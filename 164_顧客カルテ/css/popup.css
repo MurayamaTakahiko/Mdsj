@@ -1,0 +1,110 @@
+@charset "UTF-8";
+
+
+.emxas-head-area-button{
+    margin: 4px 8px;
+}
+
+/** ポップアップ **/
+.emxas-popup-area{
+    display: none;
+    width: 100%;
+    height: 100%;
+}
+
+/** ポップアップ表示エリア **/
+.emxas-popup-contents{
+    position: relative;
+    margin-top: 50px;
+    margin-bottom: auto;
+    margin-left: auto;
+    margin-right: auto;
+    /*width: 1200px;*/
+    width: 84%;
+    height: 240px;
+    z-index: 1000;
+    filter: drop-shadow(0px 0px 10px rgba(0,0,0,.8));
+    background-color: #fff;
+}
+
+/** ポップアップ表示エリア > 条件指定 **/
+/*.emxas-popup-contents-condition-area{*/
+/*    background-color: #fff;*/
+/*    padding: 4px 6px;*/
+/*}*/
+
+/** ポップアップ表示エリア > 条件指定 **/
+/*.emxas-popup-contents-condition{*/
+/*    background-color: #fff;*/
+/*    display: inline-block;*/
+/*    width: 100%;*/
+/*}*/
+
+/** ポップアップ表示エリア > 条件指定 各項目 **/
+/*.emxas-popup-contents-condition > span{*/
+/*    margin-right: 20px;*/
+/*}*/
+
+/*.emxas-popup-contents-condition-period{*/
+/*    margin: 2px 0px;*/
+/*}*/
+
+/** ポップアップ表示エリア > 各ボタン表示エリア **/
+.emxas-popup-contents-button-area{
+    text-align: right;
+    position: absolute;
+    bottom: 10px;
+    right: 16px;
+}
+
+/** ポップアップ表示エリア > 各ボタン **/
+.emxas-popup-contents-button-area button{
+    margin-left: 8px;
+}
+
+/** ヘッダ部「×」ボタン表エリア **/
+.emxas-popup-head-button-area{
+    text-align: right;
+    padding: 6px;
+}
+
+/** ヘッダ部「×」ボタン **/
+.emxas-popup-head-button-close{
+    border: none;
+    background: transparent;
+    padding: 0px;
+}
+
+.emxas-popup-contents-field-area{
+    font-size: 13px;
+    padding: 10px;
+}
+
+.emxas-popup-contents-field-area input{
+    font-size: 13px;
+    margin: 2px 8px;
+    height: 30px;
+}
+
+.emxas-popup-overlay{
+  /*display: none;*/
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, .45);
+  overflow: hidden;
+  overflow-y: auto; /* scrollにはしないことでスクロールの必要がないときはスクロールバーを表示させない */
+  -webkit-overflow-scrolling: touch;
+
+    width: 100%;
+    height: 100%;
+    z-index: 999;
+}
+
+#emxas-button-popup-close{
+    float: right;
+    margin-top: 50px;
+    margin-right: 50px;
+}

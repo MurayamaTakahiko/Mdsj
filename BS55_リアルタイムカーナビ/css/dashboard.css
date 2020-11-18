@@ -1,0 +1,13 @@
+@charset "UTF-8";
+
+#canvas1Div,#canvas2Div,#canvas3Div,#canvas4Div,#canvas5Div,#canvas6Div,#canvas7Div,#canvas8Div,#canvas9Div{
+    width: 43%;
+    height: 40%;
+}
+.bar {
+  display: block;
+  width: 100%;
+  height: 4px;
+  background-color: #378ecf;
+  border: 0;  /*デフォルトデザインでは線がある場合があるので、消しておく。*/
+}

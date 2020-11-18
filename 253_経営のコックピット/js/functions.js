@@ -982,99 +982,100 @@ jQuery.noConflict();
       return Promise.resolve(rec);
     });
   };
-/**
- * 販売予算一覧の取得
- *
- * 期間指定がない場合は、登録されている全予算を取得します。
- * whereOptionが存在する場合は、各値が存在する場合、以下の絞込みを行います
- *   keyword.customer:キーワードによる絞り込み
- *   mainChargeCustomers:「主担当のみ」による絞り込み
- *
- * @param period 期間指定(オプション)
- * @param whereOption makeWhereOption()で取得したオプションオブジェクト(オプション)
- * @param period2 2つ目の期間指定(オプション)
- *
- * @see makeWhereOption
- * @see getPeriodFromTo
- */
-var getSalesBudgetList = function(period, whereOption, period2) {
-  let isAllList = (period === void 0);
-  let querySt = ' 予算種別 in ("売上高") order by 品種コード asc, 対象年月 asc ';
-  if (!isAllList) {
-    // オプションで絞り込まれる場合の設定
-    if (whereOption) {
-      // ３コードによる絞り込み
-      if (whereOption.keyword && whereOption.keyword.customer) {
-        if (whereOption.keyword.customer.length > 0) {
-          querySt = ' (' +
-            makeWhereString('３コード', 'or', '=', whereOption.keyword.customer) + ') ' +
-            querySt;
-        } else {
-          // 1件も対象にない場合は、1件も引っかからないようにする。
-          querySt = ' (３コード = "") ' +
-            querySt;
+
+  /**
+   * 販売予算一覧の取得
+   *
+   * 期間指定がない場合は、登録されている全予算を取得します。
+   * whereOptionが存在する場合は、各値が存在する場合、以下の絞込みを行います
+   *   keyword.customer:キーワードによる絞り込み
+   *   mainChargeCustomers:「主担当のみ」による絞り込み
+   *
+   * @param period 期間指定(オプション)
+   * @param whereOption makeWhereOption()で取得したオプションオブジェクト(オプション)
+   * @param period2 2つ目の期間指定(オプション)
+   *
+   * @see makeWhereOption
+   * @see getPeriodFromTo
+   */
+  var getSalesBudgetList = function(period, whereOption, period2) {
+    let isAllList = (period === void 0);
+    let querySt = ' 予算種別 in ("売上高") order by 品種コード asc, 対象年月 asc ';
+    if (!isAllList) {
+      // オプションで絞り込まれる場合の設定
+      if (whereOption) {
+        // ３コードによる絞り込み
+        if (whereOption.keyword && whereOption.keyword.customer) {
+          if (whereOption.keyword.customer.length > 0) {
+            querySt = ' (' +
+              makeWhereString('３コード', 'or', '=', whereOption.keyword.customer) + ') ' +
+              querySt;
+          } else {
+            // 1件も対象にない場合は、1件も引っかからないようにする。
+            querySt = ' (３コード = "") ' +
+              querySt;
+          }
+        }
+        // 「主担当のみ」による絞り込み
+        if (whereOption.mainChargeCustomers) {
+          if (whereOption.mainChargeCustomers.length > 0) {
+            querySt = ' (' +
+              makeWhereString('３コード', 'or', '=', whereOption.mainChargeCustomers) + ') ' +
+              querySt;
+          } else {
+            // 1件も対象にない場合は、1件も引っかからないようにする。
+            querySt = ' (３コード = "") ' +
+              querySt;
+          }
         }
       }
-      // 「主担当のみ」による絞り込み
-      if (whereOption.mainChargeCustomers) {
-        if (whereOption.mainChargeCustomers.length > 0) {
-          querySt = ' (' +
-            makeWhereString('３コード', 'or', '=', whereOption.mainChargeCustomers) + ') ' +
-            querySt;
-        } else {
-          // 1件も対象にない場合は、1件も引っかからないようにする。
-          querySt = ' (３コード = "") ' +
-            querySt;
-        }
+      // 期間の絞り込み不可 MDSJでは顧客に契約期間を設けていない
+      let periodSt = '';
+      // let fromDate = makeFromDateSt(period.from.year, period.from.month);
+      // let toDate = makeToDateSt(period.to.year, period.to.month);
+      // let periodSt = '((契約開始日 != "" and 契約開始日 <= "' + toDate + '") and ' +
+      //         '(契約完了日 = "" or 契約完了日 >= "' + fromDate + '")) ';
+      // if (period2) {
+      //     let fromDate2 = makeFromDateSt(period2.from.year, period2.from.month);
+      //     let toDate2 = makeToDateSt(period2.to.year, period2.to.month);
+      //     periodSt = '(' + periodSt +  'or ((契約開始日 != "" and 契約開始日 <= "' + toDate2 + '") and ' +
+      //         '(契約完了日 = "" or 契約完了日 >= "' + fromDate2 + '"))) ';
+      //
+      // }
+      querySt = periodSt + querySt;
+    }
+    return kintoneUtility.rest.getAllRecordsByQuery({
+      app: emxasConf.getConfig('APP_BUDGET_LIST'),
+      query: querySt,
+      isGuest: true
+    }).then(function(resp) {
+      let rec = [];
+      let prcd = "";
+      let records = resp.records;
+      for (let ix = 0; ix < records.length; ix++) {
+        prcd = makeYearMonthSt(records[ix]['対象年月'].value);
+        rec[ix] = {
+          month: prcd, // 対象年月
+          code: records[ix]['品種コード'].value, // 品種コード
+          name: records[ix]['品種名'].value, // 品種名
+          plweight: records[ix]['計画重量'].value, // 計画重量
+          plPrice: records[ix]['計画金額'].value, // 計画金額
+          psweight: records[ix]['予定重量'].value, // 予定重量
+          psPrice: records[ix]['予定金額'].value, // 予定金額
+          ppweight: records[ix]['実績見込み重量'].value, // 見込重量
+          ppPrice: records[ix]['実績見込み金額'].value // 見込金額
+        };
       }
-    }
-    // 期間の絞り込み不可 MDSJでは顧客に契約期間を設けていない
-    let periodSt = '';
-    // let fromDate = makeFromDateSt(period.from.year, period.from.month);
-    // let toDate = makeToDateSt(period.to.year, period.to.month);
-    // let periodSt = '((契約開始日 != "" and 契約開始日 <= "' + toDate + '") and ' +
-    //         '(契約完了日 = "" or 契約完了日 >= "' + fromDate + '")) ';
-    // if (period2) {
-    //     let fromDate2 = makeFromDateSt(period2.from.year, period2.from.month);
-    //     let toDate2 = makeToDateSt(period2.to.year, period2.to.month);
-    //     periodSt = '(' + periodSt +  'or ((契約開始日 != "" and 契約開始日 <= "' + toDate2 + '") and ' +
-    //         '(契約完了日 = "" or 契約完了日 >= "' + fromDate2 + '"))) ';
-    //
-    // }
-    querySt = periodSt + querySt;
-  }
-  return kintoneUtility.rest.getAllRecordsByQuery({
-    app: emxasConf.getConfig('APP_BUDGET_LIST'),
-    query: querySt,
-    isGuest: true
-  }).then(function(resp) {
-    let rec = [];
-    let prcd = "";
-    let records = resp.records;
-    for (let ix = 0; ix < records.length; ix++) {
-      prcd = makeYearMonthSt(records[ix]['対象年月'].value);
-      rec[ix] = {
-        month: prcd, // 対象年月
-        code: records[ix]['品種コード'].value, // 品種コード
-        name: records[ix]['品種名'].value, // 品種名
-        plweight: records[ix]['計画重量'].value, // 計画重量
-        plPrice: records[ix]['計画金額'].value, // 計画金額
-        psweight: records[ix]['予定重量'].value, // 予定重量
-        psPrice: records[ix]['予定金額'].value, // 予定金額
-        ppweight: records[ix]['実績見込み重量'].value, // 見込重量
-        ppPrice: records[ix]['実績見込み金額'].value // 見込金額
-      };
-    }
-    console.log(rec);
-    if (isAllList) {
-      myVal.ALL_LIST_SALES_BUDGET = rec;
-      myVal.ALL_SRC_LIST_SALES_BUDGET = records;
-    }
-    myVal.LIST_SALES_BUDGET = rec;
-    myVal.SRC_LIST_SALES_BUDGET = records;
-    return Promise.resolve(rec);
-  });
-};
+      console.log(rec);
+      if (isAllList) {
+        myVal.ALL_LIST_SALES_BUDGET = rec;
+        myVal.ALL_SRC_LIST_SALES_BUDGET = records;
+      }
+      myVal.LIST_SALES_BUDGET = rec;
+      myVal.SRC_LIST_SALES_BUDGET = records;
+      return Promise.resolve(rec);
+    });
+  };
 
   /**
    * 在庫予算一覧の取得
@@ -4197,6 +4198,7 @@ var getSalesBudgetList = function(period, whereOption, period2) {
           resultp = {
             month: itemb.month, // 対象年月
             code: itemb.code, // 品種コード
+            name: itemb.name, // 品種名
             plweight: itemb.plweight, // 計画重量
             plPrice: itemb.plPrice, // 計画金額
             plUnit: Math.floor(itemb.plPrice / itemb.plweight),
@@ -4221,6 +4223,7 @@ var getSalesBudgetList = function(period, whereOption, period2) {
     for (let ix = 0; ix < bugCkpList.length; ix = ix + 3) {
       let bugrec = {};
       bugrec.code = bugCkpList[ix].code;
+      bugrec.name = bugCkpList[ix].name;
       bugrec.nbplweight = bugCkpList[ix].plweight;
       bugrec.nbplPrice = bugCkpList[ix].plPrice;
       bugrec.nbplUnit = bugCkpList[ix].plUnit;
@@ -4264,6 +4267,7 @@ var getSalesBudgetList = function(period, whereOption, period2) {
           resultp = {
             month: itemb.month, // 対象年月
             code: itemb.code, // 品種コード
+            name: itemb.name, // 品種名
             plweight: itemb.plweight, // 計画重量
             plPrice: itemb.plPrice, // 計画金額
             plUnit: Math.floor(itemb.plPrice / itemb.plweight),
@@ -4290,6 +4294,7 @@ var getSalesBudgetList = function(period, whereOption, period2) {
     for (let ix = 0; ix < bugCkpList.length; ix = ix + 3) {
       let bugrec = {};
       bugrec.code = bugCkpList[ix].code;
+      bugrec.name = bugCkpList[ix].name;
       bugrec.nbplweight = bugCkpList[ix].plweight;
       bugrec.nbplPrice = bugCkpList[ix].plPrice;
       bugrec.nbplUnit = bugCkpList[ix].plUnit;
@@ -4336,6 +4341,7 @@ var getSalesBudgetList = function(period, whereOption, period2) {
           resultp = {
             month: itemb.month, // 対象年月
             code: itemb.code, // 品種コード
+            name: itemb.name, // 品種名
             plweight: itemb.plweight, // 計画重量
             plPrice: itemb.plPrice, // 計画金額
             plUnit: Math.floor(itemb.plPrice / itemb.plweight),
@@ -4360,6 +4366,7 @@ var getSalesBudgetList = function(period, whereOption, period2) {
     for (let ix = 0; ix < bugCkpList.length; ix = ix + 3) {
       let bugrec = {};
       bugrec.code = bugCkpList[ix].code;
+      bugrec.name = bugCkpList[ix].name;
       bugrec.nbplweight = bugCkpList[ix].plweight;
       bugrec.nbplPrice = bugCkpList[ix].plPrice;
       bugrec.nbplUnit = bugCkpList[ix].plUnit;
@@ -4403,6 +4410,7 @@ var getSalesBudgetList = function(period, whereOption, period2) {
           resultp = {
             month: itemb.month, // 対象年月
             code: itemb.code, // 品種コード
+            name: itemb.name, // 品種名
             plweight: itemb.plweight, // 計画重量
             plPrice: itemb.plPrice, // 計画金額
             plUnit: Math.floor(itemb.plPrice / itemb.plweight),
@@ -4429,6 +4437,7 @@ var getSalesBudgetList = function(period, whereOption, period2) {
     for (let ix = 0; ix < bugCkpList.length; ix = ix + 3) {
       let bugrec = {};
       bugrec.code = bugCkpList[ix].code;
+      bugrec.name = bugCkpList[ix].name;
       bugrec.nbplweight = bugCkpList[ix].plweight;
       bugrec.nbplPrice = bugCkpList[ix].plPrice;
       bugrec.nbplUnit = bugCkpList[ix].plUnit;
@@ -4477,6 +4486,8 @@ var getSalesBudgetList = function(period, whereOption, period2) {
       recas[ix] = {
         date: prcd, // 生産日付
         code: bugHList[ix]['品番'].value, // 品番
+        name: bugHList[ix]['規格'].value, // 規格
+        size: bugHList[ix]['製品サイズ'].value, // 製品サイズ
         type: bugHList[ix]['品種コード'].value, // 品種コード
         rank: bugHList[ix]['等級コード'].value, // 等級コード
         mtrweight: bugHList[ix]['母材重量'].value, // 母材重量
@@ -4532,6 +4543,8 @@ var getSalesBudgetList = function(period, whereOption, period2) {
         result.push({
           date: current.date,
           code: current.code,
+          name: current.name,
+          size: current.size,
           type: current.type,
           rank: current.rank,
           mtrweight: current.mtrweight,

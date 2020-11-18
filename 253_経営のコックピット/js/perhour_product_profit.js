@@ -107,13 +107,13 @@ jQuery.noConflict();
   // 通常の際のカラム設定
   gridVal.getGridColumns = function(sumFlg) {
     return [{
-        data: 'code',
+        data: 'name',
         type: 'text',
         readOnly: true,
         renderer: colorRenderer
       },
       {
-        data: 'type',
+        data: 'size',
         type: 'text',
         readOnly: true,
         renderer: colorRenderer

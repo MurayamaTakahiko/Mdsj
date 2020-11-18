@@ -197,7 +197,7 @@ jQuery.noConflict();
             renderer: colorRenderer
           },
           {
-            data: 'code',
+            data: 'name',
             type: 'text',
             readOnly: true,
             renderer: colorRenderer
@@ -443,7 +443,7 @@ jQuery.noConflict();
             renderer: colorRenderer
           },
           {
-            data: 'code',
+            data: 'name',
             type: 'text',
             readOnly: true,
             renderer: colorRenderer

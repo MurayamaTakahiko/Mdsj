@@ -10,7 +10,7 @@ jQuery.noConflict();
   var COLOR_LOSS = 'red';
 
   /** 年月絞り込み条件の、表示開始年 */
-  var DISP_START_MONTH_NUM = 2019; // 2010年～2019年(来年？)
+  var DISP_START_MONTH_NUM = 2020; // 2020年～2026年
 
   /** システムで使用する、名称が得られなかった場合に使用する文字列 */
   var SYS_VALUE_NOT_EXIST_NAME = '--- NO NAME --';
@@ -219,7 +219,7 @@ jQuery.noConflict();
    */
   var nowDate = moment();
   var makeSelectYearMonth = function(seleYear, seleMonth, nameYear, nameMonth) {
-    return makeSelectYearMonth_fromToYear(DISP_START_MONTH_NUM, nowDate.year() + 5, seleYear, seleMonth, nameYear, nameMonth);
+    return makeSelectYearMonth_fromToYear(DISP_START_MONTH_NUM, nowDate.year() + 10, seleYear, seleMonth, nameYear, nameMonth);
   }
   var makeSelectYearMonth_fromToYear = function(fromYear, toYear, seleYear, seleMonth, nameYear, nameMonth) {
     // year
@@ -632,7 +632,7 @@ jQuery.noConflict();
    * @see getPeriodFromStorage
    */
   var makeStorageYearMonth = function(period) {
-    let st = period.moment.from.format('YYYY/M') + '-' + period.moment.to.format('YYYY/M');
+    let st = period.moment.apply.format('YYYY/M');
     return st;
   };
   /**
@@ -669,30 +669,21 @@ jQuery.noConflict();
    * period.moment.to     例「2018-04-30(月末日)」のmomentオブジェクト
    */
   var getPeriodFromTo = function() {
-    let fromYear = $('#select-year-from').val();
-    let fromMonth = $('#select-month-from').val();
-    let toYear = $('#select-year-to').val();
-    let toMonth = $('#select-month-to').val();
-    if (toNumber(fromYear) > toNumber(toYear)) {
+    let applyYear = $('#select-year-apply').val();
+    let applyMonth = $('#select-month-apply').val();
+    /** if (toNumber(fromYear) > toNumber(toYear)) {
       return;
     }
     if (toNumber(fromYear) === toNumber(toYear) && toNumber(fromMonth) > toNumber(toMonth)) {
       return;
-    }
+    } */
     let period = {};
-    period.from = {};
-    period.to = {};
-    period.from.year = fromYear;
-    period.from.month = fromMonth;
-    period.to.year = toYear;
-    period.to.month = toMonth;
-
-    let from = moment(period.from.year + '-' + period.from.month + '-' + 1, 'YYYY-M-D');
-    let to = moment(period.to.year + '-' + period.to.month + '-' + (moment(period.to.year + '-' + period.to.month, "YYYY-M").daysInMonth()), 'YYYY-M-D');
+    period.apply = {};
+    period.apply.year = applyYear;
+    period.apply.month = applyMonth;
+    let apply = moment(period.apply.year + '-' + period.apply.month + '-' + 1, 'YYYY-M-D');
     period.moment = {};
-    period.moment.from = from;
-    period.moment.to = to;
-
+    period.moment.apply = apply;
     return period;
   };
   /**
@@ -998,51 +989,15 @@ jQuery.noConflict();
    * @see makeWhereOption
    * @see getPeriodFromTo
    */
-  var getSalesBudgetList = function(period, whereOption, period2) {
+  var getSalesBudgetList = function(period) {
     let isAllList = (period === void 0);
     let querySt = ' 予算種別 in ("売上高") order by 品種コード asc, 対象年月 asc ';
     if (!isAllList) {
-      // オプションで絞り込まれる場合の設定
-      if (whereOption) {
-        // ３コードによる絞り込み
-        if (whereOption.keyword && whereOption.keyword.customer) {
-          if (whereOption.keyword.customer.length > 0) {
-            querySt = ' (' +
-              makeWhereString('３コード', 'or', '=', whereOption.keyword.customer) + ') ' +
-              querySt;
-          } else {
-            // 1件も対象にない場合は、1件も引っかからないようにする。
-            querySt = ' (３コード = "") ' +
-              querySt;
-          }
-        }
-        // 「主担当のみ」による絞り込み
-        if (whereOption.mainChargeCustomers) {
-          if (whereOption.mainChargeCustomers.length > 0) {
-            querySt = ' (' +
-              makeWhereString('３コード', 'or', '=', whereOption.mainChargeCustomers) + ') ' +
-              querySt;
-          } else {
-            // 1件も対象にない場合は、1件も引っかからないようにする。
-            querySt = ' (３コード = "") ' +
-              querySt;
-          }
-        }
-      }
-      // 期間の絞り込み不可 MDSJでは顧客に契約期間を設けていない
-      let periodSt = '';
-      // let fromDate = makeFromDateSt(period.from.year, period.from.month);
-      // let toDate = makeToDateSt(period.to.year, period.to.month);
-      // let periodSt = '((契約開始日 != "" and 契約開始日 <= "' + toDate + '") and ' +
-      //         '(契約完了日 = "" or 契約完了日 >= "' + fromDate + '")) ';
-      // if (period2) {
-      //     let fromDate2 = makeFromDateSt(period2.from.year, period2.from.month);
-      //     let toDate2 = makeToDateSt(period2.to.year, period2.to.month);
-      //     periodSt = '(' + periodSt +  'or ((契約開始日 != "" and 契約開始日 <= "' + toDate2 + '") and ' +
-      //         '(契約完了日 = "" or 契約完了日 >= "' + fromDate2 + '"))) ';
-      //
-      // }
-      querySt = periodSt + querySt;
+      // 期間の絞り込み
+      let fromDate = makeFromDateSt(period.apply.year, period.apply.month);
+      let toDate = makeToDateSt(period.apply.year, period.apply.month);
+      let periodSt = '(対象年月 <= "' + toDate + '" and 対象年月 >= "' + fromDate + '") ';
+      querySt = periodSt + ' and ' + querySt;
     }
     return kintoneUtility.rest.getAllRecordsByQuery({
       app: emxasConf.getConfig('APP_BUDGET_LIST'),
@@ -4436,7 +4391,7 @@ jQuery.noConflict();
       return perCkpList;
     });
     console.log(bugCkpList);
-    // 配列を1ヶ月単位に3ヶ月レイアウトに変更し、仕入CKPの後ろに追加
+    // 配列を1ヶ月単位に3ヶ月レイアウトに変更し、売上高CKPの後ろに追加
     // 合計行を出すために、生産実績のみのリストを作成
     let perCkpListBefore = [];
     let perCkpListBeforewithT = [];

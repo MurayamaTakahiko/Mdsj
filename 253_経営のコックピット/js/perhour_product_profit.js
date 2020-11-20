@@ -119,14 +119,14 @@ jQuery.noConflict();
         renderer: colorRenderer
       },
       {
-        data: '',
+        data: 'perHourPrd',
         type: 'numeric',
         format: '0,0',
         readOnly: true,
         renderer: monetaryRenderer
       },
       {
-        data: '',
+        data: 'salweight',
         type: 'numeric',
         format: '0,0',
         readOnly: true,
@@ -140,7 +140,7 @@ jQuery.noConflict();
         renderer: monetaryRenderer
       },
       {
-        data: '',
+        data: 'salprice',
         type: 'numeric',
         format: '0,0',
         readOnly: true,

@@ -591,7 +591,7 @@ jQuery.noConflict();
     // 最初は「code」で集計対象外なので除外
     totalKey.shift();
     let bugrec = {};
-    bugrec.code = "合計";
+    bugrec.name = list[0].code + "合計";
     bugrec.nbplweight = list.reduce((p, x) => toNumber(p) + toNumber(x.nbplweight), 0);
     bugrec.nbplPrice = list.reduce((p, x) => toNumber(p) + toNumber(x.nbplPrice), 0);
     bugrec.nbppweight = list.reduce((p, x) => toNumber(p) + toNumber(x.nbppweight), 0);
@@ -2462,19 +2462,20 @@ jQuery.noConflict();
   var colorRenderer = function(instance, td, row, col, prop, value, cellProperties) {
     td.innerText = (value === null ? "" : value);
     td.classList.add('htDimmed');
+    return td;
 
-    // 合計用の場合、何もしない
+    /** // 合計用の場合、何もしない
     if (instance.rootElement.id === 'total-grid') {
       return td;
     }
 
     // 同顧客／同担当者の場合、分けて表示する列の終わり
     let mergedColumnEnd;
-    /** if (w2ui[TAB_NAME].active === '顧客別') {
+    if (w2ui[TAB_NAME].active === '顧客別') {
       mergedColumnEnd = 7;
     } else {
       mergedColumnEnd = 4;
-    } */
+    }
     mergedColumnEnd = 7;
     if (col > mergedColumnEnd) {
       return td;
@@ -2498,6 +2499,7 @@ jQuery.noConflict();
     }
 
     return td;
+    */
   };
 
   /**
@@ -3359,14 +3361,14 @@ jQuery.noConflict();
         let bughour = {};
         bughour = dataList[ix];
         bughour.mtrUnitPrc = parseFloat(dataList[ix]['mtrprice'] / dataList[ix]['mtrweight']); // 母材単価
-        // TODO 販売単価はロジック修正
-        bughour.salUnitPrc = bughour.mtrUnitPrc; // 販売単価
+        bughour.salUnitPrc = parseFloat(dataList[ix]['salprice'] / dataList[ix]['salweight']); // 販売単価
         bughour.losUnit = parseFloat(dataList[ix]['losweight'] / dataList[ix]['mtrweight'] * 100).toFixed(2); // 実ﾛｽ率
         bughour.prdUnitPrc = parseFloat(dataList[ix]['mtrprice'] / dataList[ix]['prdweight']); // 製品単価（簡易原価）
         bughour.prdYieldThr = parseFloat(dataList[ix]['prdweight'] * 100 / (dataList[ix]['mtrweight'] - dataList[ix]['losweight'])).toFixed(2); // 製品歩留（理論）
         bughour.prdYield = parseFloat(dataList[ix]['prdweight'] * 100 / dataList[ix]['mtrweight']).toFixed(2); // 製品歩留
         bughour.spreadPrice = bughour.salUnitPrc - bughour.prdUnitPrc; // スプレッド金額
         bughour.spreadPer = parseFloat(bughour.spreadPrice / bughour.salUnitPrc * 100).toFixed(2); // スプレッド率
+        bughour.perHourPrd = parseFloat(dataList[ix]['prdweight'] / dataList[ix]['drophour']).toFixed(2); // 時間当たり生産量
         bughour.perHourPrf = parseFloat(bughour.spreadPrice * dataList[ix]['prdweight'] / dataList[ix]['drophour']); // 時間当たり収益
         // 計算したフィールドをリストへ追加
         dataListComp.push(bughour);
@@ -3663,14 +3665,14 @@ jQuery.noConflict();
         autoColumnSize: true
       });
       // 合計行用のtable表示
-      totalHot = new Handsontable(totalContainer, {
+      /** totalHot = new Handsontable(totalContainer, {
         data: [totalRec],
         columns: getTotalGridColumns(showType),
         colHeaders: false,
         colWidths: gridVal.COL_WIDTH,
         stretchH: 'last',
         width: gridVal.GRID_WIDTH,
-      });
+      }); */
 
       // 独自ソート関数
       const customSort = function(selectedColumn, sortConfig) {
@@ -3903,14 +3905,14 @@ jQuery.noConflict();
          autoColumnSize: true
        });
        // 合計行用のtable表示
-       totalHot = new Handsontable(totalContainer, {
+       /** totalHot = new Handsontable(totalContainer, {
          data: [totalRec],
          columns: getTotalGridColumns(showType),
          colHeaders: false,
          colWidths: gridVal.COL_WIDTH,
          stretchH: 'last',
          width: gridVal.GRID_WIDTH,
-       });
+       }); */
 
        // 独自ソート関数
        const customSort = function(selectedColumn, sortConfig) {
@@ -4197,20 +4199,21 @@ jQuery.noConflict();
         if (itemb.month === itemp.date && itemb.code === itemp.code) {
           resultp = {
             month: itemb.month, // 対象年月
-            code: itemb.code, // 品種コード
+            // code: itemb.code, // 品種コード
+            code: "仕入",
             name: itemb.name, // 品種名
             plweight: itemb.plweight, // 計画重量
             plPrice: itemb.plPrice, // 計画金額
-            plUnit: Math.floor(itemb.plPrice / itemb.plweight),
+            plUnit: toNumber(Math.floor(itemb.plPrice / itemb.plweight)),
             psweight: itemb.psweight, // 予定重量
             psPrice: itemb.psPrice, // 予定金額
-            psUnit: Math.floor(itemb.psPrice / itemb.psweight),
+            psUnit: toNumber(Math.floor(itemb.psPrice / itemb.psweight)),
             ppweight: itemb.ppweight, // 見込重量
             ppPrice: itemb.ppPrice, // 見込金額
-            ppUnit: Math.floor(itemb.ppPrice / itemb.ppweight),
+            ppUnit: toNumber(Math.floor(itemb.ppPrice / itemb.ppweight)),
             prcweight: itemp.prcweight, // 実績重量
             prcPrice: itemp.prcPrice, // 実績金額
-            prcUnit: Math.floor(itemp.prcPrice / itemp.prcweight),
+            prcUnit: toNumber(Math.floor(itemp.prcPrice / itemp.prcweight)),
           };
         }
         return resultp;
@@ -4266,20 +4269,21 @@ jQuery.noConflict();
         if (itemb.month === itemp.date && itemb.code === itemp.type) {
           resultp = {
             month: itemb.month, // 対象年月
-            code: itemb.code, // 品種コード
+            // code: itemb.code, // 品種コード
+            code: "生産",
             name: itemb.name, // 品種名
             plweight: itemb.plweight, // 計画重量
             plPrice: itemb.plPrice, // 計画金額
-            plUnit: Math.floor(itemb.plPrice / itemb.plweight),
+            plUnit: toNumber(Math.floor(itemb.plPrice / itemb.plweight)),
             psweight: itemb.psweight, // 予定重量
             psPrice: itemb.psPrice, // 予定金額
-            psUnit: Math.floor(itemb.psPrice / itemb.psweight),
+            psUnit: toNumber(Math.floor(itemb.psPrice / itemb.psweight)),
             ppweight: itemb.ppweight, // 見込重量
             ppPrice: itemb.ppPrice, // 見込金額
-            ppUnit: Math.floor(itemb.ppPrice / itemb.ppweight),
+            ppUnit: toNumber(Math.floor(itemb.ppPrice / itemb.ppweight)),
             mtrweight: itemp.mtrweight, // 母材重量
             prdweight: itemp.prdweight, // 実績重量
-            prcUnit: Math.floor(itemp.prcPrice / itemp.prcweight),
+            prcUnit: toNumber(Math.floor(itemp.prcPrice / itemp.prcweight)),
           };
         }
         return resultp;
@@ -4340,20 +4344,21 @@ jQuery.noConflict();
         if (itemb.month === itemp.date && itemb.code === itemp.type) {
           resultp = {
             month: itemb.month, // 対象年月
-            code: itemb.code, // 品種コード
+            // code: itemb.code, // 品種コード
+            code: "売上高",
             name: itemb.name, // 品種名
             plweight: itemb.plweight, // 計画重量
             plPrice: itemb.plPrice, // 計画金額
-            plUnit: Math.floor(itemb.plPrice / itemb.plweight),
+            plUnit: toNumber(Math.floor(itemb.plPrice / itemb.plweight)),
             psweight: itemb.psweight, // 予定重量
             psPrice: itemb.psPrice, // 予定金額
-            psUnit: Math.floor(itemb.psPrice / itemb.psweight),
+            psUnit: toNumber(Math.floor(itemb.psPrice / itemb.psweight)),
             ppweight: itemb.ppweight, // 見込重量
             ppPrice: itemb.ppPrice, // 見込金額
-            ppUnit: Math.floor(itemb.ppPrice / itemb.ppweight),
+            ppUnit: toNumber(Math.floor(itemb.ppPrice / itemb.ppweight)),
             salweight: itemp.salweight, // 実績重量
             salPrice: itemp.salPrice, // 実績金額
-            salUnit: Math.floor(itemp.salPrice / itemp.salweight),
+            salUnit: toNumber(Math.floor(itemp.salPrice / itemp.salweight)),
           };
         }
         return resultp;
@@ -4409,20 +4414,21 @@ jQuery.noConflict();
         if (itemb.month === itemp.date && itemb.code === itemp.type) {
           resultp = {
             month: itemb.month, // 対象年月
-            code: itemb.code, // 品種コード
+            // code: itemb.code, // 品種コード
+            code: "在庫",
             name: itemb.name, // 品種名
             plweight: itemb.plweight, // 計画重量
             plPrice: itemb.plPrice, // 計画金額
-            plUnit: Math.floor(itemb.plPrice / itemb.plweight),
+            plUnit: toNumber(Math.floor(itemb.plPrice / itemb.plweight)),
             psweight: itemb.psweight, // 予定重量
             psPrice: itemb.psPrice, // 予定金額
-            psUnit: Math.floor(itemb.psPrice / itemb.psweight),
+            psUnit: toNumber(Math.floor(itemb.psPrice / itemb.psweight)),
             ppweight: itemb.ppweight, // 見込重量
             ppPrice: itemb.ppPrice, // 見込金額
-            ppUnit: Math.floor(itemb.ppPrice / itemb.ppweight),
+            ppUnit: toNumber(Math.floor(itemb.ppPrice / itemb.ppweight)),
             stcweight: itemp.stcweight, // 実績重量
             stcPrice: itemp.stcPrice, // 実績金額
-            stcUnit: Math.floor(itemp.stcPrice / itemp.stcweight),
+            stcUnit: toNumber(Math.floor(itemp.stcPrice / itemp.stcweight)),
           };
         }
         return resultp;
@@ -4480,7 +4486,9 @@ jQuery.noConflict();
     let rec = [];
     let recas = [];
     let prcd = "";
+    let slcd = "";
     let mnt = [];
+    // 生産実績の集計
     for (let ix = 0; ix < bugHList.length; ix++) {
       prcd = makeYearMonthSt(bugHList[ix]['生産日付'].value);
       recas[ix] = {
@@ -4559,6 +4567,69 @@ jQuery.noConflict();
       }
       return result;
     }, []);
+    console.log(sumrec);
+    // 販売実績の集計
+    rec = [];
+    recas = [];
+    mnt = [];
+    for (let iv = 0; iv < perHList.length; iv++) {
+      slcd = makeYearMonthSt(perHList[iv]['販売日付'].value);
+      recas[iv] = {
+        date: slcd, // 販売日付
+        code: perHList[iv]['品番'].value, // 品番
+        rank: perHList[iv]['等級コード'].value, // 等級コード
+        salweight: perHList[iv]['販売重量'].value, // 販売重量
+        salprice: perHList[iv]['販売価格'].value // 販売金額
+      };
+      if (mnt.length == 0) {
+        mnt.push(slcd);
+        rec.push([0, recas]);
+      } else {
+        let mntflg = false;
+        for (let iw = 0; iw < mnt.length; iw++) {
+          if (mnt[iw] === slcd) {
+            rec.push([iw, recas]);
+            mntflg = true;
+            break;
+          }
+        }
+        if (!mntflg) {
+          mnt.push(slcd);
+          rec.push([[mnt.length - 1], recas]);
+        }
+      }
+    }
+    // 同月同品番のものは集約する
+    var sumrecsal = recas.reduce(function (result, current) {
+      var element = result.find(function (p) {
+        return p.date === current.date && p.code === current.code && p.rank === current.rank
+      });
+      if (element) {
+        var ele1 = parseFloat(element.salweight);
+        element.salweight = String(ele1 + parseFloat(current.salweight));
+        var ele2 = parseFloat(element.salprice);
+        element.salprice = String(ele2 + parseFloat(current.salprice));
+      } else {
+        result.push({
+          date: current.date,
+          code: current.code,
+          rank: current.rank,
+          salweight: current.salweight,
+          salprice: current.salprice
+        });
+      }
+      return result;
+    }, []);
+    console.log(sumrecsal);
+    // 生産実績と販売実績の連想配列をマージ
+    for (let iz = 0; iz < sumrecsal.length; iz++) {
+      for (let iu = 0; iu < sumrec.length; iu ++) {
+        if (sumrecsal[iz].date === sumrec[iu].date && sumrecsal[iz].code === sumrec[iu].code && sumrecsal[iz].rank === sumrec[iu].rank) {
+          sumrec[iu]['salweight'] = sumrecsal[iz].salweight;
+          sumrec[iu]['salprice'] = sumrecsal[iz].salprice;
+        }
+      }
+    }
     console.log(sumrec);
     return sumrec;
     // 合計行を求める

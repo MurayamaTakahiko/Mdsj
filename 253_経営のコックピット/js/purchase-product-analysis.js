@@ -31,7 +31,6 @@ jQuery.noConflict();
     $('#contents').append($('<div>').addClass('solo-row-block').attr('id', 'menmu-button'));
     $('#contents').append($('<div>').addClass('solo-row-block').attr('id', 'my-top-grid'));
     $('#contents').append($('<div>').addClass('solo-row-block').attr('id', 'my-grid'));
-    $('#contents').append($('<div>').addClass('solo-row-block').attr('id', 'total-grid'));
 
     // 画面描画物の構築
     func.getPersonOfChargeList().then(function() {
@@ -113,7 +112,7 @@ jQuery.noConflict();
   // グリッド幅
   gridVal.GRID_WIDTH = 'auto';
   // 通常のセル幅（CKP）
-  gridVal.COL_WIDTH_CKP = [30, 60, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45];
+  gridVal.COL_WIDTH_CKP = [30, 80, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45];
   // 2期比較の際のセル幅
   gridVal.COL_WIDTH_2TERM = [15, 60, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30];
   // 通常のセル幅（顧客別）
@@ -799,7 +798,6 @@ jQuery.noConflict();
         // 表示を初期化
         $('#my-top-grid').empty();
         $('#my-grid').empty();
-        $('#total-grid').empty();
         // グリッドを表示
         func.showPerformListGrid(period, w2ui['radio_choice_tab'].active);
 
@@ -819,7 +817,6 @@ jQuery.noConflict();
         // 表示を初期化
         $('#my-top-grid').empty();
         $('#my-grid').empty();
-        $('#total-grid').empty();
         // グリッドを表示
         func.showPerformListGrid(period, w2ui['radio_choice_tab'].active);
 

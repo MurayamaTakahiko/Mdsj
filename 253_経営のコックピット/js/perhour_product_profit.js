@@ -27,24 +27,17 @@ jQuery.noConflict();
     spinner.showSpinner();
     // 画面構成に必要なdivを用意
     $('#contents').append($('<div>').addClass('solo-row-block').attr('id', 'header'));
-    $('#contents').append($('<div>').addClass('solo-row-block').attr('id', 'tab'));
     $('#contents').append($('<div>').addClass('solo-row-block').attr('id', 'my-top-grid'));
     $('#contents').append($('<div>').addClass('solo-row-block').attr('id', 'my-grid'));
-    $('#contents').append($('<div>').addClass('solo-row-block').attr('id', 'total-grid'));
 
     // 画面描画物の構築
     func.getPersonOfChargeList().then(function() {
       // ヘッダ（期間絞込みの設定）
       var today = moment();
-      let toDate = moment(today);
-      toDate.add(+1, 'months');
-      let fromDate = moment(toDate);
-      fromDate.add(-2, 'months');
-      var fromSele = func.makeSelectYearMonth(fromDate.year(), fromDate.month() + 1, 'select-year-from', 'select-month-from');
-      var toSele = func.makeSelectYearMonth(toDate.year(), toDate.month() + 1, 'select-year-to', 'select-month-to');
+      var applySele = func.makeSelectYearMonth(today.year(), today.month() + 1, 'select-year-apply', 'select-month-apply');
       var changeButton = $('<span>').append($('<button>').attr('id', 'change-button').text('変更').click());
 
-      $('#header').append($('<div>').html('期間：' + fromSele.html() + '　～　' + toSele.html() + changeButton.html()));
+      $('#header').append($('<div>').html('&emsp;&emsp;分析対象月：' + applySele.html() + '&emsp;' + changeButton.html()));
 
       $('#change-button').click(function() {
         // 期間の前後チェック
@@ -254,11 +247,11 @@ jQuery.noConflict();
     // ユーザの設定値(期間)の読み込み
     let period = func.getPeriodFromTo();
     let err = [];
-    if (!func.checkPeriod(period, err)) {
+    /** if (!func.checkPeriod(period, err)) {
       alert(err);
       spinner.hideSpinner();
       return;
-    }
+    } */
     // 期間をsessionStorageに保存
     sessionStorage.setItem(val.SELECT_PERIOD_YEARMONTH, func.makeStorageYearMonth(period));
     // データの取得

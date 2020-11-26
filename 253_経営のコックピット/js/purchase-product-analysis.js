@@ -28,7 +28,6 @@ jQuery.noConflict();
     // 画面構成に必要なdivを用意
     $('#contents').append($('<div>').addClass('solo-row-block').attr('id', 'header'));
     $('#contents').append($('<div>').addClass('solo-row-block').attr('id', 'tab'));
-    $('#contents').append($('<div>').addClass('solo-row-block').attr('id', 'menmu-button'));
     $('#contents').append($('<div>').addClass('solo-row-block').attr('id', 'my-top-grid'));
     $('#contents').append($('<div>').addClass('solo-row-block').attr('id', 'my-grid'));
 
@@ -36,18 +35,11 @@ jQuery.noConflict();
     func.getPersonOfChargeList().then(function() {
       // ヘッダ（期間絞込みの設定）
       var today = moment();
-      let toDate = moment(today);
-      toDate.add(+1, 'months');
-      let fromDate = moment(toDate);
-      fromDate.add(-2, 'months');
-      var fromSele = func.makeSelectYearMonth(fromDate.year(), fromDate.month() + 1, 'select-year-from', 'select-month-from');
-      var toSele = func.makeSelectYearMonth(toDate.year(), toDate.month() + 1, 'select-year-to', 'select-month-to');
+      var applySele = func.makeSelectYearMonth(today.year(), today.month() + 1, 'select-year-apply', 'select-month-apply');
       var changeButton = $('<span>').append($('<button>').attr('id', 'change-button').text('変更').click());
-
-      $('#header').append($('<div>').html('期間：' + fromSele.html() + '　～　' + toSele.html() + changeButton.html()));
-
+      $('#header').append($('<div>').html('&emsp;&emsp;コックピット対象月：' + applySele.html() + '&emsp;' + changeButton.html()));
       $('#change-button').click(function() {
-        // 期間の前後チェック
+        // 表示を変更
         showAnalysisBody(w2ui['radio_choice_tab'].active);
       });
 
@@ -76,21 +68,10 @@ jQuery.noConflict();
           let period = func.getPeriodFromTo();
           if (!period) {
             // 期間の前後が不正なので、期間は初期表示に変更
-            $('#select-year-from').val(fromDate.year());
-            $('#select-month-from').val(fromDate.month() + 1);
-            $('#select-year-to').val(toDate.year());
-            $('#select-month-to').val(toDate.month() + 1);
+            $('#select-year-apply').val(today.year());
+            $('#select-month-apply').val(today.month() + 1);
           }
-          /* if (event.object.text === '事業所全体') {
-            // 損益分析のボタンは表示
-            $('#profit-and-loss-analysis').show();
-            $('#select_charge').hide();
-          } else {
-            // 損益分析のボタンは非表示
-            $('#profit-and-loss-analysis').hide();
-            $('#select_charge').show();
-          } */
-          // 表示を変更
+          // タブを変更
           showAnalysisBody(event.object.text);
         }
       });
@@ -762,11 +743,11 @@ jQuery.noConflict();
     // ユーザの設定値(期間)の読み込み
     let period = func.getPeriodFromTo();
     let err = [];
-    if (!func.checkPeriod(period, err)) {
+    /** if (!func.checkPeriod(period, err)) {
       alert(err);
       spinner.hideSpinner();
       return;
-    }
+    } */
     // 期間をsessionStorageに保存
     sessionStorage.setItem(val.SELECT_PERIOD_YEARMONTH, func.makeStorageYearMonth(period));
 

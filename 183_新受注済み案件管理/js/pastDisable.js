@@ -26,8 +26,6 @@ jQuery.noConflict();
           }else{
             //今月分は一部編集可能に
             row.value.売上月.disabled = true;
-            row.value.組織選択.disabled = true;
-            row.value.担当者.disabled = true;
             row.value.計画額.disabled = true;
             row.value.予測額.disabled = true;
           }

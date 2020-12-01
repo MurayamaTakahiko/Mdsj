@@ -11,7 +11,7 @@ jQuery.noConflict();
         record.売上管理表.value.forEach(function(row){
           var sellDate = row.value['売上月']['value'];
           if (sellDate == null){
-          }else if (moment(sellDate).isBefore(moment(), 'month')) {
+          }else if (moment(sellDate).isBefore(moment().add(-5, 'days'), 'day')) {
             row.value.売上月.disabled = true;
             row.value.組織選択.disabled = true;
             row.value.担当者.disabled = true;

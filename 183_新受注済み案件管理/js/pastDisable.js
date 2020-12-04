@@ -21,8 +21,8 @@ jQuery.noConflict();
             row.value.交通費.disabled = true;
           }else if (moment(sellDate).isAfter(moment(), 'month')) {
             //来月以降は編集可能に
-            row.value.売上月.disabled = true;
-            row.value.計画額.disabled = true;
+            // row.value.売上月.disabled = true;
+            // row.value.計画額.disabled = true;
           }else{
             //今月分は一部編集可能に
             row.value.売上月.disabled = true;

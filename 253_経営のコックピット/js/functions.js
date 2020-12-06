@@ -336,6 +336,22 @@ jQuery.noConflict();
   }
 
   /**
+   * 期間年月から、期間開始年月日(先月)の文字列を作成します
+   */
+  var makeFromPreDateSt = function(period) {
+    period = moment(period).add(-1, 'month');
+    return moment(period).startOf('months').format('YYYY-MM-DD');
+  }
+
+  /**
+   * 期間年月から、期間終了年月日(来月)の文字列を作成します
+   */
+  var makeToNxDateSt = function(period) {
+    period = moment(period).add(1, 'month');
+    return moment(period).endOf('months').format('YYYY-MM-DD');
+  }
+
+  /**
    * 指定の日付文字列から、年月の文字列を作成します
    */
   var makeYearMonthSt = function(dateSt) {
@@ -805,46 +821,16 @@ jQuery.noConflict();
     let isAllList = (period === void 0);
     let querySt = ' 予算種別 in ("仕入") order by 品種コード asc, 対象年月 asc ';
     if (!isAllList) {
-      // オプションで絞り込まれる場合の設定
-      if (whereOption) {
-        // ３コードによる絞り込み
-        if (whereOption.keyword && whereOption.keyword.customer) {
-          if (whereOption.keyword.customer.length > 0) {
-            querySt = ' (' +
-              makeWhereString('３コード', 'or', '=', whereOption.keyword.customer) + ') ' +
-              querySt;
-          } else {
-            // 1件も対象にない場合は、1件も引っかからないようにする。
-            querySt = ' (３コード = "") ' +
-              querySt;
-          }
-        }
-        // 「主担当のみ」による絞り込み
-        if (whereOption.mainChargeCustomers) {
-          if (whereOption.mainChargeCustomers.length > 0) {
-            querySt = ' (' +
-              makeWhereString('３コード', 'or', '=', whereOption.mainChargeCustomers) + ') ' +
-              querySt;
-          } else {
-            // 1件も対象にない場合は、1件も引っかからないようにする。
-            querySt = ' (３コード = "") ' +
-              querySt;
-          }
-        }
+      // 期間の絞り込み
+      let fromDate = makeFromPreDateSt(period.moment.apply);
+      let toDate = makeToNxDateSt(period.moment.apply);
+      let periodSt = '(対象年月 <= "' + toDate + '" and ' + '対象年月 >= "' + fromDate + '") and ';
+      if (period2) {
+         // let fromDate2 = makeFromDateSt(period2.from.year, period2.from.month);
+         // let toDate2 = makeToDateSt(period2.to.year, period2.to.month);
+         // periodSt = '(' + periodSt +  'or ((契約開始日 != "" and 契約開始日 <= "' + toDate2 + '") and ' +
+        //     '(契約完了日 = "" or 契約完了日 >= "' + fromDate2 + '"))) and ';
       }
-      // 期間の絞り込み不可 MDSJでは顧客に契約期間を設けていない
-      let periodSt = '';
-      // let fromDate = makeFromDateSt(period.from.year, period.from.month);
-      // let toDate = makeToDateSt(period.to.year, period.to.month);
-      // let periodSt = '((契約開始日 != "" and 契約開始日 <= "' + toDate + '") and ' +
-      //         '(契約完了日 = "" or 契約完了日 >= "' + fromDate + '")) ';
-      // if (period2) {
-      //     let fromDate2 = makeFromDateSt(period2.from.year, period2.from.month);
-      //     let toDate2 = makeToDateSt(period2.to.year, period2.to.month);
-      //     periodSt = '(' + periodSt +  'or ((契約開始日 != "" and 契約開始日 <= "' + toDate2 + '") and ' +
-      //         '(契約完了日 = "" or 契約完了日 >= "' + fromDate2 + '"))) ';
-      //
-      // }
       querySt = periodSt + querySt;
     }
     return kintoneUtility.rest.getAllRecordsByQuery({
@@ -899,46 +885,10 @@ jQuery.noConflict();
     let isAllList = (period === void 0);
     let querySt = ' 予算種別 in ("生産") order by 品種コード asc, 対象年月 asc ';
     if (!isAllList) {
-      // オプションで絞り込まれる場合の設定
-      if (whereOption) {
-        // ３コードによる絞り込み
-        if (whereOption.keyword && whereOption.keyword.customer) {
-          if (whereOption.keyword.customer.length > 0) {
-            querySt = ' (' +
-              makeWhereString('３コード', 'or', '=', whereOption.keyword.customer) + ') ' +
-              querySt;
-          } else {
-            // 1件も対象にない場合は、1件も引っかからないようにする。
-            querySt = ' (３コード = "") ' +
-              querySt;
-          }
-        }
-        // 「主担当のみ」による絞り込み
-        if (whereOption.mainChargeCustomers) {
-          if (whereOption.mainChargeCustomers.length > 0) {
-            querySt = ' (' +
-              makeWhereString('３コード', 'or', '=', whereOption.mainChargeCustomers) + ') ' +
-              querySt;
-          } else {
-            // 1件も対象にない場合は、1件も引っかからないようにする。
-            querySt = ' (３コード = "") ' +
-              querySt;
-          }
-        }
-      }
-      // 期間の絞り込み不可 MDSJでは顧客に契約期間を設けていない
-      let periodSt = '';
-      // let fromDate = makeFromDateSt(period.from.year, period.from.month);
-      // let toDate = makeToDateSt(period.to.year, period.to.month);
-      // let periodSt = '((契約開始日 != "" and 契約開始日 <= "' + toDate + '") and ' +
-      //         '(契約完了日 = "" or 契約完了日 >= "' + fromDate + '")) ';
-      // if (period2) {
-      //     let fromDate2 = makeFromDateSt(period2.from.year, period2.from.month);
-      //     let toDate2 = makeToDateSt(period2.to.year, period2.to.month);
-      //     periodSt = '(' + periodSt +  'or ((契約開始日 != "" and 契約開始日 <= "' + toDate2 + '") and ' +
-      //         '(契約完了日 = "" or 契約完了日 >= "' + fromDate2 + '"))) ';
-      //
-      // }
+      // 期間の絞り込み
+      let fromDate = makeFromPreDateSt(period.moment.apply);
+      let toDate = makeToNxDateSt(period.moment.apply);
+      let periodSt = '(対象年月 <= "' + toDate + '" and ' + '対象年月 >= "' + fromDate + '") and ';
       querySt = periodSt + querySt;
     }
     return kintoneUtility.rest.getAllRecordsByQuery({
@@ -994,10 +944,10 @@ jQuery.noConflict();
     let querySt = ' 予算種別 in ("売上高") order by 品種コード asc, 対象年月 asc ';
     if (!isAllList) {
       // 期間の絞り込み
-      let fromDate = makeFromDateSt(period.apply.year, period.apply.month);
-      let toDate = makeToDateSt(period.apply.year, period.apply.month);
-      let periodSt = '(対象年月 <= "' + toDate + '" and 対象年月 >= "' + fromDate + '") ';
-      querySt = periodSt + ' and ' + querySt;
+      let fromDate = makeFromPreDateSt(period.moment.apply);
+      let toDate = makeToNxDateSt(period.moment.apply);
+      let periodSt = '(対象年月 <= "' + toDate + '" and ' + '対象年月 >= "' + fromDate + '") and ';
+      querySt = periodSt + querySt;
     }
     return kintoneUtility.rest.getAllRecordsByQuery({
       app: emxasConf.getConfig('APP_BUDGET_LIST'),
@@ -1051,46 +1001,10 @@ jQuery.noConflict();
     let isAllList = (period === void 0);
     let querySt = ' 予算種別 in ("製品在庫") order by 品種コード asc, 対象年月 asc ';
     if (!isAllList) {
-      // オプションで絞り込まれる場合の設定
-      if (whereOption) {
-        // ３コードによる絞り込み
-        if (whereOption.keyword && whereOption.keyword.customer) {
-          if (whereOption.keyword.customer.length > 0) {
-            querySt = ' (' +
-              makeWhereString('３コード', 'or', '=', whereOption.keyword.customer) + ') ' +
-              querySt;
-          } else {
-            // 1件も対象にない場合は、1件も引っかからないようにする。
-            querySt = ' (３コード = "") ' +
-              querySt;
-          }
-        }
-        // 「主担当のみ」による絞り込み
-        if (whereOption.mainChargeCustomers) {
-          if (whereOption.mainChargeCustomers.length > 0) {
-            querySt = ' (' +
-              makeWhereString('３コード', 'or', '=', whereOption.mainChargeCustomers) + ') ' +
-              querySt;
-          } else {
-            // 1件も対象にない場合は、1件も引っかからないようにする。
-            querySt = ' (３コード = "") ' +
-              querySt;
-          }
-        }
-      }
-      // 期間の絞り込み不可 MDSJでは顧客に契約期間を設けていない
-      let periodSt = '';
-      // let fromDate = makeFromDateSt(period.from.year, period.from.month);
-      // let toDate = makeToDateSt(period.to.year, period.to.month);
-      // let periodSt = '((契約開始日 != "" and 契約開始日 <= "' + toDate + '") and ' +
-      //         '(契約完了日 = "" or 契約完了日 >= "' + fromDate + '")) ';
-      // if (period2) {
-      //     let fromDate2 = makeFromDateSt(period2.from.year, period2.from.month);
-      //     let toDate2 = makeToDateSt(period2.to.year, period2.to.month);
-      //     periodSt = '(' + periodSt +  'or ((契約開始日 != "" and 契約開始日 <= "' + toDate2 + '") and ' +
-      //         '(契約完了日 = "" or 契約完了日 >= "' + fromDate2 + '"))) ';
-      //
-      // }
+      // 期間の絞り込み
+      let fromDate = makeFromPreDateSt(period.moment.apply);
+      let toDate = makeToNxDateSt(period.moment.apply);
+      let periodSt = '(対象年月 <= "' + toDate + '" and ' + '対象年月 >= "' + fromDate + '") and ';
       querySt = periodSt + querySt;
     }
     return kintoneUtility.rest.getAllRecordsByQuery({
@@ -1145,46 +1059,10 @@ jQuery.noConflict();
     let isAllList = (period === void 0);
     let querySt = ' order by 品種コード asc, 仕入日付 asc ';
     if (!isAllList) {
-      // オプションで絞り込まれる場合の設定
-      if (whereOption) {
-        // ３コードによる絞り込み
-        if (whereOption.keyword && whereOption.keyword.customer) {
-          if (whereOption.keyword.customer.length > 0) {
-            querySt = ' (' +
-              makeWhereString('３コード', 'or', '=', whereOption.keyword.customer) + ') ' +
-              querySt;
-          } else {
-            // 1件も対象にない場合は、1件も引っかからないようにする。
-            querySt = ' (３コード = "") ' +
-              querySt;
-          }
-        }
-        // 「主担当のみ」による絞り込み
-        if (whereOption.mainChargeCustomers) {
-          if (whereOption.mainChargeCustomers.length > 0) {
-            querySt = ' (' +
-              makeWhereString('３コード', 'or', '=', whereOption.mainChargeCustomers) + ') ' +
-              querySt;
-          } else {
-            // 1件も対象にない場合は、1件も引っかからないようにする。
-            querySt = ' (３コード = "") ' +
-              querySt;
-          }
-        }
-      }
-      // 期間の絞り込み不可 MDSJでは顧客に契約期間を設けていない
-      let periodSt = '';
-      // let fromDate = makeFromDateSt(period.from.year, period.from.month);
-      // let toDate = makeToDateSt(period.to.year, period.to.month);
-      // let periodSt = '((契約開始日 != "" and 契約開始日 <= "' + toDate + '") and ' +
-      //         '(契約完了日 = "" or 契約完了日 >= "' + fromDate + '")) ';
-      // if (period2) {
-      //     let fromDate2 = makeFromDateSt(period2.from.year, period2.from.month);
-      //     let toDate2 = makeToDateSt(period2.to.year, period2.to.month);
-      //     periodSt = '(' + periodSt +  'or ((契約開始日 != "" and 契約開始日 <= "' + toDate2 + '") and ' +
-      //         '(契約完了日 = "" or 契約完了日 >= "' + fromDate2 + '"))) ';
-      //
-      // }
+      // 期間の絞り込み
+      let fromDate = makeFromPreDateSt(period.moment.apply);
+      let toDate = makeToNxDateSt(period.moment.apply);
+      let periodSt = '(仕入日付 <= "' + toDate + '" and ' + '仕入日付 >= "' + fromDate + '")';
       querySt = periodSt + querySt;
     }
     return kintoneUtility.rest.getAllRecordsByQuery({
@@ -1278,46 +1156,10 @@ jQuery.noConflict();
     let isAllList = (period === void 0);
     let querySt = ' order by 品種コード asc, 品番 asc, 生産日付 asc ';
     if (!isAllList) {
-      // オプションで絞り込まれる場合の設定
-      if (whereOption) {
-        // ３コードによる絞り込み
-        if (whereOption.keyword && whereOption.keyword.customer) {
-          if (whereOption.keyword.customer.length > 0) {
-            querySt = ' (' +
-              makeWhereString('３コード', 'or', '=', whereOption.keyword.customer) + ') ' +
-              querySt;
-          } else {
-            // 1件も対象にない場合は、1件も引っかからないようにする。
-            querySt = ' (３コード = "") ' +
-              querySt;
-          }
-        }
-        // 「主担当のみ」による絞り込み
-        if (whereOption.mainChargeCustomers) {
-          if (whereOption.mainChargeCustomers.length > 0) {
-            querySt = ' (' +
-              makeWhereString('３コード', 'or', '=', whereOption.mainChargeCustomers) + ') ' +
-              querySt;
-          } else {
-            // 1件も対象にない場合は、1件も引っかからないようにする。
-            querySt = ' (３コード = "") ' +
-              querySt;
-          }
-        }
-      }
-      // 期間の絞り込み不可 MDSJでは顧客に契約期間を設けていない
-      let periodSt = '';
-      // let fromDate = makeFromDateSt(period.from.year, period.from.month);
-      // let toDate = makeToDateSt(period.to.year, period.to.month);
-      // let periodSt = '((契約開始日 != "" and 契約開始日 <= "' + toDate + '") and ' +
-      //         '(契約完了日 = "" or 契約完了日 >= "' + fromDate + '")) ';
-      // if (period2) {
-      //     let fromDate2 = makeFromDateSt(period2.from.year, period2.from.month);
-      //     let toDate2 = makeToDateSt(period2.to.year, period2.to.month);
-      //     periodSt = '(' + periodSt +  'or ((契約開始日 != "" and 契約開始日 <= "' + toDate2 + '") and ' +
-      //         '(契約完了日 = "" or 契約完了日 >= "' + fromDate2 + '"))) ';
-      //
-      // }
+      // 期間の絞り込み
+      let fromDate = makeFromPreDateSt(period.moment.apply);
+      let toDate = makeToNxDateSt(period.moment.apply);
+      let periodSt = '(生産日付 <= "' + toDate + '" and ' + '生産日付 >= "' + fromDate + '")';
       querySt = periodSt + querySt;
     }
     return kintoneUtility.rest.getAllRecordsByQuery({
@@ -1417,46 +1259,10 @@ jQuery.noConflict();
     let isAllList = (period === void 0);
     let querySt = ' order by 品種コード asc, 販売日付 asc ';
     if (!isAllList) {
-      // オプションで絞り込まれる場合の設定
-      if (whereOption) {
-        // ３コードによる絞り込み
-        if (whereOption.keyword && whereOption.keyword.customer) {
-          if (whereOption.keyword.customer.length > 0) {
-            querySt = ' (' +
-              makeWhereString('３コード', 'or', '=', whereOption.keyword.customer) + ') ' +
-              querySt;
-          } else {
-            // 1件も対象にない場合は、1件も引っかからないようにする。
-            querySt = ' (３コード = "") ' +
-              querySt;
-          }
-        }
-        // 「主担当のみ」による絞り込み
-        if (whereOption.mainChargeCustomers) {
-          if (whereOption.mainChargeCustomers.length > 0) {
-            querySt = ' (' +
-              makeWhereString('３コード', 'or', '=', whereOption.mainChargeCustomers) + ') ' +
-              querySt;
-          } else {
-            // 1件も対象にない場合は、1件も引っかからないようにする。
-            querySt = ' (３コード = "") ' +
-              querySt;
-          }
-        }
-      }
-      // 期間の絞り込み不可 MDSJでは顧客に契約期間を設けていない
-      let periodSt = '';
-      // let fromDate = makeFromDateSt(period.from.year, period.from.month);
-      // let toDate = makeToDateSt(period.to.year, period.to.month);
-      // let periodSt = '((契約開始日 != "" and 契約開始日 <= "' + toDate + '") and ' +
-      //         '(契約完了日 = "" or 契約完了日 >= "' + fromDate + '")) ';
-      // if (period2) {
-      //     let fromDate2 = makeFromDateSt(period2.from.year, period2.from.month);
-      //     let toDate2 = makeToDateSt(period2.to.year, period2.to.month);
-      //     periodSt = '(' + periodSt +  'or ((契約開始日 != "" and 契約開始日 <= "' + toDate2 + '") and ' +
-      //         '(契約完了日 = "" or 契約完了日 >= "' + fromDate2 + '"))) ';
-      //
-      // }
+      // 期間の絞り込み
+      let fromDate = makeFromPreDateSt(period.moment.apply);
+      let toDate = makeToNxDateSt(period.moment.apply);
+      let periodSt = '(販売日付 <= "' + toDate + '" and ' + '販売日付 >= "' + fromDate + '")';
       querySt = periodSt + querySt;
     }
     return kintoneUtility.rest.getAllRecordsByQuery({
@@ -1554,46 +1360,10 @@ jQuery.noConflict();
     let isAllList = (period === void 0);
     let querySt = ' order by 品種コード asc, 生産日付 asc ';
     if (!isAllList) {
-      // オプションで絞り込まれる場合の設定
-      if (whereOption) {
-        // ３コードによる絞り込み
-        if (whereOption.keyword && whereOption.keyword.customer) {
-          if (whereOption.keyword.customer.length > 0) {
-            querySt = ' (' +
-              makeWhereString('３コード', 'or', '=', whereOption.keyword.customer) + ') ' +
-              querySt;
-          } else {
-            // 1件も対象にない場合は、1件も引っかからないようにする。
-            querySt = ' (３コード = "") ' +
-              querySt;
-          }
-        }
-        // 「主担当のみ」による絞り込み
-        if (whereOption.mainChargeCustomers) {
-          if (whereOption.mainChargeCustomers.length > 0) {
-            querySt = ' (' +
-              makeWhereString('３コード', 'or', '=', whereOption.mainChargeCustomers) + ') ' +
-              querySt;
-          } else {
-            // 1件も対象にない場合は、1件も引っかからないようにする。
-            querySt = ' (３コード = "") ' +
-              querySt;
-          }
-        }
-      }
-      // 期間の絞り込み不可 MDSJでは顧客に契約期間を設けていない
-      let periodSt = '';
-      // let fromDate = makeFromDateSt(period.from.year, period.from.month);
-      // let toDate = makeToDateSt(period.to.year, period.to.month);
-      // let periodSt = '((契約開始日 != "" and 契約開始日 <= "' + toDate + '") and ' +
-      //         '(契約完了日 = "" or 契約完了日 >= "' + fromDate + '")) ';
-      // if (period2) {
-      //     let fromDate2 = makeFromDateSt(period2.from.year, period2.from.month);
-      //     let toDate2 = makeToDateSt(period2.to.year, period2.to.month);
-      //     periodSt = '(' + periodSt +  'or ((契約開始日 != "" and 契約開始日 <= "' + toDate2 + '") and ' +
-      //         '(契約完了日 = "" or 契約完了日 >= "' + fromDate2 + '"))) ';
-      //
-      // }
+      // 期間の絞り込み
+      let fromDate = makeFromPreDateSt(period.moment.apply);
+      let toDate = makeToNxDateSt(period.moment.apply);
+      let periodSt = '(生産日付 <= "' + toDate + '" and ' + '生産日付 >= "' + fromDate + '")';
       querySt = periodSt + querySt;
     }
     return kintoneUtility.rest.getAllRecordsByQuery({
@@ -4363,6 +4133,8 @@ jQuery.noConflict();
     let bugTList = myVal.LIST_PRDSTOCK_BUDGET;
     let perTList = myVal.LIST_PRDSTOCK_PERFORM;
     perCkpListThreewithT = bugCkpListThreewithT;
+    console.log(bugTList);
+    console.log(perTList);
     // 予定は必ず全品種コード分登録することを前提とする
     var bugCkpList = bugTList.map(function (itemb) {
       var perCkpList = perTList.reduce(function(resultp, itemp) {

@@ -93,7 +93,7 @@ jQuery.noConflict();
   // グリッド幅
   gridVal.GRID_WIDTH = 'auto';
   // 通常のセル幅（CKP）
-  gridVal.COL_WIDTH_CKP = [30, 80, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45];
+  gridVal.COL_WIDTH_CKP = [30, 100, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45];
   // 2期比較の際のセル幅
   gridVal.COL_WIDTH_2TERM = [15, 60, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30];
   // 通常のセル幅（顧客別）
@@ -106,7 +106,7 @@ jQuery.noConflict();
   // ヘッダ1段目（cnt属性は2期比較時のcolspan数）
   gridVal.GRID_TOP_COL_HEADERS = [
     '<rowspan type="top"> </rowspan>', // タブ種
-    '<rowspan type="top"> </rowspan>', // ＫＰＩ項目
+    '<rowspan type="top">(単位 t/千円)</rowspan>', // ＫＰＩ項目
     '<colspan type="pre" cnt="12">6月度</colspan>', // 前月度
     '<colspan type="pre" cnt="12">7月度</colspan>', // 当月度
     '<colspan type="pre" cnt="9">8月度</colspan>', // 次月度
@@ -183,21 +183,21 @@ jQuery.noConflict();
             renderer: colorRenderer
           },
           {
-            data: '',
+            data: 'nbppweight',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
             renderer: monetaryRenderer
           },
           {
-            data: '',
+            data: 'nbppPrice',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
             renderer: monetaryRenderer,
           },
           {
-            data: '',
+            data: 'nbppUnit',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
@@ -267,21 +267,21 @@ jQuery.noConflict();
             renderer: monetaryRenderer
           },
           {
-            data: '',
+            data: 'ntppweight',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
             renderer: monetaryRenderer
           },
           {
-            data: '',
+            data: 'ntppPrice',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
             renderer: monetaryRenderer,
           },
           {
-            data: '',
+            data: 'ntppUnit',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
@@ -351,21 +351,21 @@ jQuery.noConflict();
             renderer: monetaryRenderer
           },
           {
-            data: '',
+            data: 'ntppweight',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
             renderer: monetaryRenderer
           },
           {
-            data: '',
+            data: 'ntppPrice',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
             renderer: monetaryRenderer,
           },
           {
-            data: '',
+            data: 'ntppUnit',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
@@ -429,21 +429,21 @@ jQuery.noConflict();
             renderer: colorRenderer
           },
           {
-            data: '',
+            data: 'nbppweight',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
             renderer: monetaryRenderer
           },
           {
-            data: '',
+            data: 'nbppPrice',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
             renderer: monetaryRenderer,
           },
           {
-            data: '',
+            data: 'nbppUnit',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
@@ -513,21 +513,21 @@ jQuery.noConflict();
             renderer: monetaryRenderer
           },
           {
-            data: '',
+            data: 'nbppweight',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
             renderer: monetaryRenderer
           },
           {
-            data: '',
+            data: 'nbppPrice',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
             renderer: monetaryRenderer,
           },
           {
-            data: '',
+            data: 'nbppUnit',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
@@ -597,21 +597,21 @@ jQuery.noConflict();
             renderer: monetaryRenderer
           },
           {
-            data: '',
+            data: 'nbppweight',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
             renderer: monetaryRenderer
           },
           {
-            data: '',
+            data: 'nbppPrice',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
             renderer: monetaryRenderer,
           },
           {
-            data: '',
+            data: 'nbppUnit',
             type: 'numeric',
             format: '0,0',
             readOnly: true,

@@ -34,7 +34,7 @@ jQuery.noConflict();
     func.getPersonOfChargeList().then(function() {
       // ヘッダ（期間絞込みの設定）
       var today = moment();
-      var applySele = func.makeSelectYearMonth(today.year(), today.month() + 1, 'select-year-apply', 'select-month-apply');
+      var applySele = func.makeSelectYearMonth(today.year(), today.month(), 'select-year-apply', 'select-month-apply');
       var changeButton = $('<span>').append($('<button>').attr('id', 'change-button').text('変更').click());
 
       $('#header').append($('<div>').html('&emsp;&emsp;分析対象月：' + applySele.html() + '&emsp;' + changeButton.html()));
@@ -66,8 +66,8 @@ jQuery.noConflict();
   // ヘッダ1段目
   gridVal.GRID_TOP_COL_HEADERS = [
     '<rowspan type="top">商品名</rowspan>',
-    '<rowspan type="top">寸法</rowspan>',
-    '<rowspan type="top">h当たり生産量(kg)</rowspan>',
+    '<rowspan type="top">製品<br>サイズ</rowspan>',
+    '<rowspan type="top">h当たり<br>生産量(kg)</rowspan>',
     '<colspan type="pre" cnt="3">販売金額</colspan>',
     '<colspan type="pre" cnt="3">材料金額</colspan>',
     '<colspan type="pre" cnt="3">材料ロス</colspan>',
@@ -91,7 +91,7 @@ jQuery.noConflict();
     '<colspan type="top">実ﾛｽ率</colspan>',
     '<colspan type="top">製品重量</colspan>',
     '<colspan type="top">製品単価</colspan>',
-    '<colspan type="top">製品歩留(理論)</colspan>',
+    '<colspan type="top">製品歩留<br>(理論)</colspan>',
     '<colspan type="top">実際歩留</colspan>',
     '<colspan type="top">金額</colspan>',
     '<colspan type="top">％</colspan>',
@@ -255,8 +255,9 @@ jQuery.noConflict();
     // 期間をsessionStorageに保存
     sessionStorage.setItem(val.SELECT_PERIOD_YEARMONTH, func.makeStorageYearMonth(period));
     // データの取得
-    func.getProductPerformList() .then(function() {
-      return func.getSalesPerformList();
+    let prflg = true;
+    func.getProductPerformList(period, prflg) .then(function() {
+      return func.getSalesPerformList(period, prflg);
     }).then(function() {
       console.log(' -- get data process for disp --');
       // 表示を初期化

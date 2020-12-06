@@ -1152,13 +1152,22 @@ jQuery.noConflict();
    * @see makeWhereOption
    * @see getPeriodFromTo
    */
-  var getProductPerformList = function(period, whereOption, period2) {
+  var getProductPerformList = function(period, prflg, whereOption) {
     let isAllList = (period === void 0);
     let querySt = ' order by 品種コード asc, 品番 asc, 生産日付 asc ';
     if (!isAllList) {
       // 期間の絞り込み
-      let fromDate = makeFromPreDateSt(period.moment.apply);
-      let toDate = makeToNxDateSt(period.moment.apply);
+      let fromDate = "";
+      let toDate = "";
+      if (prflg) {
+        // 対象月のみ
+        fromDate = makeFromDateSt(period.apply.year, period.apply.month);
+        toDate = makeToDateSt(period.apply.year, period.apply.month);
+      } else {
+        // 対象月前後３ヶ月
+        fromDate = makeFromPreDateSt(period.moment.apply);
+        toDate = makeToNxDateSt(period.moment.apply);
+      }
       let periodSt = '(生産日付 <= "' + toDate + '" and ' + '生産日付 >= "' + fromDate + '")';
       querySt = periodSt + querySt;
     }
@@ -1300,13 +1309,22 @@ jQuery.noConflict();
    * @see makeWhereOption
    * @see getPeriodFromTo
    */
-  var getSalesPerformList = function(period, whereOption, period2) {
+  var getSalesPerformList = function(period, prflg, whereOption) {
     let isAllList = (period === void 0);
     let querySt = ' order by 品種コード asc, 販売日付 asc ';
     if (!isAllList) {
       // 期間の絞り込み
-      let fromDate = makeFromPreDateSt(period.moment.apply);
-      let toDate = makeToNxDateSt(period.moment.apply);
+      let fromDate = "";
+      let toDate = "";
+      if (prflg) {
+        // 対象月のみ
+        fromDate = makeFromDateSt(period.apply.year, period.apply.month);
+        toDate = makeToDateSt(period.apply.year, period.apply.month);
+      } else {
+        // 対象月前後３ヶ月
+        fromDate = makeFromPreDateSt(period.moment.apply);
+        toDate = makeToNxDateSt(period.moment.apply);
+      }
       let periodSt = '(販売日付 <= "' + toDate + '" and ' + '販売日付 >= "' + fromDate + '")';
       querySt = periodSt + querySt;
     }
@@ -3009,7 +3027,8 @@ jQuery.noConflict();
       // データを取得してグリッドに表示
       console.log('------- dispPerhour --------');
       // データ取得
-      getProductPerformList(period).then(function() {
+      let prflg = true;
+      getProductPerformList(period, prflg).then(function() {
         let purList = [];
         let proList = [];
         // 生産実績、販売実績どちらも1件以上あれば、次へ。

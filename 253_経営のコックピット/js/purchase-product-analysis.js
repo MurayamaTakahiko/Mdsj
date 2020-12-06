@@ -106,7 +106,7 @@ jQuery.noConflict();
   // ヘッダ1段目（cnt属性は2期比較時のcolspan数）
   gridVal.GRID_TOP_COL_HEADERS = [
     '<rowspan type="top"> </rowspan>', // タブ種
-    '<rowspan type="top">(単位 t/千円)</rowspan>', // ＫＰＩ項目
+    '<rowspan type="top"> </rowspan>', // ＫＰＩ項目
     '<colspan type="pre" cnt="12">10月度</colspan>', // 前月度
     '<colspan type="pre" cnt="12">11月度</colspan>', // 当月度
     '<colspan type="pre" cnt="9">12月度</colspan>', // 次月度
@@ -115,27 +115,27 @@ jQuery.noConflict();
   gridVal.GRID_COL_HEADERS = [
     '<rowspan type="top"> </rowspan>', // タブ種
     '<rowspan type="top"> </rowspan>', // ＫＰＩ項目
-    '<colspan type="pre" cnt="2">前年</colspan>',
+    '<colspan type="pre" cnt="2">前年<br>(t/千円)</colspan>',
     '<colspan type="top">円/kg</colspan>',
-    '<colspan type="pre" cnt="2">計画</colspan>',
+    '<colspan type="pre" cnt="2">計画<br>(t/千円)</colspan>',
     '<colspan type="top">円/kg</colspan>',
-    '<colspan type="pre" cnt="2">実績見込</colspan>',
+    '<colspan type="pre" cnt="2">実績見込<br>(t/千円)</colspan>',
     '<colspan type="top">円/kg</colspan>',
-    '<colspan type="pre" cnt="2">実績</colspan>',
+    '<colspan type="pre" cnt="2">実績<br>(t/千円)</colspan>',
     '<colspan type="top">円/kg</colspan>',
-    '<colspan type="pre" cnt="2">前年</colspan>',
+    '<colspan type="pre" cnt="2">前年<br>(t/千円)</colspan>',
     '<colspan type="top">円/kg</colspan>',
-    '<colspan type="pre" cnt="2">計画</colspan>',
+    '<colspan type="pre" cnt="2">計画<br>(t/千円)</colspan>',
     '<colspan type="top">円/kg</colspan>',
-    '<colspan type="pre" cnt="2">予定</colspan>',
+    '<colspan type="pre" cnt="2">予定<br>(t/千円)</colspan>',
     '<colspan type="top">円/kg</colspan>',
-    '<colspan type="pre" cnt="2">実績見込</colspan>',
+    '<colspan type="pre" cnt="2">実績見込<br>(t/千円)</colspan>',
     '<colspan type="top">円/kg</colspan>',
-    '<colspan type="pre" cnt="2">前年</colspan>',
+    '<colspan type="pre" cnt="2">前年<br>(t/千円)</colspan>',
     '<colspan type="top">円/kg</colspan>',
-    '<colspan type="pre" cnt="2">計画</colspan>',
+    '<colspan type="pre" cnt="2">計画<br>(t/千円)</colspan>',
     '<colspan type="top">円/kg</colspan>',
-    '<colspan type="pre" cnt="2">予定</colspan>',
+    '<colspan type="pre" cnt="2">予定<br>(t/千円)</colspan>',
     '<colspan type="top">円/kg</colspan>',
   ];
   // 通常のヘッダ（cnt属性は2期比較時のcolspan数）

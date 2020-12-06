@@ -35,7 +35,7 @@ jQuery.noConflict();
     func.getPersonOfChargeList().then(function() {
       // ヘッダ（期間絞込みの設定）
       var today = moment();
-      var applySele = func.makeSelectYearMonth(today.year(), today.month() + 1, 'select-year-apply', 'select-month-apply');
+      var applySele = func.makeSelectYearMonth(today.year(), today.month(), 'select-year-apply', 'select-month-apply');
       var changeButton = $('<span>').append($('<button>').attr('id', 'change-button').text('変更').click());
       $('#header').append($('<div>').html('&emsp;&emsp;コックピット対象月：' + applySele.html() + '&emsp;' + changeButton.html()));
       $('#change-button').click(function() {
@@ -107,9 +107,9 @@ jQuery.noConflict();
   gridVal.GRID_TOP_COL_HEADERS = [
     '<rowspan type="top"> </rowspan>', // タブ種
     '<rowspan type="top">(単位 t/千円)</rowspan>', // ＫＰＩ項目
-    '<colspan type="pre" cnt="12">6月度</colspan>', // 前月度
-    '<colspan type="pre" cnt="12">7月度</colspan>', // 当月度
-    '<colspan type="pre" cnt="9">8月度</colspan>', // 次月度
+    '<colspan type="pre" cnt="12">10月度</colspan>', // 前月度
+    '<colspan type="pre" cnt="12">11月度</colspan>', // 当月度
+    '<colspan type="pre" cnt="9">12月度</colspan>', // 次月度
   ];
   // ヘッダ2段目（cnt属性は2期比較時のcolspan数）
   gridVal.GRID_COL_HEADERS = [

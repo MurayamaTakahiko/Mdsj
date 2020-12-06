@@ -1172,6 +1172,7 @@ jQuery.noConflict();
       let prcd = "";
       let mnt = [];
       let records = resp.records;
+      // TODO ロス・歩留まり
       for (let ix = 0; ix < records.length; ix++) {
         prcd = makeYearMonthSt(records[ix]['生産日付'].value);
         recas[ix] = {
@@ -1182,6 +1183,8 @@ jQuery.noConflict();
           mtrweight: records[ix]['母材重量'].value, // 母材重量
           prdweight: records[ix]['製品重量'].value, // 製品重量
           prdnum: records[ix]['本数'].value, // 本数
+          prdhour: records[ix]['稼働時間'].value, // 稼働時間
+          prdstop: records[ix]['停止時間'].value, // 停止時間
           prdlength: records[ix]['総ロール長'].value // 総ロール長
         };
         if (mnt.length == 0) {
@@ -1216,6 +1219,10 @@ jQuery.noConflict();
           element.prdlength = String(ele3 + parseFloat(current.prdlength));
           var ele4 = parseFloat(element.prdnum);
           element.prdnum = String(ele4 + parseFloat(current.prdnum));
+          var ele5 = parseFloat(element.prdhour);
+          element.prdhour = String(ele5 + parseFloat(current.prdhour));
+          var ele6 = parseFloat(element.prdstop);
+          element.prdstop = String(ele6 + parseFloat(current.prdstop));
         } else {
           result.push({
             date: current.date,
@@ -1224,17 +1231,55 @@ jQuery.noConflict();
             mtrweight: current.mtrweight,
             prdweight: current.prdweight,
             prdnum: current.prdnum,
+            prdhour: current.prdhour,
+            prdstop: current.prdstop,
             prdlength: current.prdlength
           });
         }
         return result;
       }, []);
       console.log(sumrec);
+      // 同月のものは集約する（稼働状況向け）
+      var totalrec = recas.reduce(function (result, current) {
+        var element = result.find(function (p) {
+          return p.date === current.date
+        });
+        if (element) {
+          var ele1 = parseFloat(element.mtrweight);
+          element.mtrweight = String(ele1 + parseFloat(current.mtrweight));
+          var ele2 = parseFloat(element.prdweight);
+          element.prdweight = String(ele2 + parseFloat(current.prdweight));
+          var ele3 = parseFloat(element.prdlength);
+          element.prdlength = String(ele3 + parseFloat(current.prdlength));
+          var ele4 = parseFloat(element.prdnum);
+          element.prdnum = String(ele4 + parseFloat(current.prdnum));
+          var ele5 = parseFloat(element.prdhour);
+          element.prdhour = String(ele5 + parseFloat(current.prdhour));
+          var ele6 = parseFloat(element.prdstop);
+          element.prdstop = String(ele6 + parseFloat(current.prdstop));
+        } else {
+          result.push({
+            date: current.date,
+            type: current.type,
+            rank: current.rank,
+            mtrweight: current.mtrweight,
+            prdweight: current.prdweight,
+            prdnum: current.prdnum,
+            prdhour: current.prdhour,
+            prdstop: current.prdstop,
+            prdlength: current.prdlength
+          });
+        }
+        return result;
+      }, []);
+      console.log(totalrec);
       if (isAllList) {
         myVal.ALL_LIST_PRODUCT_PERFORM = sumrec;
+        myVal.ALL_LIST_PLANT_PERFORM = totalrec;
         myVal.ALL_SRC_LIST_PRODUCT_PERFORM = records;
       }
       myVal.LIST_PRODUCT_PERFORM = sumrec;
+      myVal.LIST_PLANT_PERFORM = totalrec;
       myVal.SRC_LIST_PRODUCT_PERFORM = records;
       return Promise.resolve(rec);
     });
@@ -1441,6 +1486,71 @@ jQuery.noConflict();
     });
   };
 
+    /**
+     * 稼働状況一覧の取得
+     *
+     * 期間指定がない場合は、登録されている全予算を取得します。
+     * whereOptionが存在する場合は、各値が存在する場合、以下の絞込みを行います
+     *   keyword.customer:キーワードによる絞り込み
+     *   mainChargeCustomers:「主担当のみ」による絞り込み
+     *
+     * @param period 期間指定(オプション)
+     * @param whereOption makeWhereOption()で取得したオプションオブジェクト(オプション)
+     * @param period2 2つ目の期間指定(オプション)
+     *
+     * @see makeWhereOption
+     * @see getPeriodFromTo
+     */
+    var getHumanPerformList = function(period, whereOption, period2) {
+      let isAllList = (period === void 0);
+      let querySt = ' order by 対象年月 asc ';
+      if (!isAllList) {
+        // 期間の絞り込み
+        let fromDate = makeFromPreDateSt(period.moment.apply);
+        let toDate = makeToNxDateSt(period.moment.apply);
+        let periodSt = '(対象年月 <= "' + toDate + '" and ' + '対象年月 >= "' + fromDate + '")';
+        querySt = periodSt + querySt;
+      }
+      return kintoneUtility.rest.getAllRecordsByQuery({
+        app: emxasConf.getConfig('APP_HUMAN_PERFORM_LIST'),
+        query: querySt,
+        isGuest: true
+      }).then(function(resp) {
+        let recas = [];
+        let prcd = "";
+        let records = resp.records;
+        for (let ix = 0; ix < records.length; ix++) {
+          prcd = makeYearMonthSt(records[ix]['対象年月'].value);
+          recas[ix] = {
+            date: prcd, // 対象年月
+            plworkDay: records[ix]['計画所定日数'].value, // 計画所定日数
+            plworkHour: records[ix]['計画所定勤務時間'].value, // 計画所定勤務時間
+            plplantDay: records[ix]['計画工場稼働日数'].value, // 計画工場稼働日数
+            plplantHour: records[ix]['計画所定工場稼働時間'].value, // 計画所定工場稼働時間
+            psworkDay: records[ix]['予定所定日数'].value, // 予定所定日数
+            psworkHour: records[ix]['予定所定勤務時間'].value, // 予定所定勤務時間
+            psplantDay: records[ix]['予定工場稼働日数'].value, // 予定工場稼働日数
+            psplantHour: records[ix]['予定所定工場稼働時間'].value, // 予定所定工場稼働時間
+            ppworkDay: records[ix]['実績見込み所定日数'].value, // 実績見込み所定日数
+            ppworkHour: records[ix]['実績見込み所定勤務時間'].value, // 実績見込み所定勤務時間
+            ppplantDay: records[ix]['実績見込み工場稼働日数'].value, // 実績見込み工場稼働日数
+            ppplantHour: records[ix]['実績見込み所定工場稼働時間'].value, // 実績見込み所定工場稼働時間
+            pfworkDay: records[ix]['実績所定日数'].value, // 実績所定日数
+            pfworkHour: records[ix]['実績所定勤務時間'].value, // 実績所定勤務時間
+            pfplantDay: records[ix]['実績工場稼働日数'].value, // 実績工場稼働日数
+            pfplantHour: records[ix]['実績所定工場稼働時間'].value // 実績所定工場稼働時間
+          };
+        }
+        console.log(recas);
+        if (isAllList) {
+          myVal.ALL_LIST_HUMAN_PERFORM = recas;
+          myVal.ALL_SRC_LIST_HUMAN_PERFORM = records;
+        }
+        myVal.LIST_HUMAN_PERFORM = recas;
+        myVal.SRC_LIST_HUMAN_PERFORM = records;
+        return Promise.resolve(recas);
+      });
+    };
 
 
 
@@ -2873,6 +2983,7 @@ jQuery.noConflict();
            break;
          case "tab3":
            showType = "稼働状況";
+           dispOneTermThirdTab(period, showType);
            break;
          case "tab4":
            showType = "Ｐ／Ｌ";
@@ -3748,6 +3859,154 @@ jQuery.noConflict();
      });
    };
 
+   var dispOneTermThirdTab = function(period, showType) {//稼働状況
+     console.log('------- dispOneTermThirdTab --------');
+     // データ取得
+     getProductPerformList(period).then(function() {
+       let humList = [];
+       // 稼働状況、生産実績どちらも1件以上あれば、次へ。
+     　if (Object.keys(myVal.LIST_HUMAN_PERFORM).length > 0 && Object.keys(myVal.LIST_PLANT_PERFORM).length > 0) {
+         return getHumanReport(period, humList);
+       } else {
+   　    // 稼働状況、生産実績が共に1件以上存在しない場合は、分析対象が存在しないので、ここでデータ取得は離脱
+ 　      return Promise.reject('分析対象が存在しません。');
+ 　    }
+     }).then(function(resp) {
+     // 稼働状況、生産実績どちらも1件以上あれば、次へ。
+         let dataList = resp;
+         if (dataList.length < 1) {
+           return Promise.reject('分析対象が存在しません。');
+         }
+         ////// グリッドの表示 ///////
+         let headerContainer = document.getElementById('my-top-grid');
+         let container = document.getElementById('my-grid');
+         let totalContainer = document.getElementById('total-grid');
+         // 既に存在していたら破棄
+         destroyHandsonGrid(hot);
+         destroyHandsonGrid(totalHot);
+         destroyHandsonGrid(headerHot);
+         // ヘッダー2段の場合の上部分
+         headerHot = new Handsontable(headerContainer, {
+           data: [],
+           columns: gridVal.getGridColumns(showType),
+           colHeaders: gridVal.GRID_TOP_COL_HEADERS,
+           colWidths: gridVal.COL_WIDTH_CKP,
+           columnSorting: false,
+           stretchH: 'last',
+           width: gridVal.GRID_WIDTH,
+         });
+         // グリッド本体
+         hot = new Handsontable(container, {
+           data: dataList,
+           columns: gridVal.getGridColumns(showType),
+           colHeaders: gridVal.GRID_COL_HEADERS,
+           colWidths: gridVal.COL_WIDTH_CKP,
+           columnSorting: (dispViewId == emxasConf.getConfig('VIEW_PRC_PDCT_ANALYSIS') ? false : true),
+           sortIndicator: true,
+           stretchH: 'last',
+           width: gridVal.GRID_WIDTH,
+           afterGetColHeader: null,
+           afterRender: function(isForced) {
+             // colspanとrowspanの処理をまとめて行う
+             // (下側のグリッド表示後に実行されるので、headerHotは描画済み)
+             if (isForced) {
+               treatMyHeaderTags();
+             }
+           },
+           autoColumnSize: true
+         });
+         // 独自ソート関数
+         const customSort = function(selectedColumn, sortConfig) {
+           dataList.sort(function(a, b) {
+             // 指定列のソート（列値有りの場合、値でソート。ソート無しの場合も昇順）
+             if (a[selectedColumn] && b[selectedColumn]) {
+               if (a[selectedColumn] < b[selectedColumn]) return (sortConfig === 0 ? -1 : sortConfig);
+               if (a[selectedColumn] > b[selectedColumn]) return (sortConfig === 0 ? 1 : (sortConfig * -1));
+             }
+             // 指定列のソート（列値無しの場合、値無しを優先でソート）
+             // ソート無しの場合、コード値無しは最終行に表示する為、降順になる
+             if (!a[selectedColumn] || !b[selectedColumn]) {
+               if (!a[selectedColumn] && b[selectedColumn]) return (sortConfig === 0 ? 1 : sortConfig);
+               if (a[selectedColumn] && !b[selectedColumn]) return (sortConfig === 0 ? -1 : (sortConfig * -1));
+             }
+
+             // コードの昇順は全てのケースで行う
+             if (a[(showType === '顧客別' ? '３コード' : '担当者コード')] < b[(showType === '顧客別' ? '３コード' : '担当者コード')]) return -1;
+             if (a[(showType === '顧客別' ? '３コード' : '担当者コード')] > b[(showType === '顧客別' ? '３コード' : '担当者コード')]) return 1;
+
+             return 0;
+           });
+           hot.render();
+         };
+         // 生産性分析時のみの独自ソートトリガー用クリックイベント
+         if (dispViewId == emxasConf.getConfig('VIEW_PRC_PDCT_ANALYSIS')) {
+           $('table.htCore th span.colHeader').parent('div').addClass('custom-sort-header');
+           $(document).off('click', 'table.htCore span.colHeader');
+           $(document).on('click', 'table.htCore span.colHeader', function(e) {
+             let sortConfig = null;
+             // クリック列
+             let clickedColumn = $(this).parents('th').index();
+             // 前回ソート列
+             let sortedColumn = $('.sort-indicator').parents('th').index();
+             // 前回ソート内容
+             let beforeSortConfig = 0;
+
+             // 前回ソート内容取得
+             if ($(this).parents('th').find(".ascending").length > 0) {
+               beforeSortConfig = -1;
+             } else if ($(this).parents('th').find(".descending").length > 0) {
+               beforeSortConfig = 1;
+             }
+
+             // 前回ソート内容保持クラス削除
+             $(this).removeClass("ascending");
+             $(this).removeClass("descending");
+             $(this).parents('tr').find('.sort-indicator').remove();
+
+             // 現在ソート無し or 前回ソートと違う列をクリック ⇒ 昇順でソートする
+             if (beforeSortConfig === 0 || clickedColumn !== sortedColumn) {
+               sortConfig = -1;
+               e.target.classList.add("ascending");
+               e.target.classList.remove("descending");
+               $(this).after('<span class="sort-indicator">▲</span>');
+
+               // 現在昇順 and 前回ソートと同じ列をクリック ⇒ 降順でソートする
+             } else if (beforeSortConfig === -1 && clickedColumn === sortedColumn) {
+               sortConfig = 1;
+               e.target.classList.add("descending");
+               e.target.classList.remove("ascending");
+               $(this).after('<span class="sort-indicator">▼</span>');
+
+               // 現在降順 and 前回ソートと同じ列をクリック ⇒ ３コード／担当者コード順でソート（初期表示状態）
+             } else if (beforeSortConfig === 1 && clickedColumn === sortedColumn) {
+               sortConfig = 0; // ソート無し
+               clickedColumn = 0; // ３コード／担当者コード列をクリックした事にする。
+               e.target.classList.remove("descending");
+               e.target.classList.remove("ascending");
+             }
+             let columnName = gridVal.getGridColumns(showType)[clickedColumn]['data'];
+             customSort(columnName, sortConfig);
+           });
+         }
+         ////// グリッドの表示 end ///////
+         spinner.hideSpinner();
+       }).catch(function(error) {
+         console.log(error);
+         spinner.hideSpinner();
+         if (typeof error === 'string') {
+           // グリッドが存在したら削除
+           destroyHandsonGrid(hot);
+           destroyHandsonGrid(totalHot);
+           destroyHandsonGrid(headerHot);
+           // エラーメッセージを画面に表示(#my-gridに)
+           let msg = $('<div>').attr('id', 'error_msg').text(error);
+           $('#my-grid').append(msg);
+           return;
+         }
+         alert('システムエラーが発生しました');
+       });
+   };
+
   function treatMyHeaderTags() {
     // ヘッダ行の指定の項目の列ソートリンク表示(class:columnSorting)を外す
     let noSort = $('table.htCore th nosort');
@@ -4205,6 +4464,175 @@ jQuery.noConflict();
     return perCkpListThreewithT;
   }
   /**
+   * 稼働状況CKPエリアのデータに整理する
+   */
+  var getHumanReport = function(period, perCkpListThree) {
+    let perHList = myVal.LIST_PLANT_PERFORM;
+    let humHList = myVal.LIST_HUMAN_PERFORM;
+    console.log(perHList);
+    console.log(humHList);
+    // 稼働状況は必ず対象３ヶ月分登録することを前提とする
+    let recas = [];
+    let recasLen = "";
+    // 所定日数
+    for (let ix = 0; ix < humHList.length; ix++) {
+      recas[ix] = {
+        date: humHList[ix].date,
+        name: "所定日数",
+        plworkDay: humHList[ix].plworkDay,
+        psworkDay: humHList[ix].psworkDay,
+        ppworkDay: humHList[ix].ppworkDay,
+        pfworkDay: humHList[ix].pfworkDay
+      };
+    }
+    recasLen = recas.length;
+    // 所定勤務時間
+    for (let ix = 0; ix < humHList.length; ix++) {
+      recas[recasLen + ix] = {
+        date: humHList[ix].date,
+        name: "所定時間",
+        plworkDay: humHList[ix].plworkHour,
+        psworkDay: humHList[ix].psworkHour,
+        ppworkDay: humHList[ix].ppworkHour,
+        pfworkDay: humHList[ix].pfworkHour
+      };
+    }
+    recasLen = recas.length;
+    // 工場稼働日数
+    for (let ix = 0; ix < humHList.length; ix++) {
+      recas[recasLen + ix] = {
+        date: humHList[ix].date,
+        name: "工場稼働日数",
+        plworkDay: humHList[ix].plplantDay,
+        psworkDay: humHList[ix].psplantDay,
+        ppworkDay: humHList[ix].ppplantDay,
+        pfworkDay: humHList[ix].pfplantDay,
+      };
+    }
+    recasLen = recas.length;
+    // 所定工場稼働時間
+    for (let ix = 0; ix < humHList.length; ix++) {
+      recas[recasLen + ix] = {
+        date: humHList[ix].date,
+        name: "所定時間",
+        plworkDay: humHList[ix].plplantHour,
+        psworkDay: humHList[ix].psplantHour,
+        ppworkDay: humHList[ix].ppplantHour,
+        pfworkDay: humHList[ix].pfplantHour
+      };
+    }
+    recasLen = recas.length;
+    // 機器稼働時間
+    // TODO 稼働・停止予定時間
+    for (let ix = 0; ix < perHList.length; ix++) {
+      recas[recasLen + ix] = {
+        date: perHList[ix].date,
+        name: "機器稼働時間",
+        plworkDay: perHList[ix].prdhour,
+        psworkDay: perHList[ix].prdhour,
+        ppworkDay: perHList[ix].prdhour,
+        pfworkDay: perHList[ix].prdhour
+      };
+    }
+    recasLen = recas.length;
+    // 機器稼働率
+    for (let ix = 0; ix < perHList.length; ix++) {
+      var sumprdHour = parseFloat(perHList[ix].prdhour) + parseFloat(perHList[ix].prdstop);
+      var prdHourUnit = parseFloat(perHList[ix].prdhour) * 100 / sumprdHour;
+      // 稼働率
+      recas[recasLen + ix] = {
+        date: perHList[ix].date,
+        name: "稼働率",
+        plworkDay: prdHourUnit,
+        psworkDay: prdHourUnit,
+        ppworkDay: prdHourUnit,
+        pfworkDay: prdHourUnit
+      };
+    }
+    recasLen = recas.length;
+    // 総停止時間
+    for (let ix = 0; ix < perHList.length; ix++) {
+      recas[recasLen + ix] = {
+        date: perHList[ix].date,
+        name: "総停止時間",
+        plworkDay: perHList[ix].prdstop,
+        psworkDay: perHList[ix].prdstop,
+        ppworkDay: perHList[ix].prdstop,
+        pfworkDay: perHList[ix].prdstop
+      };
+    }
+    recasLen = recas.length;
+    // 合計時間
+    for (let ix = 0; ix < perHList.length; ix++) {
+      var sumprdHour = parseFloat(perHList[ix].prdhour) + parseFloat(perHList[ix].prdstop);
+      recas[recasLen + ix] = {
+        date: perHList[ix].date,
+        name: "合計時間",
+        plworkDay: sumprdHour,
+        psworkDay: sumprdHour,
+        ppworkDay: sumprdHour,
+        pfworkDay: sumprdHour
+      };
+    }
+    recasLen = recas.length;
+    // 総ロール長
+    for (let ix = 0; ix < perHList.length; ix++) {
+      recas[recasLen + ix] = {
+        date: perHList[ix].date,
+        name: "総ロール長",
+        plworkDay: perHList[ix].prdlength,
+        psworkDay: perHList[ix].prdlength,
+        ppworkDay: perHList[ix].prdlength,
+        pfworkDay: perHList[ix].prdlength
+      };
+    }
+    recasLen = recas.length;
+    // ラインスピード（m/分）
+    for (let ix = 0; ix < perHList.length; ix++) {
+      var sumprdMinutes = (parseFloat(perHList[ix].prdhour) + parseFloat(perHList[ix].prdstop)) * 60;
+      var perLength = parseFloat(perHList[ix].prdlength) / sumprdMinutes;
+      recas[recasLen + ix] = {
+        date: perHList[ix].date,
+        name: "ﾗｲﾝｽﾋﾟｰﾄﾞ(m/分)",
+        plworkDay: perLength,
+        psworkDay: perLength,
+        ppworkDay: perLength,
+        pfworkDay: perLength
+      };
+    }
+    // １級生産量/h
+    for (let ix = 0; ix < perHList.length; ix++) {
+      var sumprdHour = parseFloat(perHList[ix].prdhour) + parseFloat(perHList[ix].prdstop);
+      var perprdWeight = parseFloat(perHList[ix].prdweight) / sumprdHour;
+      recas[recasLen + ix] = {
+        date: perHList[ix].date,
+        name: "1級生産量/h",
+        plworkDay: perprdWeight,
+        psworkDay: perprdWeight,
+        ppworkDay: perprdWeight,
+        pfworkDay: perprdWeight
+      };
+    }
+    console.log(recas);
+    // 配列を1ヶ月単位に3ヶ月レイアウトに変更
+    for (let ix = 0; ix < recas.length; ix = ix + 3) {
+      let perrec = {};
+      perrec.code = "";
+      perrec.name = recas[ix].name;
+      perrec.nbplHour = recas[ix].plworkDay;
+      perrec.nbppHour = recas[ix].ppworkDay;
+      perrec.nbpfHour = recas[ix].pfworkDay;
+      perrec.ntplHour = recas[ix+1].plworkDay;
+      perrec.ntpsHour = recas[ix+1].psworkDay;
+      perrec.ntppHour = recas[ix+1].ppworkDay;
+      perrec.naplHour = recas[ix+2].plworkDay;
+      perrec.napsHour = recas[ix+2].psworkDay;
+      perCkpListThree.push(perrec);
+    }
+    console.log(perCkpListThree);
+    return perCkpListThree;
+  }
+  /**
    * 製品別時間当たり収益エリアのデータに整理する
    */
   var getPurhourReport = function(period, bugCkpListThreewithT) {
@@ -4232,7 +4660,7 @@ jQuery.noConflict();
         prdlength: bugHList[ix]['総ロール長'].value, // 総ロール長
         losweight: bugHList[ix]['ロス重量'].value, // ロス重量
         losprice: bugHList[ix]['ロス金額'].value, // ロス金額
-        drophour: bugHList[ix]['投下工数'].value // 投下工数
+        drophour: bugHList[ix]['稼働時間'].value // 稼働時間
       };
       if (mnt.length == 0) {
         mnt.push(prcd);
@@ -4486,6 +4914,9 @@ jQuery.noConflict();
   /** 生産実績一覧(期間指定) */
   myVal.LIST_PRODUCT_PERFORM;
   myVal.SRC_LIST_PRODUCT_PERFORM;
+  /** 生産実績一覧(稼働状況向け工場全体) */
+  myVal.LIST_PLANT_PERFORM;
+  myVal.ALL_LIST_PLANT_PERFORM;
   /** 販売実績一覧 */
   myVal.ALL_LIST_SALES_PERFORM;
   myVal.ALL_SRC_LIST_SALES_PERFORM;
@@ -4498,6 +4929,12 @@ jQuery.noConflict();
   /** 製品在庫実績一覧(期間指定) */
   myVal.LIST_PRDSTOCK_PERFORM;
   myVal.SRC_LIST_PRDSTOCK_PERFORM;
+  /** 稼働状況実績一覧 */
+  myVal.ALL_LIST_HUMAN_PERFORM;
+  myVal.ALL_SRC_LIST_HUMAN_PERFORM;
+  /** 稼働状況実績一覧(期間指定) */
+  myVal.LIST_HUMAN_PERFORM;
+  myVal.SRC_LIST_HUMAN_PERFORM;
   /** 顧客一覧 */
   myVal.ALL_LIST_CUSTOMER;
   myVal.ALL_SRC_LIST_CUSTOMER;
@@ -4534,6 +4971,7 @@ jQuery.noConflict();
   window.func.getSalesBudgetList = getSalesBudgetList;
   window.func.getProductPerformList = getProductPerformList;
   window.func.getSalesPerformList = getSalesPerformList;
+  window.func.getHumanPerformList = getHumanPerformList;
   window.func.makeSelectYearMonth = makeSelectYearMonth;
   window.func.getOneMonthDailyReport = getOneMonthDailyReport;
   window.func.getPersonOfChargeList = getPersonOfChargeList;

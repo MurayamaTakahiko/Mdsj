@@ -169,6 +169,252 @@ jQuery.noConflict();
   };  // 通常の際のカラム設定
   gridVal.getGridColumns = function(showType, sumFlg) {
     switch (showType) {
+      case '稼働状況':
+        return [{
+            data: 'code',
+            type: 'text',
+            readOnly: true,
+            renderer: colorRenderer
+          },
+          {
+            data: 'name',
+            type: 'text',
+            readOnly: true,
+            renderer: colorRenderer
+          },
+          {
+            data: '',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: 'nbpfHour',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer,
+          },
+          {
+            data: '',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: '',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: 'nbplHour',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: '',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: '',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: 'nbppHour',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: '',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: '',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: 'nbpfHour',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: '',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: '',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: 'ntppHour',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer,
+          },
+          {
+            data: '',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: '',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: 'ntplHour',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: '',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: '',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: 'ntpsHour',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: '',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: '',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: 'ntppHour',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: '',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: '',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: 'ntppHour',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer,
+          },
+          {
+            data: '',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: '',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: 'naplHour',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: '',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: '',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: 'napsHour',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: '',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+        ];
+        break;
       case '売上高・在庫':
         return [{
             data: 'code',
@@ -776,6 +1022,24 @@ jQuery.noConflict();
         func.getStockBudgetList(period)
       ]).then(function() {
         console.log(' -- get data process for disp tab2 --');
+        // 表示を初期化
+        $('#my-top-grid').empty();
+        $('#my-grid').empty();
+        // グリッドを表示
+        func.showPerformListGrid(period, w2ui['radio_choice_tab'].active);
+
+        spinner.hideSpinner();
+      }).catch(function(error) {
+        alert('システムエラーが発生しました');
+        console.log(error);
+        spinner.hideSpinner();
+      });
+    } else if (type === 'tab3' || type === '稼働状況') {
+      // 稼働状況管理のデータを取得
+      kintone.Promise.all([
+        func.getHumanPerformList(period)
+      ]).then(function() {
+        console.log(' -- get data process for disp tab3 --');
         // 表示を初期化
         $('#my-top-grid').empty();
         $('#my-grid').empty();

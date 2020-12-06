@@ -1403,6 +1403,103 @@ jQuery.noConflict();
     });
   };
 
+/**
+ * 販売実績一覧の取得(顧客別)
+ *
+ * 期間指定がない場合は、登録されている全予算を取得します。
+ * whereOptionが存在する場合は、各値が存在する場合、以下の絞込みを行います
+ *   keyword.customer:キーワードによる絞り込み
+ *   mainChargeCustomers:「主担当のみ」による絞り込み
+ *
+ * @param period 期間指定(オプション)
+ * @param whereOption makeWhereOption()で取得したオプションオブジェクト(オプション)
+ * @param period2 2つ目の期間指定(オプション)
+ *
+ * @see makeWhereOption
+ * @see getPeriodFromTo
+ */
+var getSalesCustomerList = function(period, prflg, whereOption) {
+  let isAllList = (period === void 0);
+  let querySt = ' order by 得意先コード asc, 品種コード asc, 品番 asc, 販売日付 asc ';
+  if (!isAllList) {
+    // 期間の絞り込み
+    let fromDate = "";
+    let toDate = "";
+    if (prflg) {
+      // 対象月のみ
+      fromDate = makeFromDateSt(period.apply.year, period.apply.month);
+      toDate = makeToDateSt(period.apply.year, period.apply.month);
+    } else {
+      // 対象月前後３ヶ月
+      fromDate = makeFromPreDateSt(period.moment.apply);
+      toDate = makeToNxDateSt(period.moment.apply);
+    }
+    let periodSt = '(販売日付 <= "' + toDate + '" and ' + '販売日付 >= "' + fromDate + '")';
+    querySt = periodSt + querySt;
+  }
+  return kintoneUtility.rest.getAllRecordsByQuery({
+    app: emxasConf.getConfig('APP_SALES_PERFORM_LIST'),
+    query: querySt,
+    isGuest: true
+  }).then(function(resp) {
+    let recas = [];
+    let prcd = "";
+    let records = resp.records;
+    // TODO 販売数量
+    for (let ix = 0; ix < records.length; ix++) {
+      prcd = makeYearMonthSt(records[ix]['販売日付'].value);
+      recas[ix] = {
+        date: prcd, // 販売日付
+        code: records[ix]['品番'].value, // 品番
+        type: records[ix]['品種コード'].value, // 品種コード
+        rank: records[ix]['等級コード'].value, // 等級コード
+        name: records[ix]['品種名'].value, // 品種名
+        cstcode: records[ix]['得意先コード'].value, // 得意先コード
+        cstname: records[ix]['得意先名'].value, // 得意先名
+        salweight: records[ix]['販売重量'].value, // 販売重量
+        sallength: records[ix]['総ロール長'].value, // 総ロール長
+        salPrice: records[ix]['販売価格'].value // 販売価格
+      };
+    }
+    // 同月同得意先同品種のものは集約する
+    var sumrec = recas.reduce(function (result, current) {
+      var element = result.find(function (p) {
+        return p.date === current.date && p.cstcode === current.cstcode && p.code === current.code && p.rank === current.rank
+      });
+      if (element) {
+        var ele1 = parseFloat(element.salweight);
+        element.salweight = String(ele1 + parseFloat(current.salweight));
+        var ele2 = parseFloat(element.sallength);
+        element.sallength = String(ele2 + parseFloat(current.sallength));
+        var ele3 = parseFloat(element.salPrice);
+        element.salPrice = String(ele3 + parseFloat(current.salPrice));
+      } else {
+        result.push({
+          date: current.date,
+          cstcode: current.cstcode,
+          cstname: current.cstname,
+          code: current.code,
+          name: current.name,
+          type: current.type,
+          rank: current.rank,
+          salweight: current.salweight,
+          sallength: current.sallength,
+          salPrice: current.salPrice
+        });
+      }
+      return result;
+    }, []);
+    console.log(sumrec);
+    if (isAllList) {
+      myVal.ALL_LIST_SALES_CUSTOMER = sumrec;
+      myVal.ALL_SRC_LIST_SALES_CUSTOMER = records;
+    }
+    myVal.LIST_SALES_CUSTOMER = sumrec;
+    myVal.SRC_LIST_SALES_CUSTOMER = records;
+    return Promise.resolve(sumrec);
+  });
+};
+
   /**
    * 在庫実績一覧の取得
    *
@@ -3230,6 +3327,7 @@ jQuery.noConflict();
         console.log(bughour);
       }
       console.log(dataListComp);
+      return dataListComp;
     };
 
     /**
@@ -3245,21 +3343,28 @@ jQuery.noConflict();
        console.log('------- dispCstSales --------');
        // データ取得
        let prflg = true;
-       getProductPerformList(period, prflg).then(function() {
+       kintone.Promise.all([
+         getSalesCustomerList(period, prflg), // 顧客別・品番別販売実績
+         getSalesPerformList(period, prflg), // 販売実績
+         getProductPerformList(period, prflg) // 生産実績
+       ]).then(function() {
          let purList = [];
-         let proList = [];
+         let runkList = [];
          // 生産実績、販売実績どちらも1件以上あれば、次へ。
      　  if (Object.keys(myVal.LIST_PRODUCT_PERFORM).length > 0 && Object.keys(myVal.LIST_SALES_PERFORM).length > 0) {
-     　    return getPurhourReport(period, purList);
+           purList = getPurhourReport(period, purList);
+           // 製品別時間当たり収益項目の計算
+           return getPerhourCulculateList(purList, runkList);
      　  } else {
    　      // 生産実績＆販売実績が共に1件以上存在しない場合は、分析対象が存在しないので、ここでデータ取得は離脱
  　        return Promise.reject('分析対象が存在しません。');
  　      }
        }).then(function(resp) {
          //////// 取得データの加工 ////////
-         // 製品別時間当たり収益項目の計算
+         // 顧客別スプレッドの計算
+         console.log(resp);
          let dataList = [];
-         getPerhourCulculateList(resp, dataList);
+         getSctRunkReport(resp, dataList);
          ////// 取得データの加工 end //////
          if (dataList.length < 1) {
            return Promise.reject('分析対象が存在しません。');
@@ -4843,6 +4948,7 @@ jQuery.noConflict();
     console.log(perCkpListThree);
     return perCkpListThree;
   }
+
   /**
    * 製品別時間当たり収益エリアのデータに整理する
    */
@@ -4892,7 +4998,7 @@ jQuery.noConflict();
       }
     }
     // 同月同品番のものは集約する
-    var sumrec = recas.reduce(function (result, current) {
+    bugCkpListThreewithT = recas.reduce(function (result, current) {
       var element = result.find(function (p) {
         return p.date === current.date && p.code === current.code && p.rank === current.rank
       });
@@ -4933,7 +5039,7 @@ jQuery.noConflict();
       }
       return result;
     }, []);
-    console.log(sumrec);
+    console.log(bugCkpListThreewithT);
     // 販売実績の集計
     rec = [];
     recas = [];
@@ -4989,19 +5095,103 @@ jQuery.noConflict();
     console.log(sumrecsal);
     // 生産実績と販売実績の連想配列をマージ
     for (let iz = 0; iz < sumrecsal.length; iz++) {
-      for (let iu = 0; iu < sumrec.length; iu ++) {
-        if (sumrecsal[iz].date === sumrec[iu].date && sumrecsal[iz].code === sumrec[iu].code && sumrecsal[iz].rank === sumrec[iu].rank) {
-          sumrec[iu]['salweight'] = sumrecsal[iz].salweight;
-          sumrec[iu]['salprice'] = sumrecsal[iz].salprice;
+      for (let iu = 0; iu < bugCkpListThreewithT.length; iu ++) {
+        if (sumrecsal[iz].date === bugCkpListThreewithT[iu].date && sumrecsal[iz].code === bugCkpListThreewithT[iu].code
+           && sumrecsal[iz].rank === bugCkpListThreewithT[iu].rank) {
+          bugCkpListThreewithT[iu]['salweight'] = sumrecsal[iz].salweight;
+          bugCkpListThreewithT[iu]['salprice'] = sumrecsal[iz].salprice;
         }
       }
     }
-    console.log(sumrec);
-    return sumrec;
+    console.log(bugCkpListThreewithT);
+    return bugCkpListThreewithT;
     // 合計行を求める
     // integrateTotal(bugCkpListThree, bugCkpListThreewithT);
     // console.log(bugCkpListThreewithT);
   }
+
+  /**
+   * 顧客別ABC分析エリアのデータに整理する
+   */
+  var getSctRunkReport = function(prdHList, dataListComp) {
+    let cstHList = myVal.LIST_SALES_CUSTOMER; // 顧客別・品番別販売実績
+    let recas = [];
+    let prcd = "";
+    let slcd = "";
+    // 品番別のスプレッドから顧客別粗利金額を計算
+    for (let ix = 0; ix < cstHList.length; ix++) {
+      let cstPrdSale = {};
+      cstPrdSale = cstHList[ix];
+      for (let iy = 0; iy < prdHList.length; iy++) {
+        if (cstHList[ix]['code'] === prdHList[iy]['code'] && cstHList[ix]['rank'] === prdHList[iy]['rank']) {
+          cstPrdSale.salprofit = parseFloat(cstHList[ix]['salweight'] * prdHList[iy]['spreadPrice']); // 粗利金額
+        }
+      }
+      // 計算したフィールドをリストへ追加
+      recas.push(cstPrdSale);
+    }
+    console.log(recas);
+    // 同月同得意先のものは集約する
+    var sumrec = recas.reduce(function (result, current) {
+      var element = result.find(function (p) {
+        return p.date === current.date && p.cstcode === current.cstcode
+      });
+      if (element) {
+        var ele1 = parseFloat(element.salPrice);
+        element.salPrice = String(ele1 + parseFloat(current.salPrice));
+        var ele2 = parseFloat(element.sallength);
+        element.sallength = String(ele2 + parseFloat(current.sallength));
+        var ele3 = parseFloat(element.salweight);
+        element.salweight = String(ele3 + parseFloat(current.salweight));
+        var ele4 = parseFloat(element.salprofit);
+        element.salprofit = ele4 + parseFloat(current.salprofit);
+      } else {
+        result.push({
+          date: current.date,
+          cstcode: current.cstcode,
+          cstname: current.cstname,
+          salPrice: current.salPrice,
+          sallength: current.sallength,
+          salweight: current.salweight,
+          salprofit: current.salprofit
+        });
+      }
+      return result;
+    }, []);
+    console.log(sumrec);
+    // 粗利金額の降順でソート
+    sumrec.sort(function(a, b) {
+      if (a.salprofit < b.salprofit) return 1;
+      if (a.salprofit > b.salprofit) return -1;
+      return 0;
+    });
+    console.log(sumrec);
+    var totalProfit = sumrec.reduce((sum, i) => sum + i.salprofit, 0);
+    var plusProfit = 0;
+    var runk = "Ａ";
+    for (let ix = 0; ix < sumrec.length; ix++) {
+      let cstPerSale = {};
+      var salunit= 0;
+      cstPerSale = sumrec[ix];
+      cstPerSale.perSalprice = parseFloat(sumrec[ix]['salPrice'] / sumrec[ix]['salweight']); // 販売単価
+      cstPerSale.perProfit = parseFloat(sumrec[ix]['salprofit'] * 100 / sumrec[ix]['salPrice']).toFixed(2); // 粗利率
+      cstPerSale.perPrfprice = parseFloat(sumrec[ix]['salprofit'] / sumrec[ix]['salweight']); // 粗利単価
+      salunit = parseFloat(sumrec[ix]['salprofit'] * 100 / totalProfit).toFixed(2);
+      cstPerSale.salUnit = salunit; // 構成比
+      cstPerSale.plusUnit = parseFloat(salunit) + parseFloat(plusProfit); // 累計構成比
+      plusProfit = parseFloat(salunit) + parseFloat(plusProfit);
+      cstPerSale.runk = runk;
+      if (plusProfit > 70) runk = "Ｂ";
+      if (plusProfit > 90) runk = "Ｃ";
+      // 計算したフィールドをリストへ追加
+      dataListComp.push(cstPerSale);
+    }
+    console.log(dataListComp);
+    // 合計行を求める
+    // integrateTotal(bugCkpListThree, bugCkpListThreewithT);
+    // console.log(bugCkpListThreewithT);
+  }
+
   /*****************************************************************************************************/
   // ▼▼▼▼▼▼▼ スピナー関連 ▼▼▼▼▼▼▼
 
@@ -5134,6 +5324,12 @@ jQuery.noConflict();
   /** 販売実績一覧(期間指定) */
   myVal.LIST_SALES_PERFORM;
   myVal.SRC_LIST_SALES_PERFORM;
+  /** 販売実績一覧(顧客別) */
+  myVal.ALL_LIST_SALES_CUSTOMER;
+  myVal.ALL_SRC_LIST_SALES_CUSTOMER;
+  /** 販売実績一覧(期間指定・顧客別) */
+  myVal.LIST_SALES_CUSTOMER;
+  myVal.SRC_LIST_SALES_CUSTOMER;
   /** 製品在庫実績一覧 */
   myVal.ALL_LIST_PRDSTOCK_PERFORM;
   myVal.ALL_SRC_LIST_PRDSTOCK_PERFORM;

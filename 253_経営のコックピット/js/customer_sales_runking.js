@@ -105,7 +105,7 @@ jQuery.noConflict();
         renderer: colorRenderer
       },
       {
-        data: 'name',
+        data: 'cstname',
         type: 'text',
         readOnly: true,
         renderer: colorRenderer
@@ -118,7 +118,7 @@ jQuery.noConflict();
         renderer: monetaryRenderer
       },
       {
-        data: 'salnum',
+        data: 'sallength',
         type: 'numeric',
         format: '0,0',
         readOnly: true,
@@ -132,14 +132,14 @@ jQuery.noConflict();
         renderer: monetaryRenderer
       },
       {
-        data: 'salprice',
+        data: 'salPrice',
         type: 'numeric',
         format: '0,0',
         readOnly: true,
         renderer: monetaryRenderer
       },
       {
-        data: 'salsplead',
+        data: 'salprofit',
         type: 'numeric',
         format: '0,0',
         readOnly: true,
@@ -206,7 +206,7 @@ jQuery.noConflict();
         type: 'numeric',
         format: '0,0',
         readOnly: true,
-        renderer: percentageRenderer,
+        renderer: monetaryRenderer,
       },
       {
         data: 'solveComment',

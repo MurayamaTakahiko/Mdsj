@@ -4205,22 +4205,22 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
          headerHot = new Handsontable(headerContainer, {
            data: [],
            columns: gridVal.getGridColumns(showType),
-           colHeaders: gridVal.GRID_TOP_COL_HEADERS,
-           colWidths: gridVal.COL_WIDTH_CKP,
+           colHeaders: gridVal.GRID_TOP_COL_WORK_HEADERS,
+           colWidths: gridVal.COL_WIDTH_WORK_CKP,
            columnSorting: false,
            stretchH: 'last',
-           width: gridVal.GRID_WIDTH,
+           width: gridVal.GRID_WIDTH_WORK,
          });
          // グリッド本体
          hot = new Handsontable(container, {
            data: dataList,
            columns: gridVal.getGridColumns(showType),
-           colHeaders: gridVal.GRID_COL_HEADERS,
-           colWidths: gridVal.COL_WIDTH_CKP,
+           colHeaders: gridVal.GRID_COL_WORK_HEADERS,
+           colWidths: gridVal.COL_WIDTH_WORK_CKP,
            columnSorting: (dispViewId == emxasConf.getConfig('VIEW_PRC_PDCT_ANALYSIS') ? false : true),
            sortIndicator: true,
            stretchH: 'last',
-           width: gridVal.GRID_WIDTH,
+           width: gridVal.GRID_WIDTH_WORK,
            afterGetColHeader: null,
            afterRender: function(isForced) {
              // colspanとrowspanの処理をまとめて行う
@@ -4795,6 +4795,7 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
       recas[ix] = {
         date: humHList[ix].date,
         name: "所定日数",
+        unit: "日",
         plworkDay: humHList[ix].plworkDay,
         psworkDay: humHList[ix].psworkDay,
         ppworkDay: humHList[ix].ppworkDay,
@@ -4807,6 +4808,7 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
       recas[recasLen + ix] = {
         date: humHList[ix].date,
         name: "所定時間",
+        unit: "h",
         plworkDay: humHList[ix].plworkHour,
         psworkDay: humHList[ix].psworkHour,
         ppworkDay: humHList[ix].ppworkHour,
@@ -4819,6 +4821,7 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
       recas[recasLen + ix] = {
         date: humHList[ix].date,
         name: "工場稼働日数",
+        unit: "日",
         plworkDay: humHList[ix].plplantDay,
         psworkDay: humHList[ix].psplantDay,
         ppworkDay: humHList[ix].ppplantDay,
@@ -4831,6 +4834,7 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
       recas[recasLen + ix] = {
         date: humHList[ix].date,
         name: "所定時間",
+        unit: "h",
         plworkDay: humHList[ix].plplantHour,
         psworkDay: humHList[ix].psplantHour,
         ppworkDay: humHList[ix].ppplantHour,
@@ -4844,6 +4848,7 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
       recas[recasLen + ix] = {
         date: perHList[ix].date,
         name: "機器稼働時間",
+        unit: "h",
         plworkDay: perHList[ix].prdhour,
         psworkDay: perHList[ix].prdhour,
         ppworkDay: perHList[ix].prdhour,
@@ -4859,6 +4864,7 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
       recas[recasLen + ix] = {
         date: perHList[ix].date,
         name: "稼働率",
+        unit: "%",
         plworkDay: prdHourUnit,
         psworkDay: prdHourUnit,
         ppworkDay: prdHourUnit,
@@ -4871,6 +4877,7 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
       recas[recasLen + ix] = {
         date: perHList[ix].date,
         name: "総停止時間",
+        unit: "h",
         plworkDay: perHList[ix].prdstop,
         psworkDay: perHList[ix].prdstop,
         ppworkDay: perHList[ix].prdstop,
@@ -4884,6 +4891,7 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
       recas[recasLen + ix] = {
         date: perHList[ix].date,
         name: "合計時間",
+        unit: "h",
         plworkDay: sumprdHour,
         psworkDay: sumprdHour,
         ppworkDay: sumprdHour,
@@ -4896,6 +4904,7 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
       recas[recasLen + ix] = {
         date: perHList[ix].date,
         name: "総ロール長",
+        unit: "m",
         plworkDay: perHList[ix].prdlength,
         psworkDay: perHList[ix].prdlength,
         ppworkDay: perHList[ix].prdlength,
@@ -4909,13 +4918,15 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
       var perLength = parseFloat(perHList[ix].prdlength) / sumprdMinutes;
       recas[recasLen + ix] = {
         date: perHList[ix].date,
-        name: "ﾗｲﾝｽﾋﾟｰﾄﾞ(m/分)",
+        name: "ﾗｲﾝｽﾋﾟｰﾄﾞ",
+        unit: "m/分",
         plworkDay: perLength,
         psworkDay: perLength,
         ppworkDay: perLength,
         pfworkDay: perLength
       };
     }
+    recasLen = recas.length;
     // １級生産量/h
     for (let ix = 0; ix < perHList.length; ix++) {
       var sumprdHour = parseFloat(perHList[ix].prdhour) + parseFloat(perHList[ix].prdstop);
@@ -4923,6 +4934,7 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
       recas[recasLen + ix] = {
         date: perHList[ix].date,
         name: "1級生産量/h",
+        unit: "kg/h",
         plworkDay: perprdWeight,
         psworkDay: perprdWeight,
         ppworkDay: perprdWeight,
@@ -4933,7 +4945,7 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
     // 配列を1ヶ月単位に3ヶ月レイアウトに変更
     for (let ix = 0; ix < recas.length; ix = ix + 3) {
       let perrec = {};
-      perrec.code = "";
+      perrec.unit = recas[ix].unit;
       perrec.name = recas[ix].name;
       perrec.nbplHour = recas[ix].plworkDay;
       perrec.nbppHour = recas[ix].ppworkDay;

@@ -116,7 +116,7 @@ jQuery.noConflict();
         type: 'numeric',
         format: '0,0',
         readOnly: true,
-        renderer: monetaryRenderer
+        renderer: manHourRenderer
       },
       {
         data: 'salweight',
@@ -130,7 +130,7 @@ jQuery.noConflict();
         type: 'numeric',
         format: '0,0',
         readOnly: true,
-        renderer: monetaryRenderer
+        renderer: manHourRenderer
       },
       {
         data: 'salprice',
@@ -151,7 +151,7 @@ jQuery.noConflict();
         type: 'numeric',
         format: '0,0',
         readOnly: true,
-        renderer: monetaryRenderer
+        renderer: manHourRenderer
       },
       {
         data: 'mtrprice',
@@ -193,7 +193,7 @@ jQuery.noConflict();
         type: 'numeric',
         format: '0,0',
         readOnly: true,
-        renderer: monetaryRenderer
+        renderer: manHourRenderer
       },
       {
         data: 'prdYieldThr',
@@ -214,7 +214,7 @@ jQuery.noConflict();
         type: 'numeric',
         format: '0,0',
         readOnly: true,
-        renderer: monetaryRenderer
+        renderer: manHourRenderer
       },
       {
         data: 'spreadPer',

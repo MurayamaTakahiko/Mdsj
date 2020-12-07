@@ -92,8 +92,12 @@ jQuery.noConflict();
   let gridVal = {};
   // グリッド幅
   gridVal.GRID_WIDTH = 'auto';
+  // グリッド幅(稼働状況)
+  gridVal.GRID_WIDTH_WORK = 'auto';
   // 通常のセル幅（CKP）
   gridVal.COL_WIDTH_CKP = [30, 100, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45, 50, 65, 45];
+  // 通常のセル幅(稼働状況)
+  gridVal.COL_WIDTH_WORK_CKP = [110, 45, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80];
   // 2期比較の際のセル幅
   gridVal.COL_WIDTH_2TERM = [15, 60, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30];
   // 通常のセル幅（顧客別）
@@ -103,7 +107,7 @@ jQuery.noConflict();
   // 選択したタブのセル幅保持（初期値：顧客別）
   gridVal.COL_WIDTH = gridVal.COL_WIDTH_CKP;
 
-  // ヘッダ1段目（cnt属性は2期比較時のcolspan数）
+  // ヘッダ1段目
   gridVal.GRID_TOP_COL_HEADERS = [
     '<rowspan type="top"> </rowspan>', // タブ種
     '<rowspan type="top"> </rowspan>', // ＫＰＩ項目
@@ -111,7 +115,15 @@ jQuery.noConflict();
     '<colspan type="pre" cnt="12">11月度</colspan>', // 当月度
     '<colspan type="pre" cnt="9">12月度</colspan>', // 次月度
   ];
-  // ヘッダ2段目（cnt属性は2期比較時のcolspan数）
+  // ヘッダ1段目(稼働状況)
+  gridVal.GRID_TOP_COL_WORK_HEADERS = [
+    '<rowspan type="top"> </rowspan>', // タブ種
+    '<rowspan type="top"> </rowspan>', // ＫＰＩ項目
+    '<colspan type="pre" cnt="4">10月度</colspan>', // 前月度
+    '<colspan type="pre" cnt="4">11月度</colspan>', // 当月度
+    '<colspan type="pre" cnt="3">12月度</colspan>', // 次月度
+  ];
+  // ヘッダ2段目
   gridVal.GRID_COL_HEADERS = [
     '<rowspan type="top"> </rowspan>', // タブ種
     '<rowspan type="top"> </rowspan>', // ＫＰＩ項目
@@ -137,6 +149,22 @@ jQuery.noConflict();
     '<colspan type="top">円/kg</colspan>',
     '<colspan type="pre" cnt="2">予定<br>(t/千円)</colspan>',
     '<colspan type="top">円/kg</colspan>',
+  ];
+  // ヘッダ2段目(稼働状況)
+  gridVal.GRID_COL_WORK_HEADERS = [
+    '<rowspan type="top"> </rowspan>', // タブ種
+    '<rowspan type="top"> </rowspan>', // 単位
+    '<colspan type="top">前年</colspan>',
+    '<colspan type="top">計画</colspan>',
+    '<colspan type="top">実績見込</colspan>',
+    '<colspan type="top">実績</colspan>',
+    '<colspan type="top">前年</colspan>',
+    '<colspan type="top">計画</colspan>',
+    '<colspan type="top">予定</colspan>',
+    '<colspan type="top">実績見込</colspan>',
+    '<colspan type="top">前年</colspan>',
+    '<colspan type="top">計画</colspan>',
+    '<colspan type="top">予定</colspan>'
   ];
   // 通常のヘッダ（cnt属性は2期比較時のcolspan数）
   gridVal.getGridColHeaders = function(showType) {
@@ -171,247 +199,93 @@ jQuery.noConflict();
     switch (showType) {
       case '稼働状況':
         return [{
-            data: 'code',
-            type: 'text',
-            readOnly: true,
-            renderer: colorRenderer
-          },
-          {
             data: 'name',
             type: 'text',
             readOnly: true,
             renderer: colorRenderer
           },
           {
-            data: '',
-            type: 'numeric',
-            format: '0,0',
+            data: 'unit',
+            type: 'text',
             readOnly: true,
-            renderer: monetaryRenderer
+            renderer: colorRenderer
           },
           {
             data: 'nbpfHour',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
-            renderer: monetaryRenderer,
-          },
-          {
-            data: '',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: '',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
+            renderer: manHourRenderer,
           },
           {
             data: 'nbplHour',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: '',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: '',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
+            renderer: manHourRenderer
           },
           {
             data: 'nbppHour',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: '',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: '',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
+            renderer: manHourRenderer
           },
           {
             data: 'nbpfHour',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: '',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: '',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
+            renderer: manHourRenderer
           },
           {
             data: 'ntppHour',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
-            renderer: monetaryRenderer,
-          },
-          {
-            data: '',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: '',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
+            renderer: manHourRenderer,
           },
           {
             data: 'ntplHour',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: '',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: '',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
+            renderer: manHourRenderer
           },
           {
             data: 'ntpsHour',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: '',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: '',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
+            renderer: manHourRenderer
           },
           {
             data: 'ntppHour',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: '',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: '',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
+            renderer: manHourRenderer
           },
           {
             data: 'ntppHour',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
-            renderer: monetaryRenderer,
-          },
-          {
-            data: '',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: '',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
+            renderer: manHourRenderer,
           },
           {
             data: 'naplHour',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: '',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: '',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
+            renderer: manHourRenderer
           },
           {
             data: 'napsHour',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: '',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
+            renderer: manHourRenderer
           },
         ];
         break;

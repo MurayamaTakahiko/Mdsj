@@ -112,10 +112,9 @@ jQuery.noConflict();
       },
       {
         data: 'codelist',
-        type: 'numeric',
-        format: '0,0',
+        type: 'text',
         readOnly: true,
-        renderer: monetaryRenderer
+        renderer: colorRenderer
       },
       {
         data: 'sallength',
@@ -178,21 +177,21 @@ jQuery.noConflict();
         type: 'numeric',
         format: '0,0',
         readOnly: true,
-        renderer: monetaryRenderer
+        renderer: manHourRenderer
       },
       {
         data: 'perBrgprice',
         type: 'numeric',
         format: '0,0',
         readOnly: true,
-        renderer: monetaryRenderer
+        renderer: manHourRenderer
       },
       {
         data: 'perStcprice',
         type: 'numeric',
         format: '0,0',
         readOnly: true,
-        renderer: monetaryRenderer
+        renderer: manHourRenderer
       },
       {
         data: 'perProfit',
@@ -206,7 +205,7 @@ jQuery.noConflict();
         type: 'numeric',
         format: '0,0',
         readOnly: true,
-        renderer: monetaryRenderer,
+        renderer: manHourRenderer,
       },
       {
         data: 'solveComment',

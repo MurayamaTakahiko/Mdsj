@@ -23,6 +23,32 @@ jQuery.noConflict();
         }
         return years + "年 " + months + "ヶ月";
     }
+    // 今日までの換算人員
+    function getCalNum(dtDate) {
+
+        var dtToday = moment();
+        var dtFrom = moment(dtDate);
+        var years = 0;
+        var calnum = 0;
+        //入力日が過去日付の場合計算
+        if (!dtToday.isBefore(moment(dtFrom), 'day')) {
+            years = dtToday.diff(moment(dtFrom), 'years');
+            switch (years) {
+              case 0:
+                calnum = 0.25;
+                break;
+              case 1:
+                calnum = 0.25;
+                break;
+              case 2:
+                calnum = 0.5;
+                break;
+              default:
+                calnum = 1;
+            }
+        }
+        return calnum;
+    }
 
     var events = [
         'app.record.create.show',
@@ -46,6 +72,7 @@ jQuery.noConflict();
         var emplYear = "";
         var month = "";
         var day = "";
+        var calEmpNum = "";
         // 生年月日から年齢を表示する
         if (emBirthDay) {
           // 年齢
@@ -62,6 +89,12 @@ jQuery.noConflict();
         if (emJoiningDate) {
             emplYear = getYearMonth(record['入社日']['value']);
             record['勤続年数']['value'] = emplYear;
+            if (record['ランク'].value === "P1" || record['ランク'].value === "アシスタント") {
+              calEmpNum = getCalNum(record['入社日']['value']);
+            } else {
+              calEmpNum = 1;
+            }
+            record['換算人員']['value'] = calEmpNum;
         }
         return event;
     });

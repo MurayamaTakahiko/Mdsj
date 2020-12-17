@@ -49,15 +49,15 @@ jQuery.noConflict();
         active: 'tab1',
         tabs: [{
             id: 'tab1',
-            caption: '仕入・生産'
+            caption: '予実比較'
           },
           {
             id: 'tab2',
-            caption: '売上高・在庫'
+            caption: '稼働状況'
           },
           {
             id: 'tab3',
-            caption: '稼働状況'
+            caption: '品質状況'
           },
           {
             id: 'tab4',
@@ -289,252 +289,6 @@ jQuery.noConflict();
           },
         ];
         break;
-      case '売上高・在庫':
-        return [{
-            data: 'code',
-            type: 'text',
-            readOnly: true,
-            renderer: colorRenderer
-          },
-          {
-            data: 'name',
-            type: 'text',
-            readOnly: true,
-            renderer: colorRenderer
-          },
-          {
-            data: 'nbppweight',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: 'nbppPrice',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer,
-          },
-          {
-            data: 'nbppUnit',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: 'nbplweight',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: 'nbplPrice',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: 'nbplUnit',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: 'nbppweight',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: 'nbppPrice',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: 'nbppUnit',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: 'nbsalweight',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: 'nbsalPrice',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: 'nbsalUnit',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: 'ntppweight',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: 'ntppPrice',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer,
-          },
-          {
-            data: 'ntppUnit',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: 'ntplweight',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: 'ntplPrice',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: 'ntplUnit',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: 'ntpsweight',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: 'ntpsPrice',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: 'ntpsUnit',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: 'ntppweight',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: 'ntppPrice',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: 'ntppUnit',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: 'ntppweight',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: 'ntppPrice',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer,
-          },
-          {
-            data: 'ntppUnit',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: 'naplweight',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: 'naplPrice',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: 'naplUnit',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: 'napsweight',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: 'napsPrice',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: 'napsUnit',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-        ];
-        break;
       default:
         return [{
             data: 'code',
@@ -549,21 +303,21 @@ jQuery.noConflict();
             renderer: colorRenderer
           },
           {
-            data: 'nbppweight',
+            data: 'nblsprcweight',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
             renderer: monetaryRenderer
           },
           {
-            data: 'nbppPrice',
+            data: 'nblsprcPrice',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
             renderer: monetaryRenderer,
           },
           {
-            data: 'nbppUnit',
+            data: 'nblsprcUnit',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
@@ -633,21 +387,21 @@ jQuery.noConflict();
             renderer: monetaryRenderer
           },
           {
-            data: 'nbppweight',
+            data: 'ntlsprcweight',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
             renderer: monetaryRenderer
           },
           {
-            data: 'nbppPrice',
+            data: 'ntlsprcPrice',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
             renderer: monetaryRenderer,
           },
           {
-            data: 'nbppUnit',
+            data: 'ntlsprcUnit',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
@@ -717,21 +471,21 @@ jQuery.noConflict();
             renderer: monetaryRenderer
           },
           {
-            data: 'nbppweight',
+            data: 'nalsprcweight',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
             renderer: monetaryRenderer
           },
           {
-            data: 'nbppPrice',
+            data: 'nalsprcPrice',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
             renderer: monetaryRenderer,
           },
           {
-            data: 'nbppUnit',
+            data: 'nalsprcUnit',
             type: 'numeric',
             format: '0,0',
             readOnly: true,
@@ -782,70 +536,6 @@ jQuery.noConflict();
         ];
     };
   };
-  // 二期比較の際のカラム設定
-  gridVal.get2TermGridColumns = function(showType) {
-    let code = (showType === '顧客別') ? '３コード' : '担当者コード';
-    let name = (showType === '顧客別') ? '顧客名' : '担当者名';
-    return [{
-        data: code,
-        type: 'text',
-        readOnly: true
-      },
-      {
-        data: name,
-        type: 'text',
-        readOnly: true
-      },
-      {
-        data: '報酬',
-        type: 'numeric',
-        format: '0,0',
-        readOnly: true,
-        renderer: monetaryRenderer
-      },
-      {
-        data: '報酬Comp',
-        type: 'numeric',
-        format: '0,0',
-        renderer: monetaryGainLossRenderer,
-        readOnly: true,
-      },
-      {
-        data: '工数',
-        type: 'numeric',
-        format: '0,0',
-        renderer: manHourRenderer,
-        readOnly: true,
-      },
-      {
-        data: '工数Comp',
-        type: 'numeric',
-        format: '0,0',
-        renderer: manHourGainLossColorRenderer,
-        readOnly: true,
-      },
-      {
-        data: '時間あたり',
-        type: 'numeric',
-        format: '0,0',
-        readOnly: true,
-        renderer: monetaryRenderer
-      },
-      {
-        data: '時間あたりComp',
-        type: 'numeric',
-        format: '0,0',
-        renderer: monetaryGainLossRenderer,
-        readOnly: true,
-      },
-      {
-        data: '',
-        type: 'text',
-        readOnly: true,
-        renderer: func.plusMinusRenderer
-      },
-    ];
-  };
 
   // Renderer
   var monetaryRenderer = func.monetaryRenderer;
@@ -858,16 +548,10 @@ jQuery.noConflict();
    * 分析結果の表示を行います。
    */
   var showAnalysisBody = function(type) {
-
     spinner.showSpinner();
     // ユーザの設定値(期間)の読み込み
     let period = func.getPeriodFromTo();
     let err = [];
-    /** if (!func.checkPeriod(period, err)) {
-      alert(err);
-      spinner.hideSpinner();
-      return;
-    } */
     // 期間をsessionStorageに保存
     sessionStorage.setItem(val.SELECT_PERIOD_YEARMONTH, func.makeStorageYearMonth(period));
 
@@ -889,7 +573,7 @@ jQuery.noConflict();
     whereOption.orderBy = codeName; // 並び替え
 
     // データの取得
-    if (type === 'tab2' || type === '売上高・在庫') {
+    if (type === 'tab4' || type === 'Ｐ／Ｌ') {
       // 売上実績管理と在庫実績管理と予算管理のデータを取得
       kintone.Promise.all([
         func.getSalesBudgetList(period),
@@ -901,25 +585,23 @@ jQuery.noConflict();
         $('#my-grid').empty();
         // グリッドを表示
         func.showPerformListGrid(period, w2ui['radio_choice_tab'].active);
-
         spinner.hideSpinner();
       }).catch(function(error) {
         alert('システムエラーが発生しました');
         console.log(error);
         spinner.hideSpinner();
       });
-    } else if (type === 'tab3' || type === '稼働状況') {
+    } else if (type === 'tab2' || type === '稼働状況') {
       // 稼働状況管理のデータを取得
       kintone.Promise.all([
         func.getHumanPerformList(period)
       ]).then(function() {
-        console.log(' -- get data process for disp tab3 --');
+        console.log(' -- get data process for disp tab2 --');
         // 表示を初期化
         $('#my-top-grid').empty();
         $('#my-grid').empty();
         // グリッドを表示
         func.showPerformListGrid(period, w2ui['radio_choice_tab'].active);
-
         spinner.hideSpinner();
       }).catch(function(error) {
         alert('システムエラーが発生しました');
@@ -928,9 +610,12 @@ jQuery.noConflict();
       });
     } else {
       // 仕入実績管理と生産実績管理と予算管理のデータを取得
+      // 売上実績管理と在庫実績管理と予算管理のデータを取得
       kintone.Promise.all([
         func.getPurchaseBudgetList(period),
-        func.getProductBudgetList(period)
+        func.getProductBudgetList(period),
+        func.getSalesBudgetList(period),
+        func.getStockBudgetList(period)
       ]).then(function() {
         console.log(' -- get data process for disp --');
         // 表示を初期化
@@ -938,7 +623,6 @@ jQuery.noConflict();
         $('#my-grid').empty();
         // グリッドを表示
         func.showPerformListGrid(period, w2ui['radio_choice_tab'].active);
-
         spinner.hideSpinner();
       }).catch(function(error) {
         alert('システムエラーが発生しました');

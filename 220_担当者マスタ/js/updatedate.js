@@ -26,32 +26,32 @@ jQuery.noConflict();
   }
   // 今日までの換算人員
   function getCalNum(dtDate, runk) {
-      var dtToday = moment();
-      var dtFrom = moment(dtDate);
-      var years = 0;
-      var calnum = 0;
-      //入力日が過去日付の場合計算
-      if (!dtToday.isBefore(moment(dtFrom), 'day')) {
-        if (runk === "P1" || runk === "アシスタント") {
-          years = dtToday.diff(moment(dtFrom), 'years');
-          switch (years) {
-            case 0:
-              calnum = 0.25;
-              break;
-            case 1:
-              calnum = 0.25;
-              break;
-            case 2:
-              calnum = 0.5;
-              break;
-            default:
-              calnum = 1;
-          }
-        } else {
-          calnum = 1;
+    var dtToday = moment();
+    var dtFrom = moment(dtDate);
+    var years = 0;
+    var calnum = 0;
+    //入力日が過去日付の場合計算
+    if (!dtToday.isBefore(moment(dtFrom), 'day')) {
+      if (runk === "P1" || runk === "アシスタント") {
+        years = dtToday.diff(moment(dtFrom), 'years');
+        switch (years) {
+          case 0:
+            calnum = 0.25;
+            break;
+          case 1:
+            calnum = 0.25;
+            break;
+          case 2:
+            calnum = 0.5;
+            break;
+          default:
+            calnum = 1;
         }
+      } else {
+        calnum = 1;
       }
-      return calnum;
+    }
+    return calnum;
   }
   var getRecords = function(app, tmpRecords) {
     var limit = 500;
@@ -97,8 +97,8 @@ jQuery.noConflict();
     button.id = 'updateButton';
     kintone.app.getHeaderMenuSpaceElement().appendChild(button);
     button.addEventListener('click', function() {
-      getRecords(kintone.app.getId()).then(function(records){
-        putRecords(kintone.app.getId(),records.map(function(record){
+      getRecords(kintone.app.getId()).then(function(records) {
+        putRecords(kintone.app.getId(), records.map(function(record) {
           return {
             id: record.レコード番号.value,
             record: {
@@ -113,7 +113,7 @@ jQuery.noConflict();
               }
             }
           };
-        })).then(function(){
+        })).then(function() {
           location.reload();
         });
       });

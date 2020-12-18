@@ -249,7 +249,7 @@ jQuery.noConflict();
     sessionStorage.setItem(val.SELECT_PERIOD_YEARMONTH, func.makeStorageYearMonth(period));
     // データの取得
     let prflg = true;
-    func.getProductPerformList(period, prflg) .then(function() {
+    func.getProductPerformList(period, prflg).then(function() {
       return func.getSalesPerformList(period, prflg);
     }).then(function() {
       console.log(' -- get data process for disp --');

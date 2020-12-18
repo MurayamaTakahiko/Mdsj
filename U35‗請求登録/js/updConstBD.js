@@ -37,8 +37,8 @@ jQuery.noConflict();
     var custCd = record['得意先CD'].value;
     var query = '得意先CD = "' + custCd + '" and 金額入力日 != "" and 請求日 = ""';
     var paramGet = {
-        'app': relatedAppId,
-        'query': query
+      'app': relatedAppId,
+      'query': query
     };
     // 入金管理アプリID
     var APP_CONSTLIST = 37;
@@ -48,28 +48,28 @@ jQuery.noConflict();
     var billDay = record['請求日'].value;
     var billPrice = record['請求総額'].value;
     var params = {
-        'app': APP_CONSTLIST,
-        "record": {
-          "請求番号": {
-            "value": billNum
-          },
-          "請求先CD": {
-            "value": billCD
-          },
-          "請求先名": {
-            "value": billCstName
-          },
-          "請求日": {
-            "value": billDay
-          },
-          "請求額": {
-            "value": billPrice
-          },
-          "請求先区分": {
-            "value": "法人"
-          }
+      'app': APP_CONSTLIST,
+      "record": {
+        "請求番号": {
+          "value": billNum
+        },
+        "請求先CD": {
+          "value": billCD
+        },
+        "請求先名": {
+          "value": billCstName
+        },
+        "請求日": {
+          "value": billDay
+        },
+        "請求額": {
+          "value": billPrice
+        },
+        "請求先区分": {
+          "value": "法人"
         }
-      };
+      }
+    };
     // 工事依頼請求日更新
     return kintone.api(kintone.api.url('/k/v1/records', true), 'GET', paramGet).then(function(resp) {
       var records = resp.records;

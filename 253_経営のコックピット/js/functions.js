@@ -419,7 +419,7 @@ jQuery.noConflict();
     return col;
   }
 
-////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////
   /**
    * 工数(分)、人件費をdataRecDestListの各データに加算します。
    * 工数、人件費がそれぞれ存在しない場合は追加しません。
@@ -851,12 +851,12 @@ jQuery.noConflict();
       let toDate = makeToNxDateSt(period.moment.apply);
       let lastFromDate = makeFromLastPreDateSt(period.moment.apply);
       let lastToDate = makeToLastNxDateSt(period.moment.apply);
-      let periodSt = '((対象年月 <= "' + toDate + '" and ' + '対象年月 >= "' + fromDate
-        + '") or (対象年月 <= "' + lastToDate + '" and 対象年月 >= "' + lastFromDate + '")) and ';
+      let periodSt = '((対象年月 <= "' + toDate + '" and ' + '対象年月 >= "' + fromDate +
+        '") or (対象年月 <= "' + lastToDate + '" and 対象年月 >= "' + lastFromDate + '")) and ';
       if (period2) {
-         // let fromDate2 = makeFromDateSt(period2.from.year, period2.from.month);
-         // let toDate2 = makeToDateSt(period2.to.year, period2.to.month);
-         // periodSt = '(' + periodSt +  'or ((契約開始日 != "" and 契約開始日 <= "' + toDate2 + '") and ' +
+        // let fromDate2 = makeFromDateSt(period2.from.year, period2.from.month);
+        // let toDate2 = makeToDateSt(period2.to.year, period2.to.month);
+        // periodSt = '(' + periodSt +  'or ((契約開始日 != "" and 契約開始日 <= "' + toDate2 + '") and ' +
         //     '(契約完了日 = "" or 契約完了日 >= "' + fromDate2 + '"))) and ';
       }
       querySt = periodSt + querySt;
@@ -918,8 +918,8 @@ jQuery.noConflict();
       let toDate = makeToNxDateSt(period.moment.apply);
       let lastFromDate = makeFromLastPreDateSt(period.moment.apply);
       let lastToDate = makeToLastNxDateSt(period.moment.apply);
-      let periodSt = '((対象年月 <= "' + toDate + '" and ' + '対象年月 >= "' + fromDate
-        + '") or (対象年月 <= "' + lastToDate + '" and 対象年月 >= "' + lastFromDate + '")) and ';
+      let periodSt = '((対象年月 <= "' + toDate + '" and ' + '対象年月 >= "' + fromDate +
+        '") or (対象年月 <= "' + lastToDate + '" and 対象年月 >= "' + lastFromDate + '")) and ';
       querySt = periodSt + querySt;
     }
     return kintoneUtility.rest.getAllRecordsByQuery({
@@ -979,8 +979,8 @@ jQuery.noConflict();
       let toDate = makeToNxDateSt(period.moment.apply);
       let lastFromDate = makeFromLastPreDateSt(period.moment.apply);
       let lastToDate = makeToLastNxDateSt(period.moment.apply);
-      let periodSt = '((対象年月 <= "' + toDate + '" and ' + '対象年月 >= "' + fromDate
-        + '") or (対象年月 <= "' + lastToDate + '" and 対象年月 >= "' + lastFromDate + '")) and ';
+      let periodSt = '((対象年月 <= "' + toDate + '" and ' + '対象年月 >= "' + fromDate +
+        '") or (対象年月 <= "' + lastToDate + '" and 対象年月 >= "' + lastFromDate + '")) and ';
       querySt = periodSt + querySt;
     }
     return kintoneUtility.rest.getAllRecordsByQuery({
@@ -1040,8 +1040,8 @@ jQuery.noConflict();
       let toDate = makeToNxDateSt(period.moment.apply);
       let lastFromDate = makeFromLastPreDateSt(period.moment.apply);
       let lastToDate = makeToLastNxDateSt(period.moment.apply);
-      let periodSt = '((対象年月 <= "' + toDate + '" and ' + '対象年月 >= "' + fromDate
-        + '") or (対象年月 <= "' + lastToDate + '" and 対象年月 >= "' + lastFromDate + '")) and ';
+      let periodSt = '((対象年月 <= "' + toDate + '" and ' + '対象年月 >= "' + fromDate +
+        '") or (対象年月 <= "' + lastToDate + '" and 対象年月 >= "' + lastFromDate + '")) and ';
       querySt = periodSt + querySt;
     }
     return kintoneUtility.rest.getAllRecordsByQuery({
@@ -1101,8 +1101,8 @@ jQuery.noConflict();
       let toDate = makeToNxDateSt(period.moment.apply);
       let lastFromDate = makeFromLastPreDateSt(period.moment.apply);
       let lastToDate = makeToLastNxDateSt(period.moment.apply);
-      let periodSt = '(仕入日付 <= "' + toDate + '" and 仕入日付 >= "' + fromDate
-        + '") or (仕入日付 <= "' + lastToDate + '" and 仕入日付 >= "' + lastFromDate + '")';
+      let periodSt = '(仕入日付 <= "' + toDate + '" and 仕入日付 >= "' + fromDate +
+        '") or (仕入日付 <= "' + lastToDate + '" and 仕入日付 >= "' + lastFromDate + '")';
       querySt = periodSt + querySt;
     }
     return kintoneUtility.rest.getAllRecordsByQuery({
@@ -1126,8 +1126,8 @@ jQuery.noConflict();
         };
       }
       // 同月同品種のものは集約する
-      var sumrec = recas.reduce(function (result, current) {
-        var element = result.find(function (p) {
+      var sumrec = recas.reduce(function(result, current) {
+        var element = result.find(function(p) {
           return p.date === current.date && p.code === current.code
         });
         if (element) {
@@ -1182,10 +1182,15 @@ jQuery.noConflict();
       let fromDate = "";
       let toDate = "";
       let periodSt = "";
-      if (prflg) {
+      if (prflg === 1) {
         // 対象月のみ
         fromDate = makeFromDateSt(period.apply.year, period.apply.month);
         toDate = makeToDateSt(period.apply.year, period.apply.month);
+        periodSt = '(生産日付 <= "' + toDate + '" and ' + '生産日付 >= "' + fromDate + '")';
+      } else if (prflg === 2) {
+        // 対象月前後３ヶ月
+        fromDate = makeFromPreDateSt(period.moment.apply);
+        toDate = makeToNxDateSt(period.moment.apply);
         periodSt = '(生産日付 <= "' + toDate + '" and ' + '生産日付 >= "' + fromDate + '")';
       } else {
         // 対象月前後３ヶ月
@@ -1193,8 +1198,8 @@ jQuery.noConflict();
         toDate = makeToNxDateSt(period.moment.apply);
         let lastFromDate = makeFromLastPreDateSt(period.moment.apply);
         let lastToDate = makeToLastNxDateSt(period.moment.apply);
-        periodSt = '(生産日付 <= "' + toDate + '" and 生産日付 >= "' + fromDate
-          + '") or (生産日付 <= "' + lastToDate + '" and 生産日付 >= "' + lastFromDate + '")';
+        periodSt = '(生産日付 <= "' + toDate + '" and 生産日付 >= "' + fromDate +
+          '") or (生産日付 <= "' + lastToDate + '" and 生産日付 >= "' + lastFromDate + '")';
       }
       querySt = periodSt + querySt;
     }
@@ -1224,8 +1229,8 @@ jQuery.noConflict();
         };
       }
       // 同月同品種のものは集約する
-      var sumrec = recas.reduce(function (result, current) {
-        var element = result.find(function (p) {
+      var sumrec = recas.reduce(function(result, current) {
+        var element = result.find(function(p) {
           return p.date === current.date && p.type === current.type && p.rank === current.rank
         });
         if (element) {
@@ -1258,8 +1263,8 @@ jQuery.noConflict();
       }, []);
       console.log(sumrec);
       // 同月のものは集約する（稼働状況向け）
-      var totalrec = recas.reduce(function (result, current) {
-        var element = result.find(function (p) {
+      var totalrec = recas.reduce(function(result, current) {
+        var element = result.find(function(p) {
           return p.date === current.date
         });
         if (element) {
@@ -1337,8 +1342,8 @@ jQuery.noConflict();
         toDate = makeToNxDateSt(period.moment.apply);
         let lastFromDate = makeFromLastPreDateSt(period.moment.apply);
         let lastToDate = makeToLastNxDateSt(period.moment.apply);
-        periodSt = '(販売日付 <= "' + toDate + '" and 販売日付 >= "' + fromDate
-          + '") or (販売日付 <= "' + lastToDate + '" and 販売日付 >= "' + lastFromDate + '")';
+        periodSt = '(販売日付 <= "' + toDate + '" and 販売日付 >= "' + fromDate +
+          '") or (販売日付 <= "' + lastToDate + '" and 販売日付 >= "' + lastFromDate + '")';
       }
       querySt = periodSt + querySt;
     }
@@ -1365,8 +1370,8 @@ jQuery.noConflict();
         };
       }
       // 同月同品種のものは集約する
-      var sumrec = recas.reduce(function (result, current) {
-        var element = result.find(function (p) {
+      var sumrec = recas.reduce(function(result, current) {
+        var element = result.find(function(p) {
           return p.date === current.date && p.type === current.type && p.rank === current.rank
         });
         if (element) {
@@ -1399,107 +1404,107 @@ jQuery.noConflict();
     });
   };
 
-/**
- * 販売実績一覧の取得(顧客別)
- *
- * 期間指定がない場合は、登録されている全予算を取得します。
- * whereOptionが存在する場合は、各値が存在する場合、以下の絞込みを行います
- *   keyword.customer:キーワードによる絞り込み
- *   mainChargeCustomers:「主担当のみ」による絞り込み
- *
- * @param period 期間指定(オプション)
- * @param whereOption makeWhereOption()で取得したオプションオブジェクト(オプション)
- * @param period2 2つ目の期間指定(オプション)
- *
- * @see makeWhereOption
- * @see getPeriodFromTo
- */
-var getSalesCustomerList = function(period, prflg, whereOption) {
-  let isAllList = (period === void 0);
-  let querySt = ' order by 得意先コード asc, 品種コード asc, 品番 asc, 販売日付 asc ';
-  if (!isAllList) {
-    // 期間の絞り込み
-    let fromDate = "";
-    let toDate = "";
-    let periodSt = "";
-    if (prflg) {
-      // 対象月のみ
-      fromDate = makeFromDateSt(period.apply.year, period.apply.month);
-      toDate = makeToDateSt(period.apply.year, period.apply.month);
-      periodSt = '(販売日付 <= "' + toDate + '" and ' + '販売日付 >= "' + fromDate + '")';
-    } else {
-      // 対象月前後３ヶ月
-      fromDate = makeFromPreDateSt(period.moment.apply);
-      toDate = makeToNxDateSt(period.moment.apply);
-      let lastFromDate = makeFromLastPreDateSt(period.moment.apply);
-      let lastToDate = makeToLastNxDateSt(period.moment.apply);
-      periodSt = '(販売日付 <= "' + toDate + '" and 販売日付 >= "' + fromDate
-        + '") or (販売日付 <= "' + lastToDate + '" and 販売日付 >= "' + lastFromDate + '")';
-    }
-    querySt = periodSt + querySt;
-  }
-  return kintoneUtility.rest.getAllRecordsByQuery({
-    app: emxasConf.getConfig('APP_SALES_PERFORM_LIST'),
-    query: querySt,
-    isGuest: true
-  }).then(function(resp) {
-    let recas = [];
-    let prcd = "";
-    let records = resp.records;
-    // TODO 販売数量
-    for (let ix = 0; ix < records.length; ix++) {
-      prcd = makeYearMonthSt(records[ix]['販売日付'].value);
-      recas[ix] = {
-        date: prcd, // 販売日付
-        code: records[ix]['品番'].value, // 品番
-        type: records[ix]['品種コード'].value, // 品種コード
-        rank: records[ix]['等級コード'].value, // 等級コード
-        name: records[ix]['品種名'].value, // 品種名
-        cstcode: records[ix]['得意先コード'].value, // 得意先コード
-        cstname: records[ix]['得意先名'].value, // 得意先名
-        salweight: records[ix]['販売重量'].value, // 販売重量
-        sallength: records[ix]['総ロール長'].value, // 総ロール長
-        salPrice: records[ix]['販売価格'].value // 販売価格
-      };
-    }
-    // 同月同得意先同品種のものは集約する
-    var sumrec = recas.reduce(function (result, current) {
-      var element = result.find(function (p) {
-        return p.date === current.date && p.cstcode === current.cstcode && p.code === current.code && p.rank === current.rank
-      });
-      if (element) {
-        var ele1 = parseFloat(element.salweight);
-        element.salweight = String(ele1 + parseFloat(current.salweight));
-        var ele2 = parseFloat(element.sallength);
-        element.sallength = String(ele2 + parseFloat(current.sallength));
-        var ele3 = parseFloat(element.salPrice);
-        element.salPrice = String(ele3 + parseFloat(current.salPrice));
+  /**
+   * 販売実績一覧の取得(顧客別)
+   *
+   * 期間指定がない場合は、登録されている全予算を取得します。
+   * whereOptionが存在する場合は、各値が存在する場合、以下の絞込みを行います
+   *   keyword.customer:キーワードによる絞り込み
+   *   mainChargeCustomers:「主担当のみ」による絞り込み
+   *
+   * @param period 期間指定(オプション)
+   * @param whereOption makeWhereOption()で取得したオプションオブジェクト(オプション)
+   * @param period2 2つ目の期間指定(オプション)
+   *
+   * @see makeWhereOption
+   * @see getPeriodFromTo
+   */
+  var getSalesCustomerList = function(period, prflg, whereOption) {
+    let isAllList = (period === void 0);
+    let querySt = ' order by 得意先コード asc, 品種コード asc, 品番 asc, 販売日付 asc ';
+    if (!isAllList) {
+      // 期間の絞り込み
+      let fromDate = "";
+      let toDate = "";
+      let periodSt = "";
+      if (prflg) {
+        // 対象月のみ
+        fromDate = makeFromDateSt(period.apply.year, period.apply.month);
+        toDate = makeToDateSt(period.apply.year, period.apply.month);
+        periodSt = '(販売日付 <= "' + toDate + '" and ' + '販売日付 >= "' + fromDate + '")';
       } else {
-        result.push({
-          date: current.date,
-          cstcode: current.cstcode,
-          cstname: current.cstname,
-          code: current.code,
-          name: current.name,
-          type: current.type,
-          rank: current.rank,
-          salweight: current.salweight,
-          sallength: current.sallength,
-          salPrice: current.salPrice
-        });
+        // 対象月前後３ヶ月
+        fromDate = makeFromPreDateSt(period.moment.apply);
+        toDate = makeToNxDateSt(period.moment.apply);
+        let lastFromDate = makeFromLastPreDateSt(period.moment.apply);
+        let lastToDate = makeToLastNxDateSt(period.moment.apply);
+        periodSt = '(販売日付 <= "' + toDate + '" and 販売日付 >= "' + fromDate +
+          '") or (販売日付 <= "' + lastToDate + '" and 販売日付 >= "' + lastFromDate + '")';
       }
-      return result;
-    }, []);
-    console.log(sumrec);
-    if (isAllList) {
-      myVal.ALL_LIST_SALES_CUSTOMER = sumrec;
-      myVal.ALL_SRC_LIST_SALES_CUSTOMER = records;
+      querySt = periodSt + querySt;
     }
-    myVal.LIST_SALES_CUSTOMER = sumrec;
-    myVal.SRC_LIST_SALES_CUSTOMER = records;
-    return Promise.resolve(sumrec);
-  });
-};
+    return kintoneUtility.rest.getAllRecordsByQuery({
+      app: emxasConf.getConfig('APP_SALES_PERFORM_LIST'),
+      query: querySt,
+      isGuest: true
+    }).then(function(resp) {
+      let recas = [];
+      let prcd = "";
+      let records = resp.records;
+      // TODO 販売数量
+      for (let ix = 0; ix < records.length; ix++) {
+        prcd = makeYearMonthSt(records[ix]['販売日付'].value);
+        recas[ix] = {
+          date: prcd, // 販売日付
+          code: records[ix]['品番'].value, // 品番
+          type: records[ix]['品種コード'].value, // 品種コード
+          rank: records[ix]['等級コード'].value, // 等級コード
+          name: records[ix]['品種名'].value, // 品種名
+          cstcode: records[ix]['得意先コード'].value, // 得意先コード
+          cstname: records[ix]['得意先名'].value, // 得意先名
+          salweight: records[ix]['販売重量'].value, // 販売重量
+          sallength: records[ix]['総ロール長'].value, // 総ロール長
+          salPrice: records[ix]['販売価格'].value // 販売価格
+        };
+      }
+      // 同月同得意先同品種のものは集約する
+      var sumrec = recas.reduce(function(result, current) {
+        var element = result.find(function(p) {
+          return p.date === current.date && p.cstcode === current.cstcode && p.code === current.code && p.rank === current.rank
+        });
+        if (element) {
+          var ele1 = parseFloat(element.salweight);
+          element.salweight = String(ele1 + parseFloat(current.salweight));
+          var ele2 = parseFloat(element.sallength);
+          element.sallength = String(ele2 + parseFloat(current.sallength));
+          var ele3 = parseFloat(element.salPrice);
+          element.salPrice = String(ele3 + parseFloat(current.salPrice));
+        } else {
+          result.push({
+            date: current.date,
+            cstcode: current.cstcode,
+            cstname: current.cstname,
+            code: current.code,
+            name: current.name,
+            type: current.type,
+            rank: current.rank,
+            salweight: current.salweight,
+            sallength: current.sallength,
+            salPrice: current.salPrice
+          });
+        }
+        return result;
+      }, []);
+      console.log(sumrec);
+      if (isAllList) {
+        myVal.ALL_LIST_SALES_CUSTOMER = sumrec;
+        myVal.ALL_SRC_LIST_SALES_CUSTOMER = records;
+      }
+      myVal.LIST_SALES_CUSTOMER = sumrec;
+      myVal.SRC_LIST_SALES_CUSTOMER = records;
+      return Promise.resolve(sumrec);
+    });
+  };
 
   /**
    * 在庫実績一覧の取得
@@ -1526,8 +1531,8 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
       let toDate = makeToNxDateSt(period.moment.apply);
       let lastFromDate = makeFromLastPreDateSt(period.moment.apply);
       let lastToDate = makeToLastNxDateSt(period.moment.apply);
-      let periodSt = '(生産日付 <= "' + toDate + '" and 生産日付 >= "' + fromDate
-        + '") or (生産日付 <= "' + lastToDate + '" and 生産日付 >= "' + lastFromDate + '")';
+      let periodSt = '(生産日付 <= "' + toDate + '" and 生産日付 >= "' + fromDate +
+        '") or (生産日付 <= "' + lastToDate + '" and 生産日付 >= "' + lastFromDate + '")';
       querySt = periodSt + querySt;
     }
     return kintoneUtility.rest.getAllRecordsByQuery({
@@ -1553,8 +1558,8 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
         };
       }
       // 同月同品種のものは集約する
-      var sumrec = recas.reduce(function (result, current) {
-        var element = result.find(function (p) {
+      var sumrec = recas.reduce(function(result, current) {
+        var element = result.find(function(p) {
           return p.date === current.date && p.type === current.type && p.rank === current.rank
         });
         if (element) {
@@ -1587,71 +1592,71 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
     });
   };
 
-    /**
-     * 稼働状況一覧の取得
-     *
-     * 期間指定がない場合は、登録されている全予算を取得します。
-     * whereOptionが存在する場合は、各値が存在する場合、以下の絞込みを行います
-     *   keyword.customer:キーワードによる絞り込み
-     *   mainChargeCustomers:「主担当のみ」による絞り込み
-     *
-     * @param period 期間指定(オプション)
-     * @param whereOption makeWhereOption()で取得したオプションオブジェクト(オプション)
-     * @param period2 2つ目の期間指定(オプション)
-     *
-     * @see makeWhereOption
-     * @see getPeriodFromTo
-     */
-    var getHumanPerformList = function(period, whereOption, period2) {
-      let isAllList = (period === void 0);
-      let querySt = ' order by 対象年月 asc ';
-      if (!isAllList) {
-        // 期間の絞り込み
-        let fromDate = makeFromPreDateSt(period.moment.apply);
-        let toDate = makeToNxDateSt(period.moment.apply);
-        let periodSt = '(対象年月 <= "' + toDate + '" and ' + '対象年月 >= "' + fromDate + '")';
-        querySt = periodSt + querySt;
+  /**
+   * 稼働状況一覧の取得
+   *
+   * 期間指定がない場合は、登録されている全予算を取得します。
+   * whereOptionが存在する場合は、各値が存在する場合、以下の絞込みを行います
+   *   keyword.customer:キーワードによる絞り込み
+   *   mainChargeCustomers:「主担当のみ」による絞り込み
+   *
+   * @param period 期間指定(オプション)
+   * @param whereOption makeWhereOption()で取得したオプションオブジェクト(オプション)
+   * @param period2 2つ目の期間指定(オプション)
+   *
+   * @see makeWhereOption
+   * @see getPeriodFromTo
+   */
+  var getHumanPerformList = function(period, whereOption, period2) {
+    let isAllList = (period === void 0);
+    let querySt = ' order by 対象年月 asc ';
+    if (!isAllList) {
+      // 期間の絞り込み
+      let fromDate = makeFromPreDateSt(period.moment.apply);
+      let toDate = makeToNxDateSt(period.moment.apply);
+      let periodSt = '(対象年月 <= "' + toDate + '" and ' + '対象年月 >= "' + fromDate + '")';
+      querySt = periodSt + querySt;
+    }
+    return kintoneUtility.rest.getAllRecordsByQuery({
+      app: emxasConf.getConfig('APP_HUMAN_PERFORM_LIST'),
+      query: querySt,
+      isGuest: true
+    }).then(function(resp) {
+      let recas = [];
+      let prcd = "";
+      let records = resp.records;
+      for (let ix = 0; ix < records.length; ix++) {
+        prcd = makeYearMonthSt(records[ix]['対象年月'].value);
+        recas[ix] = {
+          date: prcd, // 対象年月
+          plworkDay: records[ix]['計画所定日数'].value, // 計画所定日数
+          plworkHour: records[ix]['計画所定勤務時間'].value, // 計画所定勤務時間
+          plplantDay: records[ix]['計画工場稼働日数'].value, // 計画工場稼働日数
+          plplantHour: records[ix]['計画所定工場稼働時間'].value, // 計画所定工場稼働時間
+          psworkDay: records[ix]['予定所定日数'].value, // 予定所定日数
+          psworkHour: records[ix]['予定所定勤務時間'].value, // 予定所定勤務時間
+          psplantDay: records[ix]['予定工場稼働日数'].value, // 予定工場稼働日数
+          psplantHour: records[ix]['予定所定工場稼働時間'].value, // 予定所定工場稼働時間
+          ppworkDay: records[ix]['実績見込み所定日数'].value, // 実績見込み所定日数
+          ppworkHour: records[ix]['実績見込み所定勤務時間'].value, // 実績見込み所定勤務時間
+          ppplantDay: records[ix]['実績見込み工場稼働日数'].value, // 実績見込み工場稼働日数
+          ppplantHour: records[ix]['実績見込み所定工場稼働時間'].value, // 実績見込み所定工場稼働時間
+          pfworkDay: records[ix]['実績所定日数'].value, // 実績所定日数
+          pfworkHour: records[ix]['実績所定勤務時間'].value, // 実績所定勤務時間
+          pfplantDay: records[ix]['実績工場稼働日数'].value, // 実績工場稼働日数
+          pfplantHour: records[ix]['実績所定工場稼働時間'].value // 実績所定工場稼働時間
+        };
       }
-      return kintoneUtility.rest.getAllRecordsByQuery({
-        app: emxasConf.getConfig('APP_HUMAN_PERFORM_LIST'),
-        query: querySt,
-        isGuest: true
-      }).then(function(resp) {
-        let recas = [];
-        let prcd = "";
-        let records = resp.records;
-        for (let ix = 0; ix < records.length; ix++) {
-          prcd = makeYearMonthSt(records[ix]['対象年月'].value);
-          recas[ix] = {
-            date: prcd, // 対象年月
-            plworkDay: records[ix]['計画所定日数'].value, // 計画所定日数
-            plworkHour: records[ix]['計画所定勤務時間'].value, // 計画所定勤務時間
-            plplantDay: records[ix]['計画工場稼働日数'].value, // 計画工場稼働日数
-            plplantHour: records[ix]['計画所定工場稼働時間'].value, // 計画所定工場稼働時間
-            psworkDay: records[ix]['予定所定日数'].value, // 予定所定日数
-            psworkHour: records[ix]['予定所定勤務時間'].value, // 予定所定勤務時間
-            psplantDay: records[ix]['予定工場稼働日数'].value, // 予定工場稼働日数
-            psplantHour: records[ix]['予定所定工場稼働時間'].value, // 予定所定工場稼働時間
-            ppworkDay: records[ix]['実績見込み所定日数'].value, // 実績見込み所定日数
-            ppworkHour: records[ix]['実績見込み所定勤務時間'].value, // 実績見込み所定勤務時間
-            ppplantDay: records[ix]['実績見込み工場稼働日数'].value, // 実績見込み工場稼働日数
-            ppplantHour: records[ix]['実績見込み所定工場稼働時間'].value, // 実績見込み所定工場稼働時間
-            pfworkDay: records[ix]['実績所定日数'].value, // 実績所定日数
-            pfworkHour: records[ix]['実績所定勤務時間'].value, // 実績所定勤務時間
-            pfplantDay: records[ix]['実績工場稼働日数'].value, // 実績工場稼働日数
-            pfplantHour: records[ix]['実績所定工場稼働時間'].value // 実績所定工場稼働時間
-          };
-        }
-        console.log(recas);
-        if (isAllList) {
-          myVal.ALL_LIST_HUMAN_PERFORM = recas;
-          myVal.ALL_SRC_LIST_HUMAN_PERFORM = records;
-        }
-        myVal.LIST_HUMAN_PERFORM = recas;
-        myVal.SRC_LIST_HUMAN_PERFORM = records;
-        return Promise.resolve(recas);
-      });
-    };
+      console.log(recas);
+      if (isAllList) {
+        myVal.ALL_LIST_HUMAN_PERFORM = recas;
+        myVal.ALL_SRC_LIST_HUMAN_PERFORM = records;
+      }
+      myVal.LIST_HUMAN_PERFORM = recas;
+      myVal.SRC_LIST_HUMAN_PERFORM = records;
+      return Promise.resolve(recas);
+    });
+  };
 
 
 
@@ -3063,457 +3068,457 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
    * 仕入・生産タブ内のグリッドを表示します。
    * データは現在の条件で取得
    */
-   var showPerformListGrid = function(period, type) {
-     // エラー表示があったら削除
-     $('#error_msg').remove();
-     // CSV出力データクリア
-     csvDataList = [];
-     // 2期比較にチェックONか？
-     if ($('#ch2').prop('checked')) {
-       // 二期比較は違うロジック
-       dispTowTerm(period, showType);
-       // CSV出力用フラグ（2期比較）
-       isComp = true;
-     } else {
-       // データを取得してグリッドに表示
-       let showType = "予実比較";
-       switch (type) {
-         case "tab2":
-           showType = "稼働状況";
-           dispOneTermSecondTab(period, showType);
-           break;
-         case "tab3":
-           showType = "品質状況";
-           dispOneTermThirdTab(period, showType);
-           break;
-         case "tab4":
-           showType = "Ｐ／Ｌ";
-           break;
-         default:
-           dispOneTerm(period);
-       }
-       console.log(showType);
-       // CSV出力用フラグ（2期比較ではない）
-       isComp = false;
-     }
-   };
-
-   /**
-    * 製品別時間当たり収益のグリッドを表示します。
-    * データは現在の条件で取得
-    */
-    var showPerhourListGrid = function(period, type) {
-      // エラー表示があったら削除
-      $('#error_msg').remove();
-      // CSV出力データクリア
-      csvDataList = [];
+  var showPerformListGrid = function(period, type) {
+    // エラー表示があったら削除
+    $('#error_msg').remove();
+    // CSV出力データクリア
+    csvDataList = [];
+    // 2期比較にチェックONか？
+    if ($('#ch2').prop('checked')) {
+      // 二期比較は違うロジック
+      dispTowTerm(period, showType);
+      // CSV出力用フラグ（2期比較）
+      isComp = true;
+    } else {
       // データを取得してグリッドに表示
-      console.log('------- dispPerhour --------');
-      // データ取得
-      let prflg = true;
-      getProductPerformList(period, prflg).then(function() {
-        let purList = [];
-        let proList = [];
-        // 生産実績、販売実績どちらも1件以上あれば、次へ。
-    　  if (Object.keys(myVal.LIST_PRODUCT_PERFORM).length > 0 && Object.keys(myVal.LIST_SALES_PERFORM).length > 0) {
-    　    return getPurhourReport(period, purList);
-    　  } else {
-  　      // 生産実績＆販売実績が共に1件以上存在しない場合は、分析対象が存在しないので、ここでデータ取得は離脱
-　        return Promise.reject('分析対象が存在しません。');
-　      }
-      }).then(function(resp) {
-        //////// 取得データの加工 ////////
-        // 製品別時間当たり収益項目の計算
-        let dataList = [];
-        getPerhourCulculateList(resp, dataList);
-        ////// 取得データの加工 end //////
-        if (dataList.length < 1) {
-          return Promise.reject('分析対象が存在しません。');
-        }
-        ////// グリッドの表示 ///////
-        let headerContainer = document.getElementById('my-top-grid');
-        let container = document.getElementById('my-grid');
-        let totalContainer = document.getElementById('total-grid');
-        // 既に存在していたら破棄
+      let showType = "予実比較";
+      switch (type) {
+        case "tab2":
+          showType = "稼働状況";
+          dispOneTermSecondTab(period, showType);
+          break;
+        case "tab3":
+          showType = "品質状況";
+          dispOneTermThirdTab(period, showType);
+          break;
+        case "tab4":
+          showType = "Ｐ／Ｌ";
+          break;
+        default:
+          dispOneTerm(period);
+      }
+      console.log(showType);
+      // CSV出力用フラグ（2期比較ではない）
+      isComp = false;
+    }
+  };
+
+  /**
+   * 製品別時間当たり収益のグリッドを表示します。
+   * データは現在の条件で取得
+   */
+  var showPerhourListGrid = function(period, type) {
+    // エラー表示があったら削除
+    $('#error_msg').remove();
+    // CSV出力データクリア
+    csvDataList = [];
+    // データを取得してグリッドに表示
+    console.log('------- dispPerhour --------');
+    // データ取得
+    let prflg = 1;
+    getProductPerformList(period, prflg).then(function() {
+      let purList = [];
+      let proList = [];
+      // 生産実績、販売実績どちらも1件以上あれば、次へ。
+      if (Object.keys(myVal.LIST_PRODUCT_PERFORM).length > 0 && Object.keys(myVal.LIST_SALES_PERFORM).length > 0) {
+        return getPurhourReport(period, purList);
+      } else {
+        // 生産実績＆販売実績が共に1件以上存在しない場合は、分析対象が存在しないので、ここでデータ取得は離脱
+        return Promise.reject('分析対象が存在しません。');
+      }
+    }).then(function(resp) {
+      //////// 取得データの加工 ////////
+      // 製品別時間当たり収益項目の計算
+      let dataList = [];
+      getPerhourCulculateList(resp, dataList);
+      ////// 取得データの加工 end //////
+      if (dataList.length < 1) {
+        return Promise.reject('分析対象が存在しません。');
+      }
+      ////// グリッドの表示 ///////
+      let headerContainer = document.getElementById('my-top-grid');
+      let container = document.getElementById('my-grid');
+      let totalContainer = document.getElementById('total-grid');
+      // 既に存在していたら破棄
+      destroyHandsonGrid(hot);
+      destroyHandsonGrid(totalHot);
+      destroyHandsonGrid(headerHot);
+      // ヘッダー2段の場合の上部分
+      headerHot = new Handsontable(headerContainer, {
+        data: [],
+        columns: gridVal.getGridColumns(),
+        colHeaders: gridVal.GRID_TOP_COL_HEADERS,
+        colWidths: gridVal.COL_WIDTH_CKP,
+        columnSorting: false,
+        stretchH: 'last',
+        // width: gridVal.GRID_WIDTH,
+      });
+      // グリッド本体
+      hot = new Handsontable(container, {
+        data: dataList,
+        columns: gridVal.getGridColumns(),
+        colHeaders: gridVal.GRID_COL_HEADERS,
+        colWidths: gridVal.COL_WIDTH_CKP,
+        columnSorting: (dispViewId == emxasConf.getConfig('VIEW_PRD_PERHOUR_PROFIT') ? false : true),
+        sortIndicator: true,
+        stretchH: 'last',
+        // width: gridVal.GRID_WIDTH,
+        afterGetColHeader: null,
+        afterRender: function(isForced) {
+          // colspanとrowspanの処理をまとめて行う
+          // (下側のグリッド表示後に実行されるので、headerHotは描画済み)
+          if (isForced) {
+            treatMyHeaderTags();
+          }
+        },
+        // autoColumnSize: true
+      });
+      // 合計行用のtable表示
+      /** totalHot = new Handsontable(totalContainer, {
+        data: [totalRec],
+        columns: getTotalGridColumns(),
+        colHeaders: false,
+        colWidths: gridVal.COL_WIDTH,
+        stretchH: 'last',
+        width: gridVal.GRID_WIDTH,
+      }); */
+
+      // 独自ソート関数
+      const customSort = function(selectedColumn, sortConfig) {
+        dataList.sort(function(a, b) {
+          // 指定列のソート（列値有りの場合、値でソート。ソート無しの場合も昇順）
+          if (a[selectedColumn] && b[selectedColumn]) {
+            if (a[selectedColumn] < b[selectedColumn]) return (sortConfig === 0 ? -1 : sortConfig);
+            if (a[selectedColumn] > b[selectedColumn]) return (sortConfig === 0 ? 1 : (sortConfig * -1));
+          }
+          // 指定列のソート（列値無しの場合、値無しを優先でソート）
+          // ソート無しの場合、コード値無しは最終行に表示する為、降順になる
+          if (!a[selectedColumn] || !b[selectedColumn]) {
+            if (!a[selectedColumn] && b[selectedColumn]) return (sortConfig === 0 ? 1 : sortConfig);
+            if (a[selectedColumn] && !b[selectedColumn]) return (sortConfig === 0 ? -1 : (sortConfig * -1));
+          }
+
+          // コードの昇順は全てのケースで行う
+          if (a[(showType === '顧客別' ? '３コード' : '担当者コード')] < b[(showType === '顧客別' ? '３コード' : '担当者コード')]) return -1;
+          if (a[(showType === '顧客別' ? '３コード' : '担当者コード')] > b[(showType === '顧客別' ? '３コード' : '担当者コード')]) return 1;
+
+          return 0;
+        });
+
+        // // ソート無しの場合、コード未選択を最終行にする。
+        // if (sortConfig === 0) {
+        //     let noCodeData = [];
+        //     let dataListForSort = $.extend(true, [], dataList);
+        //     dataListForSort.forEach(function(data, i) {
+        //         // コード未選択以外はスキップ
+        //         if (data['no_code']) {
+        //             return;
+        //         }
+        //         noCodeData.push(data);
+        //         dataList.splice(i, 1);
+        //     });
+        //     dataList.push(noCodeData);
+        // }
+        hot.render();
+      };
+
+      // 生産性分析時のみの独自ソートトリガー用クリックイベント
+      if (dispViewId == emxasConf.getConfig('VIEW_PRC_PDCT_ANALYSIS')) {
+        $('table.htCore th span.colHeader').parent('div').addClass('custom-sort-header');
+        $(document).off('click', 'table.htCore span.colHeader');
+        $(document).on('click', 'table.htCore span.colHeader', function(e) {
+          let sortConfig = null;
+          // クリック列
+          let clickedColumn = $(this).parents('th').index();
+          // 前回ソート列
+          let sortedColumn = $('.sort-indicator').parents('th').index();
+          // 前回ソート内容
+          let beforeSortConfig = 0;
+
+          // 前回ソート内容取得
+          if ($(this).parents('th').find(".ascending").length > 0) {
+            beforeSortConfig = -1;
+          } else if ($(this).parents('th').find(".descending").length > 0) {
+            beforeSortConfig = 1;
+          }
+
+          // 前回ソート内容保持クラス削除
+          $(this).removeClass("ascending");
+          $(this).removeClass("descending");
+          $(this).parents('tr').find('.sort-indicator').remove();
+
+          // 現在ソート無し or 前回ソートと違う列をクリック ⇒ 昇順でソートする
+          if (beforeSortConfig === 0 || clickedColumn !== sortedColumn) {
+            sortConfig = -1;
+            e.target.classList.add("ascending");
+            e.target.classList.remove("descending");
+            $(this).after('<span class="sort-indicator">▲</span>');
+
+            // 現在昇順 and 前回ソートと同じ列をクリック ⇒ 降順でソートする
+          } else if (beforeSortConfig === -1 && clickedColumn === sortedColumn) {
+            sortConfig = 1;
+            e.target.classList.add("descending");
+            e.target.classList.remove("ascending");
+            $(this).after('<span class="sort-indicator">▼</span>');
+
+            // 現在降順 and 前回ソートと同じ列をクリック ⇒ ３コード／担当者コード順でソート（初期表示状態）
+          } else if (beforeSortConfig === 1 && clickedColumn === sortedColumn) {
+            sortConfig = 0; // ソート無し
+            clickedColumn = 0; // ３コード／担当者コード列をクリックした事にする。
+            e.target.classList.remove("descending");
+            e.target.classList.remove("ascending");
+          }
+          let columnName = gridVal.getGridColumns(showType)[clickedColumn]['data'];
+          customSort(columnName, sortConfig);
+        });
+      }
+
+      ////// グリッドの表示 end ///////
+      spinner.hideSpinner();
+    }).catch(function(error) {
+      console.log(error);
+      spinner.hideSpinner();
+      if (typeof error === 'string') {
+        // グリッドが存在したら削除
         destroyHandsonGrid(hot);
         destroyHandsonGrid(totalHot);
         destroyHandsonGrid(headerHot);
-        // ヘッダー2段の場合の上部分
-        headerHot = new Handsontable(headerContainer, {
-          data: [],
-          columns: gridVal.getGridColumns(),
-          colHeaders: gridVal.GRID_TOP_COL_HEADERS,
-          colWidths: gridVal.COL_WIDTH_CKP,
-          columnSorting: false,
-          stretchH: 'last',
-          // width: gridVal.GRID_WIDTH,
-        });
-        // グリッド本体
-        hot = new Handsontable(container, {
-          data: dataList,
-          columns: gridVal.getGridColumns(),
-          colHeaders: gridVal.GRID_COL_HEADERS,
-          colWidths: gridVal.COL_WIDTH_CKP,
-          columnSorting: (dispViewId == emxasConf.getConfig('VIEW_PRD_PERHOUR_PROFIT') ? false : true),
-          sortIndicator: true,
-          stretchH: 'last',
-          // width: gridVal.GRID_WIDTH,
-          afterGetColHeader: null,
-          afterRender: function(isForced) {
-            // colspanとrowspanの処理をまとめて行う
-            // (下側のグリッド表示後に実行されるので、headerHotは描画済み)
-            if (isForced) {
-              treatMyHeaderTags();
-            }
-          },
-          // autoColumnSize: true
-        });
-        // 合計行用のtable表示
-        /** totalHot = new Handsontable(totalContainer, {
-          data: [totalRec],
-          columns: getTotalGridColumns(),
-          colHeaders: false,
-          colWidths: gridVal.COL_WIDTH,
-          stretchH: 'last',
-          width: gridVal.GRID_WIDTH,
-        }); */
-
-        // 独自ソート関数
-        const customSort = function(selectedColumn, sortConfig) {
-          dataList.sort(function(a, b) {
-            // 指定列のソート（列値有りの場合、値でソート。ソート無しの場合も昇順）
-            if (a[selectedColumn] && b[selectedColumn]) {
-              if (a[selectedColumn] < b[selectedColumn]) return (sortConfig === 0 ? -1 : sortConfig);
-              if (a[selectedColumn] > b[selectedColumn]) return (sortConfig === 0 ? 1 : (sortConfig * -1));
-            }
-            // 指定列のソート（列値無しの場合、値無しを優先でソート）
-            // ソート無しの場合、コード値無しは最終行に表示する為、降順になる
-            if (!a[selectedColumn] || !b[selectedColumn]) {
-              if (!a[selectedColumn] && b[selectedColumn]) return (sortConfig === 0 ? 1 : sortConfig);
-              if (a[selectedColumn] && !b[selectedColumn]) return (sortConfig === 0 ? -1 : (sortConfig * -1));
-            }
-
-            // コードの昇順は全てのケースで行う
-            if (a[(showType === '顧客別' ? '３コード' : '担当者コード')] < b[(showType === '顧客別' ? '３コード' : '担当者コード')]) return -1;
-            if (a[(showType === '顧客別' ? '３コード' : '担当者コード')] > b[(showType === '顧客別' ? '３コード' : '担当者コード')]) return 1;
-
-            return 0;
-          });
-
-          // // ソート無しの場合、コード未選択を最終行にする。
-          // if (sortConfig === 0) {
-          //     let noCodeData = [];
-          //     let dataListForSort = $.extend(true, [], dataList);
-          //     dataListForSort.forEach(function(data, i) {
-          //         // コード未選択以外はスキップ
-          //         if (data['no_code']) {
-          //             return;
-          //         }
-          //         noCodeData.push(data);
-          //         dataList.splice(i, 1);
-          //     });
-          //     dataList.push(noCodeData);
-          // }
-          hot.render();
-        };
-
-        // 生産性分析時のみの独自ソートトリガー用クリックイベント
-        if (dispViewId == emxasConf.getConfig('VIEW_PRC_PDCT_ANALYSIS')) {
-          $('table.htCore th span.colHeader').parent('div').addClass('custom-sort-header');
-          $(document).off('click', 'table.htCore span.colHeader');
-          $(document).on('click', 'table.htCore span.colHeader', function(e) {
-            let sortConfig = null;
-            // クリック列
-            let clickedColumn = $(this).parents('th').index();
-            // 前回ソート列
-            let sortedColumn = $('.sort-indicator').parents('th').index();
-            // 前回ソート内容
-            let beforeSortConfig = 0;
-
-            // 前回ソート内容取得
-            if ($(this).parents('th').find(".ascending").length > 0) {
-              beforeSortConfig = -1;
-            } else if ($(this).parents('th').find(".descending").length > 0) {
-              beforeSortConfig = 1;
-            }
-
-            // 前回ソート内容保持クラス削除
-            $(this).removeClass("ascending");
-            $(this).removeClass("descending");
-            $(this).parents('tr').find('.sort-indicator').remove();
-
-            // 現在ソート無し or 前回ソートと違う列をクリック ⇒ 昇順でソートする
-            if (beforeSortConfig === 0 || clickedColumn !== sortedColumn) {
-              sortConfig = -1;
-              e.target.classList.add("ascending");
-              e.target.classList.remove("descending");
-              $(this).after('<span class="sort-indicator">▲</span>');
-
-              // 現在昇順 and 前回ソートと同じ列をクリック ⇒ 降順でソートする
-            } else if (beforeSortConfig === -1 && clickedColumn === sortedColumn) {
-              sortConfig = 1;
-              e.target.classList.add("descending");
-              e.target.classList.remove("ascending");
-              $(this).after('<span class="sort-indicator">▼</span>');
-
-              // 現在降順 and 前回ソートと同じ列をクリック ⇒ ３コード／担当者コード順でソート（初期表示状態）
-            } else if (beforeSortConfig === 1 && clickedColumn === sortedColumn) {
-              sortConfig = 0; // ソート無し
-              clickedColumn = 0; // ３コード／担当者コード列をクリックした事にする。
-              e.target.classList.remove("descending");
-              e.target.classList.remove("ascending");
-            }
-            let columnName = gridVal.getGridColumns(showType)[clickedColumn]['data'];
-            customSort(columnName, sortConfig);
-          });
-        }
-
-        ////// グリッドの表示 end ///////
-        spinner.hideSpinner();
-      }).catch(function(error) {
-        console.log(error);
-        spinner.hideSpinner();
-        if (typeof error === 'string') {
-          // グリッドが存在したら削除
-          destroyHandsonGrid(hot);
-          destroyHandsonGrid(totalHot);
-          destroyHandsonGrid(headerHot);
-          // エラーメッセージを画面に表示(#my-gridに)
-          let msg = $('<div>').attr('id', 'error_msg').text(error);
-          $('#my-grid').append(msg);
-          return;
-        }
-        alert('システムエラーが発生しました');
-      });
-      console.log();
-      // CSV出力用フラグ（2期比較ではない）
-      isComp = false;
-    };
-
-    /**
-     * 製品別時間当たり収益に必要な計算を行い、dataList側に計算フィールドを追加し値を格納します。
-     *
-     */
-    var getPerhourCulculateList = function(dataList, dataListComp) {
-      for (let ix = 0; ix < dataList.length; ix++) {
-        let bughour = {};
-        bughour = dataList[ix];
-        bughour.mtrUnitPrc = parseFloat(dataList[ix]['mtrprice'] / dataList[ix]['mtrweight']); // 母材単価
-        bughour.salUnitPrc = parseFloat(dataList[ix]['salprice'] / dataList[ix]['salweight']); // 販売単価
-        bughour.losUnit = parseFloat(dataList[ix]['losweight'] / dataList[ix]['mtrweight'] * 100).toFixed(2); // 実ﾛｽ率
-        bughour.prdUnitPrc = parseFloat(dataList[ix]['mtrprice'] / dataList[ix]['prdweight']); // 製品単価（簡易原価）
-        bughour.prdYieldThr = parseFloat(dataList[ix]['prdweight'] * 100 / (dataList[ix]['mtrweight'] - dataList[ix]['losweight'])).toFixed(2); // 製品歩留（理論）
-        bughour.prdYield = parseFloat(dataList[ix]['prdweight'] * 100 / dataList[ix]['mtrweight']).toFixed(2); // 製品歩留
-        bughour.spreadPrice = bughour.salUnitPrc - bughour.prdUnitPrc; // スプレッド金額
-        bughour.spreadPer = parseFloat(bughour.spreadPrice / bughour.salUnitPrc * 100).toFixed(2); // スプレッド率
-        bughour.perHourPrd = parseFloat(dataList[ix]['prdweight'] / dataList[ix]['drophour']).toFixed(2); // 時間当たり生産量
-        bughour.perHourPrf = parseFloat(bughour.spreadPrice * dataList[ix]['prdweight'] / dataList[ix]['drophour']); // 時間当たり収益
-        // 計算したフィールドをリストへ追加
-        dataListComp.push(bughour);
-        console.log(bughour);
+        // エラーメッセージを画面に表示(#my-gridに)
+        let msg = $('<div>').attr('id', 'error_msg').text(error);
+        $('#my-grid').append(msg);
+        return;
       }
-      console.log(dataListComp);
-      return dataListComp;
-    };
+      alert('システムエラーが発生しました');
+    });
+    console.log();
+    // CSV出力用フラグ（2期比較ではない）
+    isComp = false;
+  };
 
-    /**
-     * 顧客別ABC分析のグリッドを表示します。
-     * データは現在の条件で取得
-     */
-     var showCstSalesRunkGrid = function(period, type) {
-       // エラー表示があったら削除
-       $('#error_msg').remove();
-       // CSV出力データクリア
-       csvDataList = [];
-       // データを取得してグリッドに表示
-       console.log('------- dispCstSales --------');
-       // データ取得
-       let prflg = true;
-       kintone.Promise.all([
-         getSalesCustomerList(period, prflg), // 顧客別・品番別販売実績
-         getSalesPerformList(period, prflg), // 販売実績
-         getProductPerformList(period, prflg) // 生産実績
-       ]).then(function() {
-         let purList = [];
-         let runkList = [];
-         // 生産実績、販売実績どちらも1件以上あれば、次へ。
-     　  if (Object.keys(myVal.LIST_PRODUCT_PERFORM).length > 0 && Object.keys(myVal.LIST_SALES_PERFORM).length > 0) {
-           purList = getPurhourReport(period, purList);
-           // 製品別時間当たり収益項目の計算
-           return getPerhourCulculateList(purList, runkList);
-     　  } else {
-   　      // 生産実績＆販売実績が共に1件以上存在しない場合は、分析対象が存在しないので、ここでデータ取得は離脱
- 　        return Promise.reject('分析対象が存在しません。');
- 　      }
-       }).then(function(resp) {
-         //////// 取得データの加工 ////////
-         // 顧客別スプレッドの計算
-         console.log(resp);
-         let dataList = [];
-         getSctRunkReport(resp, dataList);
-         ////// 取得データの加工 end //////
-         if (dataList.length < 1) {
-           return Promise.reject('分析対象が存在しません。');
-         }
-         ////// グリッドの表示 ///////
-         let headerContainer = document.getElementById('my-top-grid');
-         let container = document.getElementById('my-grid');
-         let totalContainer = document.getElementById('total-grid');
-         // 既に存在していたら破棄
-         destroyHandsonGrid(hot);
-         destroyHandsonGrid(totalHot);
-         destroyHandsonGrid(headerHot);
-         // ヘッダー2段の場合の上部分
-         headerHot = new Handsontable(headerContainer, {
-           data: [],
-           columns: gridVal.getGridColumns(),
-           colHeaders: gridVal.GRID_TOP_COL_HEADERS,
-           colWidths: gridVal.COL_WIDTH_CKP,
-           columnSorting: false,
-           stretchH: 'last',
-           // width: gridVal.GRID_WIDTH,
-         });
-         // グリッド本体
-         hot = new Handsontable(container, {
-           data: dataList,
-           columns: gridVal.getGridColumns(),
-           colHeaders: gridVal.GRID_COL_HEADERS,
-           colWidths: gridVal.COL_WIDTH_CKP,
-           columnSorting: (dispViewId == emxasConf.getConfig('VIEW_PRD_PERHOUR_PROFIT') ? false : true),
-           sortIndicator: true,
-           stretchH: 'last',
-           // width: gridVal.GRID_WIDTH,
-           afterGetColHeader: null,
-           afterRender: function(isForced) {
-             // colspanとrowspanの処理をまとめて行う
-             // (下側のグリッド表示後に実行されるので、headerHotは描画済み)
-             if (isForced) {
-               treatMyHeaderTags();
-             }
-           },
-           // autoColumnSize: true
-         });
-         // 合計行用のtable表示
-         /** totalHot = new Handsontable(totalContainer, {
-           data: [totalRec],
-           columns: getTotalGridColumns(),
-           colHeaders: false,
-           colWidths: gridVal.COL_WIDTH,
-           stretchH: 'last',
-           width: gridVal.GRID_WIDTH,
-         }); */
+  /**
+   * 製品別時間当たり収益に必要な計算を行い、dataList側に計算フィールドを追加し値を格納します。
+   *
+   */
+  var getPerhourCulculateList = function(dataList, dataListComp) {
+    for (let ix = 0; ix < dataList.length; ix++) {
+      let bughour = {};
+      bughour = dataList[ix];
+      bughour.mtrUnitPrc = parseFloat(dataList[ix]['mtrprice'] / dataList[ix]['mtrweight']); // 母材単価
+      bughour.salUnitPrc = parseFloat(dataList[ix]['salprice'] / dataList[ix]['salweight']); // 販売単価
+      bughour.losUnit = parseFloat(dataList[ix]['losweight'] / dataList[ix]['mtrweight'] * 100).toFixed(2); // 実ﾛｽ率
+      bughour.prdUnitPrc = parseFloat(dataList[ix]['mtrprice'] / dataList[ix]['prdweight']); // 製品単価（簡易原価）
+      bughour.prdYieldThr = parseFloat(dataList[ix]['prdweight'] * 100 / (dataList[ix]['mtrweight'] - dataList[ix]['losweight'])).toFixed(2); // 製品歩留（理論）
+      bughour.prdYield = parseFloat(dataList[ix]['prdweight'] * 100 / dataList[ix]['mtrweight']).toFixed(2); // 製品歩留
+      bughour.spreadPrice = bughour.salUnitPrc - bughour.prdUnitPrc; // スプレッド金額
+      bughour.spreadPer = parseFloat(bughour.spreadPrice / bughour.salUnitPrc * 100).toFixed(2); // スプレッド率
+      bughour.perHourPrd = parseFloat(dataList[ix]['prdweight'] / dataList[ix]['drophour']).toFixed(2); // 時間当たり生産量
+      bughour.perHourPrf = parseFloat(bughour.spreadPrice * dataList[ix]['prdweight'] / dataList[ix]['drophour']); // 時間当たり収益
+      // 計算したフィールドをリストへ追加
+      dataListComp.push(bughour);
+      console.log(bughour);
+    }
+    console.log(dataListComp);
+    return dataListComp;
+  };
 
-         // 独自ソート関数
-         const customSort = function(selectedColumn, sortConfig) {
-           dataList.sort(function(a, b) {
-             // 指定列のソート（列値有りの場合、値でソート。ソート無しの場合も昇順）
-             if (a[selectedColumn] && b[selectedColumn]) {
-               if (a[selectedColumn] < b[selectedColumn]) return (sortConfig === 0 ? -1 : sortConfig);
-               if (a[selectedColumn] > b[selectedColumn]) return (sortConfig === 0 ? 1 : (sortConfig * -1));
-             }
-             // 指定列のソート（列値無しの場合、値無しを優先でソート）
-             // ソート無しの場合、コード値無しは最終行に表示する為、降順になる
-             if (!a[selectedColumn] || !b[selectedColumn]) {
-               if (!a[selectedColumn] && b[selectedColumn]) return (sortConfig === 0 ? 1 : sortConfig);
-               if (a[selectedColumn] && !b[selectedColumn]) return (sortConfig === 0 ? -1 : (sortConfig * -1));
-             }
+  /**
+   * 顧客別ABC分析のグリッドを表示します。
+   * データは現在の条件で取得
+   */
+  var showCstSalesRunkGrid = function(period, type) {
+    // エラー表示があったら削除
+    $('#error_msg').remove();
+    // CSV出力データクリア
+    csvDataList = [];
+    // データを取得してグリッドに表示
+    console.log('------- dispCstSales --------');
+    // データ取得
+    let prflg = 1;
+    kintone.Promise.all([
+      getSalesCustomerList(period, prflg), // 顧客別・品番別販売実績
+      getSalesPerformList(period, prflg), // 販売実績
+      getProductPerformList(period, prflg) // 生産実績
+    ]).then(function() {
+      let purList = [];
+      let runkList = [];
+      // 生産実績、販売実績どちらも1件以上あれば、次へ。
+      if (Object.keys(myVal.LIST_PRODUCT_PERFORM).length > 0 && Object.keys(myVal.LIST_SALES_PERFORM).length > 0) {
+        purList = getPurhourReport(period, purList);
+        // 製品別時間当たり収益項目の計算
+        return getPerhourCulculateList(purList, runkList);
+      } else {
+        // 生産実績＆販売実績が共に1件以上存在しない場合は、分析対象が存在しないので、ここでデータ取得は離脱
+        return Promise.reject('分析対象が存在しません。');
+      }
+    }).then(function(resp) {
+      //////// 取得データの加工 ////////
+      // 顧客別スプレッドの計算
+      console.log(resp);
+      let dataList = [];
+      getSctRunkReport(resp, dataList);
+      ////// 取得データの加工 end //////
+      if (dataList.length < 1) {
+        return Promise.reject('分析対象が存在しません。');
+      }
+      ////// グリッドの表示 ///////
+      let headerContainer = document.getElementById('my-top-grid');
+      let container = document.getElementById('my-grid');
+      let totalContainer = document.getElementById('total-grid');
+      // 既に存在していたら破棄
+      destroyHandsonGrid(hot);
+      destroyHandsonGrid(totalHot);
+      destroyHandsonGrid(headerHot);
+      // ヘッダー2段の場合の上部分
+      headerHot = new Handsontable(headerContainer, {
+        data: [],
+        columns: gridVal.getGridColumns(),
+        colHeaders: gridVal.GRID_TOP_COL_HEADERS,
+        colWidths: gridVal.COL_WIDTH_CKP,
+        columnSorting: false,
+        stretchH: 'last',
+        // width: gridVal.GRID_WIDTH,
+      });
+      // グリッド本体
+      hot = new Handsontable(container, {
+        data: dataList,
+        columns: gridVal.getGridColumns(),
+        colHeaders: gridVal.GRID_COL_HEADERS,
+        colWidths: gridVal.COL_WIDTH_CKP,
+        columnSorting: (dispViewId == emxasConf.getConfig('VIEW_PRD_PERHOUR_PROFIT') ? false : true),
+        sortIndicator: true,
+        stretchH: 'last',
+        // width: gridVal.GRID_WIDTH,
+        afterGetColHeader: null,
+        afterRender: function(isForced) {
+          // colspanとrowspanの処理をまとめて行う
+          // (下側のグリッド表示後に実行されるので、headerHotは描画済み)
+          if (isForced) {
+            treatMyHeaderTags();
+          }
+        },
+        // autoColumnSize: true
+      });
+      // 合計行用のtable表示
+      /** totalHot = new Handsontable(totalContainer, {
+        data: [totalRec],
+        columns: getTotalGridColumns(),
+        colHeaders: false,
+        colWidths: gridVal.COL_WIDTH,
+        stretchH: 'last',
+        width: gridVal.GRID_WIDTH,
+      }); */
 
-             // コードの昇順は全てのケースで行う
-             if (a[(showType === '顧客別' ? '３コード' : '担当者コード')] < b[(showType === '顧客別' ? '３コード' : '担当者コード')]) return -1;
-             if (a[(showType === '顧客別' ? '３コード' : '担当者コード')] > b[(showType === '顧客別' ? '３コード' : '担当者コード')]) return 1;
+      // 独自ソート関数
+      const customSort = function(selectedColumn, sortConfig) {
+        dataList.sort(function(a, b) {
+          // 指定列のソート（列値有りの場合、値でソート。ソート無しの場合も昇順）
+          if (a[selectedColumn] && b[selectedColumn]) {
+            if (a[selectedColumn] < b[selectedColumn]) return (sortConfig === 0 ? -1 : sortConfig);
+            if (a[selectedColumn] > b[selectedColumn]) return (sortConfig === 0 ? 1 : (sortConfig * -1));
+          }
+          // 指定列のソート（列値無しの場合、値無しを優先でソート）
+          // ソート無しの場合、コード値無しは最終行に表示する為、降順になる
+          if (!a[selectedColumn] || !b[selectedColumn]) {
+            if (!a[selectedColumn] && b[selectedColumn]) return (sortConfig === 0 ? 1 : sortConfig);
+            if (a[selectedColumn] && !b[selectedColumn]) return (sortConfig === 0 ? -1 : (sortConfig * -1));
+          }
 
-             return 0;
-           });
+          // コードの昇順は全てのケースで行う
+          if (a[(showType === '顧客別' ? '３コード' : '担当者コード')] < b[(showType === '顧客別' ? '３コード' : '担当者コード')]) return -1;
+          if (a[(showType === '顧客別' ? '３コード' : '担当者コード')] > b[(showType === '顧客別' ? '３コード' : '担当者コード')]) return 1;
 
-           // // ソート無しの場合、コード未選択を最終行にする。
-           // if (sortConfig === 0) {
-           //     let noCodeData = [];
-           //     let dataListForSort = $.extend(true, [], dataList);
-           //     dataListForSort.forEach(function(data, i) {
-           //         // コード未選択以外はスキップ
-           //         if (data['no_code']) {
-           //             return;
-           //         }
-           //         noCodeData.push(data);
-           //         dataList.splice(i, 1);
-           //     });
-           //     dataList.push(noCodeData);
-           // }
-           hot.render();
-         };
+          return 0;
+        });
 
-         // 生産性分析時のみの独自ソートトリガー用クリックイベント
-         if (dispViewId == emxasConf.getConfig('VIEW_PRC_PDCT_ANALYSIS')) {
-           $('table.htCore th span.colHeader').parent('div').addClass('custom-sort-header');
-           $(document).off('click', 'table.htCore span.colHeader');
-           $(document).on('click', 'table.htCore span.colHeader', function(e) {
-             let sortConfig = null;
-             // クリック列
-             let clickedColumn = $(this).parents('th').index();
-             // 前回ソート列
-             let sortedColumn = $('.sort-indicator').parents('th').index();
-             // 前回ソート内容
-             let beforeSortConfig = 0;
+        // // ソート無しの場合、コード未選択を最終行にする。
+        // if (sortConfig === 0) {
+        //     let noCodeData = [];
+        //     let dataListForSort = $.extend(true, [], dataList);
+        //     dataListForSort.forEach(function(data, i) {
+        //         // コード未選択以外はスキップ
+        //         if (data['no_code']) {
+        //             return;
+        //         }
+        //         noCodeData.push(data);
+        //         dataList.splice(i, 1);
+        //     });
+        //     dataList.push(noCodeData);
+        // }
+        hot.render();
+      };
 
-             // 前回ソート内容取得
-             if ($(this).parents('th').find(".ascending").length > 0) {
-               beforeSortConfig = -1;
-             } else if ($(this).parents('th').find(".descending").length > 0) {
-               beforeSortConfig = 1;
-             }
+      // 生産性分析時のみの独自ソートトリガー用クリックイベント
+      if (dispViewId == emxasConf.getConfig('VIEW_PRC_PDCT_ANALYSIS')) {
+        $('table.htCore th span.colHeader').parent('div').addClass('custom-sort-header');
+        $(document).off('click', 'table.htCore span.colHeader');
+        $(document).on('click', 'table.htCore span.colHeader', function(e) {
+          let sortConfig = null;
+          // クリック列
+          let clickedColumn = $(this).parents('th').index();
+          // 前回ソート列
+          let sortedColumn = $('.sort-indicator').parents('th').index();
+          // 前回ソート内容
+          let beforeSortConfig = 0;
 
-             // 前回ソート内容保持クラス削除
-             $(this).removeClass("ascending");
-             $(this).removeClass("descending");
-             $(this).parents('tr').find('.sort-indicator').remove();
+          // 前回ソート内容取得
+          if ($(this).parents('th').find(".ascending").length > 0) {
+            beforeSortConfig = -1;
+          } else if ($(this).parents('th').find(".descending").length > 0) {
+            beforeSortConfig = 1;
+          }
 
-             // 現在ソート無し or 前回ソートと違う列をクリック ⇒ 昇順でソートする
-             if (beforeSortConfig === 0 || clickedColumn !== sortedColumn) {
-               sortConfig = -1;
-               e.target.classList.add("ascending");
-               e.target.classList.remove("descending");
-               $(this).after('<span class="sort-indicator">▲</span>');
+          // 前回ソート内容保持クラス削除
+          $(this).removeClass("ascending");
+          $(this).removeClass("descending");
+          $(this).parents('tr').find('.sort-indicator').remove();
 
-               // 現在昇順 and 前回ソートと同じ列をクリック ⇒ 降順でソートする
-             } else if (beforeSortConfig === -1 && clickedColumn === sortedColumn) {
-               sortConfig = 1;
-               e.target.classList.add("descending");
-               e.target.classList.remove("ascending");
-               $(this).after('<span class="sort-indicator">▼</span>');
+          // 現在ソート無し or 前回ソートと違う列をクリック ⇒ 昇順でソートする
+          if (beforeSortConfig === 0 || clickedColumn !== sortedColumn) {
+            sortConfig = -1;
+            e.target.classList.add("ascending");
+            e.target.classList.remove("descending");
+            $(this).after('<span class="sort-indicator">▲</span>');
 
-               // 現在降順 and 前回ソートと同じ列をクリック ⇒ ３コード／担当者コード順でソート（初期表示状態）
-             } else if (beforeSortConfig === 1 && clickedColumn === sortedColumn) {
-               sortConfig = 0; // ソート無し
-               clickedColumn = 0; // ３コード／担当者コード列をクリックした事にする。
-               e.target.classList.remove("descending");
-               e.target.classList.remove("ascending");
-             }
-             let columnName = gridVal.getGridColumns(showType)[clickedColumn]['data'];
-             customSort(columnName, sortConfig);
-           });
-         }
+            // 現在昇順 and 前回ソートと同じ列をクリック ⇒ 降順でソートする
+          } else if (beforeSortConfig === -1 && clickedColumn === sortedColumn) {
+            sortConfig = 1;
+            e.target.classList.add("descending");
+            e.target.classList.remove("ascending");
+            $(this).after('<span class="sort-indicator">▼</span>');
 
-         ////// グリッドの表示 end ///////
-         spinner.hideSpinner();
-       }).catch(function(error) {
-         console.log(error);
-         spinner.hideSpinner();
-         if (typeof error === 'string') {
-           // グリッドが存在したら削除
-           destroyHandsonGrid(hot);
-           destroyHandsonGrid(totalHot);
-           destroyHandsonGrid(headerHot);
-           // エラーメッセージを画面に表示(#my-gridに)
-           let msg = $('<div>').attr('id', 'error_msg').text(error);
-           $('#my-grid').append(msg);
-           return;
-         }
-         alert('システムエラーが発生しました');
-       });
-       console.log();
-       // CSV出力用フラグ（2期比較ではない）
-       isComp = false;
-     };
+            // 現在降順 and 前回ソートと同じ列をクリック ⇒ ３コード／担当者コード順でソート（初期表示状態）
+          } else if (beforeSortConfig === 1 && clickedColumn === sortedColumn) {
+            sortConfig = 0; // ソート無し
+            clickedColumn = 0; // ３コード／担当者コード列をクリックした事にする。
+            e.target.classList.remove("descending");
+            e.target.classList.remove("ascending");
+          }
+          let columnName = gridVal.getGridColumns(showType)[clickedColumn]['data'];
+          customSort(columnName, sortConfig);
+        });
+      }
+
+      ////// グリッドの表示 end ///////
+      spinner.hideSpinner();
+    }).catch(function(error) {
+      console.log(error);
+      spinner.hideSpinner();
+      if (typeof error === 'string') {
+        // グリッドが存在したら削除
+        destroyHandsonGrid(hot);
+        destroyHandsonGrid(totalHot);
+        destroyHandsonGrid(headerHot);
+        // エラーメッセージを画面に表示(#my-gridに)
+        let msg = $('<div>').attr('id', 'error_msg').text(error);
+        $('#my-grid').append(msg);
+        return;
+      }
+      alert('システムエラーが発生しました');
+    });
+    console.log();
+    // CSV出力用フラグ（2期比較ではない）
+    isComp = false;
+  };
 
   /**
    * グリッドを表示します。
@@ -3728,21 +3733,21 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
       getSalesPerformList(period), // 販売実績取得
       getStockPerformList(period) // 在庫実績取得
     ]).then(function() {
-        let purList = [];
-        let proList = [];
-        let salList = [];
-        let stcList = [];
-        // 仕入実績、生産実績、販売実績、在庫実績いずれも1件以上あれば、次へ。
-    　  if (Object.keys(myVal.LIST_PURCHASE_PERFORM).length > 0 && Object.keys(myVal.LIST_PRODUCT_PERFORM).length
-          && Object.keys(myVal.LIST_SALES_PERFORM).length > 0 && Object.keys(myVal.LIST_PRDSTOCK_BUDGET).length > 0) {
-    　    purList = getPurchaseReport(period, purList);
-          proList = getProductReport(period, purList, proList);
-          salList = getSalesReport(period, proList, salList);
-          return getStockReport(period, salList, stcList);
-    　  } else {
-  　      // 仕入実績＆生産実績＆販売実績＆在庫実績が共に1件以上存在しない場合は、分析対象が存在しないので、ここでデータ取得は離脱
-　        return Promise.reject('分析対象が存在しません。');
-　      }
+      let purList = [];
+      let proList = [];
+      let salList = [];
+      let stcList = [];
+      // 仕入実績、生産実績、販売実績、在庫実績いずれも1件以上あれば、次へ。
+      if (Object.keys(myVal.LIST_PURCHASE_PERFORM).length > 0 && Object.keys(myVal.LIST_PRODUCT_PERFORM).length &&
+        Object.keys(myVal.LIST_SALES_PERFORM).length > 0 && Object.keys(myVal.LIST_PRDSTOCK_BUDGET).length > 0) {
+        purList = getPurchaseReport(period, purList);
+        proList = getProductReport(period, purList, proList);
+        salList = getSalesReport(period, proList, salList);
+        return getStockReport(period, salList, stcList);
+      } else {
+        // 仕入実績＆生産実績＆販売実績＆在庫実績が共に1件以上存在しない場合は、分析対象が存在しないので、ここでデータ取得は離脱
+        return Promise.reject('分析対象が存在しません。');
+      }
     }).then(function(resp) {
       //////// 取得データの加工 ////////
       let totalRec = {
@@ -3919,153 +3924,154 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
    * afterRender でisForcedの場合に呼び出してください。
    * 自前タグは一旦削除するので、再度呼び出しても再加工はされません。
    */
-   var dispOneTermSecondTab = function(period, showType) {//稼働状況
-     console.log('------- dispOneTermSecondTab --------');
-     // データ取得
-     getProductPerformList(period).then(function() {
-       let humList = [];
-       // 稼働状況、生産実績どちらも1件以上あれば、次へ。
-     　if (Object.keys(myVal.LIST_HUMAN_PERFORM).length > 0 && Object.keys(myVal.LIST_PLANT_PERFORM).length > 0) {
-         return getHumanReport(period, humList);
-       } else {
-   　    // 稼働状況、生産実績が共に1件以上存在しない場合は、分析対象が存在しないので、ここでデータ取得は離脱
- 　      return Promise.reject('分析対象が存在しません。');
- 　    }
-     }).then(function(resp) {
-     // 稼働状況、生産実績どちらも1件以上あれば、次へ。
-         let dataList = resp;
-         if (dataList.length < 1) {
-           return Promise.reject('分析対象が存在しません。');
-         }
-         ////// グリッドの表示 ///////
-         let headerContainer = document.getElementById('my-top-grid');
-         let container = document.getElementById('my-grid');
-         let totalContainer = document.getElementById('total-grid');
-         // 既に存在していたら破棄
-         destroyHandsonGrid(hot);
-         destroyHandsonGrid(totalHot);
-         destroyHandsonGrid(headerHot);
-         // ヘッダー2段の場合の上部分
-         headerHot = new Handsontable(headerContainer, {
-           data: [],
-           columns: gridVal.getGridColumns(showType),
-           colHeaders: gridVal.GRID_TOP_COL_WORK_HEADERS,
-           colWidths: gridVal.COL_WIDTH_WORK_CKP,
-           columnSorting: false,
-           stretchH: 'last',
-           width: gridVal.GRID_WIDTH_WORK,
-         });
-         // グリッド本体
-         hot = new Handsontable(container, {
-           data: dataList,
-           columns: gridVal.getGridColumns(showType),
-           colHeaders: gridVal.GRID_COL_WORK_HEADERS,
-           colWidths: gridVal.COL_WIDTH_WORK_CKP,
-           columnSorting: (dispViewId == emxasConf.getConfig('VIEW_PRC_PDCT_ANALYSIS') ? false : true),
-           sortIndicator: true,
-           stretchH: 'last',
-           width: gridVal.GRID_WIDTH_WORK,
-           afterGetColHeader: null,
-           afterRender: function(isForced) {
-             // colspanとrowspanの処理をまとめて行う
-             // (下側のグリッド表示後に実行されるので、headerHotは描画済み)
-             if (isForced) {
-               treatMyHeaderTags();
-             }
-           },
-           autoColumnSize: true
-         });
-         // 独自ソート関数
-         const customSort = function(selectedColumn, sortConfig) {
-           dataList.sort(function(a, b) {
-             // 指定列のソート（列値有りの場合、値でソート。ソート無しの場合も昇順）
-             if (a[selectedColumn] && b[selectedColumn]) {
-               if (a[selectedColumn] < b[selectedColumn]) return (sortConfig === 0 ? -1 : sortConfig);
-               if (a[selectedColumn] > b[selectedColumn]) return (sortConfig === 0 ? 1 : (sortConfig * -1));
-             }
-             // 指定列のソート（列値無しの場合、値無しを優先でソート）
-             // ソート無しの場合、コード値無しは最終行に表示する為、降順になる
-             if (!a[selectedColumn] || !b[selectedColumn]) {
-               if (!a[selectedColumn] && b[selectedColumn]) return (sortConfig === 0 ? 1 : sortConfig);
-               if (a[selectedColumn] && !b[selectedColumn]) return (sortConfig === 0 ? -1 : (sortConfig * -1));
-             }
+  var dispOneTermSecondTab = function(period, showType) { //稼働状況
+    console.log('------- dispOneTermSecondTab --------');
+    // データ取得
+    let prflg = 2;
+    getProductPerformList(period, prflg).then(function() {
+      let humList = [];
+      // 稼働状況、生産実績どちらも1件以上あれば、次へ。
+      if (Object.keys(myVal.LIST_HUMAN_PERFORM).length > 0 && Object.keys(myVal.LIST_PLANT_PERFORM).length > 0) {
+        return getHumanReport(period, humList);
+      } else {
+        // 稼働状況、生産実績が共に1件以上存在しない場合は、分析対象が存在しないので、ここでデータ取得は離脱
+        return Promise.reject('分析対象が存在しません。');
+      }
+    }).then(function(resp) {
+      // 稼働状況、生産実績どちらも1件以上あれば、次へ。
+      let dataList = resp;
+      if (dataList.length < 1) {
+        return Promise.reject('分析対象が存在しません。');
+      }
+      ////// グリッドの表示 ///////
+      let headerContainer = document.getElementById('my-top-grid');
+      let container = document.getElementById('my-grid');
+      let totalContainer = document.getElementById('total-grid');
+      // 既に存在していたら破棄
+      destroyHandsonGrid(hot);
+      destroyHandsonGrid(totalHot);
+      destroyHandsonGrid(headerHot);
+      // ヘッダー2段の場合の上部分
+      headerHot = new Handsontable(headerContainer, {
+        data: [],
+        columns: gridVal.getGridColumns(showType),
+        colHeaders: gridVal.GRID_TOP_COL_WORK_HEADERS,
+        colWidths: gridVal.COL_WIDTH_WORK_CKP,
+        columnSorting: false,
+        stretchH: 'last',
+        width: gridVal.GRID_WIDTH_WORK,
+      });
+      // グリッド本体
+      hot = new Handsontable(container, {
+        data: dataList,
+        columns: gridVal.getGridColumns(showType),
+        colHeaders: gridVal.GRID_COL_WORK_HEADERS,
+        colWidths: gridVal.COL_WIDTH_WORK_CKP,
+        columnSorting: (dispViewId == emxasConf.getConfig('VIEW_PRC_PDCT_ANALYSIS') ? false : true),
+        sortIndicator: true,
+        stretchH: 'last',
+        width: gridVal.GRID_WIDTH_WORK,
+        afterGetColHeader: null,
+        afterRender: function(isForced) {
+          // colspanとrowspanの処理をまとめて行う
+          // (下側のグリッド表示後に実行されるので、headerHotは描画済み)
+          if (isForced) {
+            treatMyHeaderTags();
+          }
+        },
+        autoColumnSize: true
+      });
+      // 独自ソート関数
+      const customSort = function(selectedColumn, sortConfig) {
+        dataList.sort(function(a, b) {
+          // 指定列のソート（列値有りの場合、値でソート。ソート無しの場合も昇順）
+          if (a[selectedColumn] && b[selectedColumn]) {
+            if (a[selectedColumn] < b[selectedColumn]) return (sortConfig === 0 ? -1 : sortConfig);
+            if (a[selectedColumn] > b[selectedColumn]) return (sortConfig === 0 ? 1 : (sortConfig * -1));
+          }
+          // 指定列のソート（列値無しの場合、値無しを優先でソート）
+          // ソート無しの場合、コード値無しは最終行に表示する為、降順になる
+          if (!a[selectedColumn] || !b[selectedColumn]) {
+            if (!a[selectedColumn] && b[selectedColumn]) return (sortConfig === 0 ? 1 : sortConfig);
+            if (a[selectedColumn] && !b[selectedColumn]) return (sortConfig === 0 ? -1 : (sortConfig * -1));
+          }
 
-             // コードの昇順は全てのケースで行う
-             if (a[(showType === '顧客別' ? '３コード' : '担当者コード')] < b[(showType === '顧客別' ? '３コード' : '担当者コード')]) return -1;
-             if (a[(showType === '顧客別' ? '３コード' : '担当者コード')] > b[(showType === '顧客別' ? '３コード' : '担当者コード')]) return 1;
+          // コードの昇順は全てのケースで行う
+          if (a[(showType === '顧客別' ? '３コード' : '担当者コード')] < b[(showType === '顧客別' ? '３コード' : '担当者コード')]) return -1;
+          if (a[(showType === '顧客別' ? '３コード' : '担当者コード')] > b[(showType === '顧客別' ? '３コード' : '担当者コード')]) return 1;
 
-             return 0;
-           });
-           hot.render();
-         };
-         // 生産性分析時のみの独自ソートトリガー用クリックイベント
-         if (dispViewId == emxasConf.getConfig('VIEW_PRC_PDCT_ANALYSIS')) {
-           $('table.htCore th span.colHeader').parent('div').addClass('custom-sort-header');
-           $(document).off('click', 'table.htCore span.colHeader');
-           $(document).on('click', 'table.htCore span.colHeader', function(e) {
-             let sortConfig = null;
-             // クリック列
-             let clickedColumn = $(this).parents('th').index();
-             // 前回ソート列
-             let sortedColumn = $('.sort-indicator').parents('th').index();
-             // 前回ソート内容
-             let beforeSortConfig = 0;
+          return 0;
+        });
+        hot.render();
+      };
+      // 生産性分析時のみの独自ソートトリガー用クリックイベント
+      if (dispViewId == emxasConf.getConfig('VIEW_PRC_PDCT_ANALYSIS')) {
+        $('table.htCore th span.colHeader').parent('div').addClass('custom-sort-header');
+        $(document).off('click', 'table.htCore span.colHeader');
+        $(document).on('click', 'table.htCore span.colHeader', function(e) {
+          let sortConfig = null;
+          // クリック列
+          let clickedColumn = $(this).parents('th').index();
+          // 前回ソート列
+          let sortedColumn = $('.sort-indicator').parents('th').index();
+          // 前回ソート内容
+          let beforeSortConfig = 0;
 
-             // 前回ソート内容取得
-             if ($(this).parents('th').find(".ascending").length > 0) {
-               beforeSortConfig = -1;
-             } else if ($(this).parents('th').find(".descending").length > 0) {
-               beforeSortConfig = 1;
-             }
+          // 前回ソート内容取得
+          if ($(this).parents('th').find(".ascending").length > 0) {
+            beforeSortConfig = -1;
+          } else if ($(this).parents('th').find(".descending").length > 0) {
+            beforeSortConfig = 1;
+          }
 
-             // 前回ソート内容保持クラス削除
-             $(this).removeClass("ascending");
-             $(this).removeClass("descending");
-             $(this).parents('tr').find('.sort-indicator').remove();
+          // 前回ソート内容保持クラス削除
+          $(this).removeClass("ascending");
+          $(this).removeClass("descending");
+          $(this).parents('tr').find('.sort-indicator').remove();
 
-             // 現在ソート無し or 前回ソートと違う列をクリック ⇒ 昇順でソートする
-             if (beforeSortConfig === 0 || clickedColumn !== sortedColumn) {
-               sortConfig = -1;
-               e.target.classList.add("ascending");
-               e.target.classList.remove("descending");
-               $(this).after('<span class="sort-indicator">▲</span>');
+          // 現在ソート無し or 前回ソートと違う列をクリック ⇒ 昇順でソートする
+          if (beforeSortConfig === 0 || clickedColumn !== sortedColumn) {
+            sortConfig = -1;
+            e.target.classList.add("ascending");
+            e.target.classList.remove("descending");
+            $(this).after('<span class="sort-indicator">▲</span>');
 
-               // 現在昇順 and 前回ソートと同じ列をクリック ⇒ 降順でソートする
-             } else if (beforeSortConfig === -1 && clickedColumn === sortedColumn) {
-               sortConfig = 1;
-               e.target.classList.add("descending");
-               e.target.classList.remove("ascending");
-               $(this).after('<span class="sort-indicator">▼</span>');
+            // 現在昇順 and 前回ソートと同じ列をクリック ⇒ 降順でソートする
+          } else if (beforeSortConfig === -1 && clickedColumn === sortedColumn) {
+            sortConfig = 1;
+            e.target.classList.add("descending");
+            e.target.classList.remove("ascending");
+            $(this).after('<span class="sort-indicator">▼</span>');
 
-               // 現在降順 and 前回ソートと同じ列をクリック ⇒ ３コード／担当者コード順でソート（初期表示状態）
-             } else if (beforeSortConfig === 1 && clickedColumn === sortedColumn) {
-               sortConfig = 0; // ソート無し
-               clickedColumn = 0; // ３コード／担当者コード列をクリックした事にする。
-               e.target.classList.remove("descending");
-               e.target.classList.remove("ascending");
-             }
-             let columnName = gridVal.getGridColumns(showType)[clickedColumn]['data'];
-             customSort(columnName, sortConfig);
-           });
-         }
-         ////// グリッドの表示 end ///////
-         spinner.hideSpinner();
-       }).catch(function(error) {
-         console.log(error);
-         spinner.hideSpinner();
-         if (typeof error === 'string') {
-           // グリッドが存在したら削除
-           destroyHandsonGrid(hot);
-           destroyHandsonGrid(totalHot);
-           destroyHandsonGrid(headerHot);
-           // エラーメッセージを画面に表示(#my-gridに)
-           let msg = $('<div>').attr('id', 'error_msg').text(error);
-           $('#my-grid').append(msg);
-           return;
-         }
-         alert('システムエラーが発生しました');
-       });
-   };
+            // 現在降順 and 前回ソートと同じ列をクリック ⇒ ３コード／担当者コード順でソート（初期表示状態）
+          } else if (beforeSortConfig === 1 && clickedColumn === sortedColumn) {
+            sortConfig = 0; // ソート無し
+            clickedColumn = 0; // ３コード／担当者コード列をクリックした事にする。
+            e.target.classList.remove("descending");
+            e.target.classList.remove("ascending");
+          }
+          let columnName = gridVal.getGridColumns(showType)[clickedColumn]['data'];
+          customSort(columnName, sortConfig);
+        });
+      }
+      ////// グリッドの表示 end ///////
+      spinner.hideSpinner();
+    }).catch(function(error) {
+      console.log(error);
+      spinner.hideSpinner();
+      if (typeof error === 'string') {
+        // グリッドが存在したら削除
+        destroyHandsonGrid(hot);
+        destroyHandsonGrid(totalHot);
+        destroyHandsonGrid(headerHot);
+        // エラーメッセージを画面に表示(#my-gridに)
+        let msg = $('<div>').attr('id', 'error_msg').text(error);
+        $('#my-grid').append(msg);
+        return;
+      }
+      alert('システムエラーが発生しました');
+    });
+  };
 
   function treatMyHeaderTags() {
     // ヘッダ行の指定の項目の列ソートリンク表示(class:columnSorting)を外す
@@ -4238,7 +4244,7 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
     let bugCList = myVal.LIST_PURCHASE_BUDGET;
     let perCList = myVal.LIST_PURCHASE_PERFORM;
     // 予定は必ず全品種コード分登録することを前提とする
-    var bugCkpList = bugCList.map(function (itemb) {
+    var bugCkpList = bugCList.map(function(itemb) {
       var perCkpList = perCList.reduce(function(resultp, itemp) {
         if (itemb.month === itemp.date && itemb.code === itemp.code) {
           resultp = {
@@ -4268,41 +4274,41 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
     let bugCkpListThree = [];
     for (let ix = 0; ix < bugCkpList.length; ix = ix + 6) {
       let bugrec = {};
-      bugrec.code = bugCkpList[ix+3].code;
-      bugrec.name = bugCkpList[ix+3].name;
+      bugrec.code = bugCkpList[ix + 3].code;
+      bugrec.name = bugCkpList[ix + 3].name;
       bugrec.nblsprcweight = bugCkpList[ix].prcweight;
       bugrec.nblsprcPrice = bugCkpList[ix].prcPrice;
       bugrec.nblsprcUnit = bugCkpList[ix].prcUnit;
-      bugrec.nbplweight = bugCkpList[ix+3].plweight;
-      bugrec.nbplPrice = bugCkpList[ix+3].plPrice;
-      bugrec.nbplUnit = bugCkpList[ix+3].plUnit;
-      bugrec.nbppweight = bugCkpList[ix+3].ppweight;
-      bugrec.nbppPrice = bugCkpList[ix+3].ppPrice;
-      bugrec.nbppUnit = bugCkpList[ix+3].ppUnit;
-      bugrec.nbprcweight = bugCkpList[ix+3].prcweight;
-      bugrec.nbprcPrice = bugCkpList[ix+3].prcPrice;
-      bugrec.nbprcUnit = bugCkpList[ix+3].prcUnit;
-      bugrec.ntlsprcweight = bugCkpList[ix+1].prcweight;
-      bugrec.ntlsprcPrice = bugCkpList[ix+1].prcPrice;
-      bugrec.ntlsprcUnit = bugCkpList[ix+1].prcUnit;
-      bugrec.ntplweight = bugCkpList[ix+4].plweight;
-      bugrec.ntplPrice = bugCkpList[ix+4].plPrice;
-      bugrec.ntplUnit = bugCkpList[ix+4].plUnit;
-      bugrec.ntpsweight = bugCkpList[ix+4].psweight;
-      bugrec.ntpsPrice = bugCkpList[ix+4].psPrice;
-      bugrec.ntpsUnit = bugCkpList[ix+4].psUnit;
-      bugrec.ntppweight = bugCkpList[ix+4].ppweight;
-      bugrec.ntppPrice = bugCkpList[ix+4].ppPrice;
-      bugrec.ntppUnit = bugCkpList[ix+4].ppUnit;
-      bugrec.nalsprcweight = bugCkpList[ix+2].prcweight;
-      bugrec.nalsprcPrice = bugCkpList[ix+2].prcPrice;
-      bugrec.nalsprcUnit = bugCkpList[ix+2].prcUnit;
-      bugrec.naplweight = bugCkpList[ix+5].plweight;
-      bugrec.naplPrice = bugCkpList[ix+5].plPrice;
-      bugrec.naplUnit = bugCkpList[ix+5].plUnit;
-      bugrec.napsweight = bugCkpList[ix+5].psweight;
-      bugrec.napsPrice = bugCkpList[ix+5].psPrice;
-      bugrec.napsUnit = bugCkpList[ix+5].psUnit;
+      bugrec.nbplweight = bugCkpList[ix + 3].plweight;
+      bugrec.nbplPrice = bugCkpList[ix + 3].plPrice;
+      bugrec.nbplUnit = bugCkpList[ix + 3].plUnit;
+      bugrec.nbppweight = bugCkpList[ix + 3].ppweight;
+      bugrec.nbppPrice = bugCkpList[ix + 3].ppPrice;
+      bugrec.nbppUnit = bugCkpList[ix + 3].ppUnit;
+      bugrec.nbprcweight = bugCkpList[ix + 3].prcweight;
+      bugrec.nbprcPrice = bugCkpList[ix + 3].prcPrice;
+      bugrec.nbprcUnit = bugCkpList[ix + 3].prcUnit;
+      bugrec.ntlsprcweight = bugCkpList[ix + 1].prcweight;
+      bugrec.ntlsprcPrice = bugCkpList[ix + 1].prcPrice;
+      bugrec.ntlsprcUnit = bugCkpList[ix + 1].prcUnit;
+      bugrec.ntplweight = bugCkpList[ix + 4].plweight;
+      bugrec.ntplPrice = bugCkpList[ix + 4].plPrice;
+      bugrec.ntplUnit = bugCkpList[ix + 4].plUnit;
+      bugrec.ntpsweight = bugCkpList[ix + 4].psweight;
+      bugrec.ntpsPrice = bugCkpList[ix + 4].psPrice;
+      bugrec.ntpsUnit = bugCkpList[ix + 4].psUnit;
+      bugrec.ntppweight = bugCkpList[ix + 4].ppweight;
+      bugrec.ntppPrice = bugCkpList[ix + 4].ppPrice;
+      bugrec.ntppUnit = bugCkpList[ix + 4].ppUnit;
+      bugrec.nalsprcweight = bugCkpList[ix + 2].prcweight;
+      bugrec.nalsprcPrice = bugCkpList[ix + 2].prcPrice;
+      bugrec.nalsprcUnit = bugCkpList[ix + 2].prcUnit;
+      bugrec.naplweight = bugCkpList[ix + 5].plweight;
+      bugrec.naplPrice = bugCkpList[ix + 5].plPrice;
+      bugrec.naplUnit = bugCkpList[ix + 5].plUnit;
+      bugrec.napsweight = bugCkpList[ix + 5].psweight;
+      bugrec.napsPrice = bugCkpList[ix + 5].psPrice;
+      bugrec.napsUnit = bugCkpList[ix + 5].psUnit;
       bugCkpListThree.push(bugrec);
     }
     integrateTotal(bugCkpListThree, bugCkpListThreewithT);
@@ -4317,7 +4323,7 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
     let perRList = myVal.LIST_PRODUCT_PERFORM;
     perCkpListThreewithT = bugCkpListThreewithT;
     // 予定は必ず全品種コード分登録することを前提とする
-    var bugCkpList = bugRList.map(function (itemb) {
+    var bugCkpList = bugRList.map(function(itemb) {
       var perCkpList = perRList.reduce(function(resultp, itemp) {
         if (itemb.month === itemp.date && itemb.code === itemp.type) {
           resultp = {
@@ -4350,41 +4356,41 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
     let perCkpListBeforewithT = [];
     for (let ix = 0; ix < bugCkpList.length; ix = ix + 6) {
       let bugrec = {};
-      bugrec.code = bugCkpList[ix+3].code;
-      bugrec.name = bugCkpList[ix+3].name;
+      bugrec.code = bugCkpList[ix + 3].code;
+      bugrec.name = bugCkpList[ix + 3].name;
       bugrec.nblsprcweight = bugCkpList[ix].prdweight;
       bugrec.nblsprcPrice = "";
       bugrec.nblsprcUnit = bugCkpList[ix].prcUnit;
-      bugrec.nbplweight = bugCkpList[ix+3].plweight;
-      bugrec.nbplPrice = bugCkpList[ix+3].plPrice;
-      bugrec.nbplUnit = bugCkpList[ix+3].plUnit;
-      bugrec.nbppweight = bugCkpList[ix+3].ppweight;
-      bugrec.nbppPrice = bugCkpList[ix+3].ppPrice;
-      bugrec.nbppUnit = bugCkpList[ix+3].ppUnit;
-      bugrec.nbprcweight = bugCkpList[ix+3].prdweight;
+      bugrec.nbplweight = bugCkpList[ix + 3].plweight;
+      bugrec.nbplPrice = bugCkpList[ix + 3].plPrice;
+      bugrec.nbplUnit = bugCkpList[ix + 3].plUnit;
+      bugrec.nbppweight = bugCkpList[ix + 3].ppweight;
+      bugrec.nbppPrice = bugCkpList[ix + 3].ppPrice;
+      bugrec.nbppUnit = bugCkpList[ix + 3].ppUnit;
+      bugrec.nbprcweight = bugCkpList[ix + 3].prdweight;
       bugrec.nbprcPrice = "";
-      bugrec.nbprcUnit = bugCkpList[ix+3].prcUnit;
-      bugrec.ntlsprcweight = bugCkpList[ix+1].prdweight;
+      bugrec.nbprcUnit = bugCkpList[ix + 3].prcUnit;
+      bugrec.ntlsprcweight = bugCkpList[ix + 1].prdweight;
       bugrec.ntlsprcPrice = "";;
-      bugrec.ntlsprcUnit = bugCkpList[ix+1].prcUnit;
-      bugrec.ntplweight = bugCkpList[ix+4].plweight;
-      bugrec.ntplPrice = bugCkpList[ix+4].plPrice;
-      bugrec.ntplUnit = bugCkpList[ix+4].plUnit;
-      bugrec.ntpsweight = bugCkpList[ix+4].psweight;
-      bugrec.ntpsPrice = bugCkpList[ix+4].psPrice;
-      bugrec.ntpsUnit = bugCkpList[ix+4].psUnit;
-      bugrec.ntppweight = bugCkpList[ix+4].ppweight;
-      bugrec.ntppPrice = bugCkpList[ix+4].ppPrice;
-      bugrec.ntppUnit = bugCkpList[ix+4].ppUnit;
-      bugrec.nalsprcweight = bugCkpList[ix+2].prdweight;
+      bugrec.ntlsprcUnit = bugCkpList[ix + 1].prcUnit;
+      bugrec.ntplweight = bugCkpList[ix + 4].plweight;
+      bugrec.ntplPrice = bugCkpList[ix + 4].plPrice;
+      bugrec.ntplUnit = bugCkpList[ix + 4].plUnit;
+      bugrec.ntpsweight = bugCkpList[ix + 4].psweight;
+      bugrec.ntpsPrice = bugCkpList[ix + 4].psPrice;
+      bugrec.ntpsUnit = bugCkpList[ix + 4].psUnit;
+      bugrec.ntppweight = bugCkpList[ix + 4].ppweight;
+      bugrec.ntppPrice = bugCkpList[ix + 4].ppPrice;
+      bugrec.ntppUnit = bugCkpList[ix + 4].ppUnit;
+      bugrec.nalsprcweight = bugCkpList[ix + 2].prdweight;
       bugrec.nalsprcPrice = "";
-      bugrec.nalsprcUnit = bugCkpList[ix+2].prcUnit;
-      bugrec.naplweight = bugCkpList[ix+5].plweight;
-      bugrec.naplPrice = bugCkpList[ix+5].plPrice;
-      bugrec.naplUnit = bugCkpList[ix+5].plUnit;
-      bugrec.napsweight = bugCkpList[ix+5].psweight;
-      bugrec.napsPrice = bugCkpList[ix+5].psPrice;
-      bugrec.napsUnit = bugCkpList[ix+5].psUnit;
+      bugrec.nalsprcUnit = bugCkpList[ix + 2].prcUnit;
+      bugrec.naplweight = bugCkpList[ix + 5].plweight;
+      bugrec.naplPrice = bugCkpList[ix + 5].plPrice;
+      bugrec.naplUnit = bugCkpList[ix + 5].plUnit;
+      bugrec.napsweight = bugCkpList[ix + 5].psweight;
+      bugrec.napsPrice = bugCkpList[ix + 5].psPrice;
+      bugrec.napsUnit = bugCkpList[ix + 5].psUnit;
       perCkpListBefore.push(bugrec);
     }
     integrateTotal(perCkpListBefore, perCkpListBeforewithT);
@@ -4402,7 +4408,7 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
     let perSList = myVal.LIST_SALES_PERFORM;
     salCkpListThreewithT = perCkpListThreewithT;
     // 予定は必ず全品種コード分登録することを前提とする
-    var bugCkpList = bugSList.map(function (itemb) {
+    var bugCkpList = bugSList.map(function(itemb) {
       var perCkpList = perSList.reduce(function(resultp, itemp) {
         if (itemb.month === itemp.date && itemb.code === itemp.type) {
           resultp = {
@@ -4434,41 +4440,41 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
     let salCkpListBeforewithT = [];
     for (let ix = 0; ix < bugCkpList.length; ix = ix + 6) {
       let bugrec = {};
-      bugrec.code = bugCkpList[ix+3].code;
-      bugrec.name = bugCkpList[ix+3].name;
+      bugrec.code = bugCkpList[ix + 3].code;
+      bugrec.name = bugCkpList[ix + 3].name;
       bugrec.nblsprcweight = bugCkpList[ix].salweight;
       bugrec.nblsprcPrice = bugCkpList[ix].salPrice;
       bugrec.nblsprcUnit = bugCkpList[ix].salUnit;
-      bugrec.nbplweight = bugCkpList[ix+3].plweight;
-      bugrec.nbplPrice = bugCkpList[ix+3].plPrice;
-      bugrec.nbplUnit = bugCkpList[ix+3].plUnit;
-      bugrec.nbppweight = bugCkpList[ix+3].ppweight;
-      bugrec.nbppPrice = bugCkpList[ix+3].ppPrice;
-      bugrec.nbppUnit = bugCkpList[ix+3].ppUnit;
-      bugrec.nbprcweight = bugCkpList[ix+3].salweight;
-      bugrec.nbprcPrice = bugCkpList[ix+3].salPrice;
-      bugrec.nbprcUnit = bugCkpList[ix+3].salUnit;
-      bugrec.ntlsprcweight = bugCkpList[ix+1].salweight;
-      bugrec.ntlsprcPrice = bugCkpList[ix+1].salPrice;
-      bugrec.ntlsprcUnit = bugCkpList[ix+1].salUnit;
-      bugrec.ntplweight = bugCkpList[ix+4].plweight;
-      bugrec.ntplPrice = bugCkpList[ix+4].plPrice;
-      bugrec.ntplUnit = bugCkpList[ix+4].plUnit;
-      bugrec.ntpsweight = bugCkpList[ix+4].psweight;
-      bugrec.ntpsPrice = bugCkpList[ix+4].psPrice;
-      bugrec.ntpsUnit = bugCkpList[ix+4].psUnit;
-      bugrec.ntppweight = bugCkpList[ix+4].ppweight;
-      bugrec.ntppPrice = bugCkpList[ix+4].ppPrice;
-      bugrec.ntppUnit = bugCkpList[ix+4].ppUnit;
-      bugrec.nalsprcweight = bugCkpList[ix+2].salweight;
-      bugrec.nalsprcPrice = bugCkpList[ix+2].salPrice;
-      bugrec.nalsprcUnit = bugCkpList[ix+2].salUnit;
-      bugrec.naplweight = bugCkpList[ix+5].plweight;
-      bugrec.naplPrice = bugCkpList[ix+5].plPrice;
-      bugrec.naplUnit = bugCkpList[ix+5].plUnit;
-      bugrec.napsweight = bugCkpList[ix+5].psweight;
-      bugrec.napsPrice = bugCkpList[ix+5].psPrice;
-      bugrec.napsUnit = bugCkpList[ix+5].psUnit;
+      bugrec.nbplweight = bugCkpList[ix + 3].plweight;
+      bugrec.nbplPrice = bugCkpList[ix + 3].plPrice;
+      bugrec.nbplUnit = bugCkpList[ix + 3].plUnit;
+      bugrec.nbppweight = bugCkpList[ix + 3].ppweight;
+      bugrec.nbppPrice = bugCkpList[ix + 3].ppPrice;
+      bugrec.nbppUnit = bugCkpList[ix + 3].ppUnit;
+      bugrec.nbprcweight = bugCkpList[ix + 3].salweight;
+      bugrec.nbprcPrice = bugCkpList[ix + 3].salPrice;
+      bugrec.nbprcUnit = bugCkpList[ix + 3].salUnit;
+      bugrec.ntlsprcweight = bugCkpList[ix + 1].salweight;
+      bugrec.ntlsprcPrice = bugCkpList[ix + 1].salPrice;
+      bugrec.ntlsprcUnit = bugCkpList[ix + 1].salUnit;
+      bugrec.ntplweight = bugCkpList[ix + 4].plweight;
+      bugrec.ntplPrice = bugCkpList[ix + 4].plPrice;
+      bugrec.ntplUnit = bugCkpList[ix + 4].plUnit;
+      bugrec.ntpsweight = bugCkpList[ix + 4].psweight;
+      bugrec.ntpsPrice = bugCkpList[ix + 4].psPrice;
+      bugrec.ntpsUnit = bugCkpList[ix + 4].psUnit;
+      bugrec.ntppweight = bugCkpList[ix + 4].ppweight;
+      bugrec.ntppPrice = bugCkpList[ix + 4].ppPrice;
+      bugrec.ntppUnit = bugCkpList[ix + 4].ppUnit;
+      bugrec.nalsprcweight = bugCkpList[ix + 2].salweight;
+      bugrec.nalsprcPrice = bugCkpList[ix + 2].salPrice;
+      bugrec.nalsprcUnit = bugCkpList[ix + 2].salUnit;
+      bugrec.naplweight = bugCkpList[ix + 5].plweight;
+      bugrec.naplPrice = bugCkpList[ix + 5].plPrice;
+      bugrec.naplUnit = bugCkpList[ix + 5].plUnit;
+      bugrec.napsweight = bugCkpList[ix + 5].psweight;
+      bugrec.napsPrice = bugCkpList[ix + 5].psPrice;
+      bugrec.napsUnit = bugCkpList[ix + 5].psUnit;
       salCkpListBefore.push(bugrec);
     }
     integrateTotal(salCkpListBefore, salCkpListBeforewithT);
@@ -4486,7 +4492,7 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
     let perTList = myVal.LIST_PRDSTOCK_PERFORM;
     stcCkpListThreewithT = salCkpListThreewithT;
     // 予定は必ず全品種コード分登録することを前提とする
-    var bugCkpList = bugTList.map(function (itemb) {
+    var bugCkpList = bugTList.map(function(itemb) {
       var perCkpList = perTList.reduce(function(resultp, itemp) {
         if (itemb.month === itemp.date && itemb.code === itemp.type) {
           resultp = {
@@ -4519,41 +4525,41 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
     let stcCkpListBeforewithT = [];
     for (let ix = 0; ix < bugCkpList.length; ix = ix + 6) {
       let bugrec = {};
-      bugrec.code = bugCkpList[ix+3].code;
-      bugrec.name = bugCkpList[ix+3].name;
+      bugrec.code = bugCkpList[ix + 3].code;
+      bugrec.name = bugCkpList[ix + 3].name;
       bugrec.nblsprcweight = bugCkpList[ix].stcweight;
       bugrec.nblsprcPrice = bugCkpList[ix].stcPrice;
       bugrec.nblsprcUnit = bugCkpList[ix].stcUnit;
-      bugrec.nbplweight = bugCkpList[ix+3].plweight;
-      bugrec.nbplPrice = bugCkpList[ix+3].plPrice;
-      bugrec.nbplUnit = bugCkpList[ix+3].plUnit;
-      bugrec.nbppweight = bugCkpList[ix+3].ppweight;
-      bugrec.nbppPrice = bugCkpList[ix+3].ppPrice;
-      bugrec.nbppUnit = bugCkpList[ix+3].ppUnit;
-      bugrec.nbprcweight = bugCkpList[ix+3].stcweight;
-      bugrec.nbprcPrice = bugCkpList[ix+3].stcPrice;
-      bugrec.nbprcUnit = bugCkpList[ix+3].stcUnit;
-      bugrec.ntlsprcweight = bugCkpList[ix+1].stcweight;
-      bugrec.ntlsprcPrice = bugCkpList[ix+1].stcPrice;
-      bugrec.ntlsprcUnit = bugCkpList[ix+1].stcUnit;
-      bugrec.ntplweight = bugCkpList[ix+4].plweight;
-      bugrec.ntplPrice = bugCkpList[ix+4].plPrice;
-      bugrec.ntplUnit = bugCkpList[ix+4].plUnit;
-      bugrec.ntpsweight = bugCkpList[ix+4].psweight;
-      bugrec.ntpsPrice = bugCkpList[ix+4].psPrice;
-      bugrec.ntpsUnit = bugCkpList[ix+4].psUnit;
-      bugrec.ntppweight = bugCkpList[ix+4].ppweight;
-      bugrec.ntppPrice = bugCkpList[ix+4].ppPrice;
-      bugrec.ntppUnit = bugCkpList[ix+4].ppUnit;
-      bugrec.nalsprcweight = bugCkpList[ix+2].stcweight;
-      bugrec.nalsprcPrice = bugCkpList[ix+2].stcPrice;
-      bugrec.nalsprcUnit = bugCkpList[ix+2].stcUnit;
-      bugrec.naplweight = bugCkpList[ix+5].plweight;
-      bugrec.naplPrice = bugCkpList[ix+5].plPrice;
-      bugrec.naplUnit = bugCkpList[ix+5].plUnit;
-      bugrec.napsweight = bugCkpList[ix+5].psweight;
-      bugrec.napsPrice = bugCkpList[ix+5].psPrice;
-      bugrec.napsUnit = bugCkpList[ix+5].psUnit;
+      bugrec.nbplweight = bugCkpList[ix + 3].plweight;
+      bugrec.nbplPrice = bugCkpList[ix + 3].plPrice;
+      bugrec.nbplUnit = bugCkpList[ix + 3].plUnit;
+      bugrec.nbppweight = bugCkpList[ix + 3].ppweight;
+      bugrec.nbppPrice = bugCkpList[ix + 3].ppPrice;
+      bugrec.nbppUnit = bugCkpList[ix + 3].ppUnit;
+      bugrec.nbprcweight = bugCkpList[ix + 3].stcweight;
+      bugrec.nbprcPrice = bugCkpList[ix + 3].stcPrice;
+      bugrec.nbprcUnit = bugCkpList[ix + 3].stcUnit;
+      bugrec.ntlsprcweight = bugCkpList[ix + 1].stcweight;
+      bugrec.ntlsprcPrice = bugCkpList[ix + 1].stcPrice;
+      bugrec.ntlsprcUnit = bugCkpList[ix + 1].stcUnit;
+      bugrec.ntplweight = bugCkpList[ix + 4].plweight;
+      bugrec.ntplPrice = bugCkpList[ix + 4].plPrice;
+      bugrec.ntplUnit = bugCkpList[ix + 4].plUnit;
+      bugrec.ntpsweight = bugCkpList[ix + 4].psweight;
+      bugrec.ntpsPrice = bugCkpList[ix + 4].psPrice;
+      bugrec.ntpsUnit = bugCkpList[ix + 4].psUnit;
+      bugrec.ntppweight = bugCkpList[ix + 4].ppweight;
+      bugrec.ntppPrice = bugCkpList[ix + 4].ppPrice;
+      bugrec.ntppUnit = bugCkpList[ix + 4].ppUnit;
+      bugrec.nalsprcweight = bugCkpList[ix + 2].stcweight;
+      bugrec.nalsprcPrice = bugCkpList[ix + 2].stcPrice;
+      bugrec.nalsprcUnit = bugCkpList[ix + 2].stcUnit;
+      bugrec.naplweight = bugCkpList[ix + 5].plweight;
+      bugrec.naplPrice = bugCkpList[ix + 5].plPrice;
+      bugrec.naplUnit = bugCkpList[ix + 5].plUnit;
+      bugrec.napsweight = bugCkpList[ix + 5].psweight;
+      bugrec.napsPrice = bugCkpList[ix + 5].psPrice;
+      bugrec.napsUnit = bugCkpList[ix + 5].psUnit;
       stcCkpListBefore.push(bugrec);
     }
     integrateTotal(stcCkpListBefore, stcCkpListBeforewithT);
@@ -4734,11 +4740,11 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
       perrec.nbplHour = recas[ix].plworkDay;
       perrec.nbppHour = recas[ix].ppworkDay;
       perrec.nbpfHour = recas[ix].pfworkDay;
-      perrec.ntplHour = recas[ix+1].plworkDay;
-      perrec.ntpsHour = recas[ix+1].psworkDay;
-      perrec.ntppHour = recas[ix+1].ppworkDay;
-      perrec.naplHour = recas[ix+2].plworkDay;
-      perrec.napsHour = recas[ix+2].psworkDay;
+      perrec.ntplHour = recas[ix + 1].plworkDay;
+      perrec.ntpsHour = recas[ix + 1].psworkDay;
+      perrec.ntppHour = recas[ix + 1].ppworkDay;
+      perrec.naplHour = recas[ix + 2].plworkDay;
+      perrec.napsHour = recas[ix + 2].psworkDay;
       perCkpListThree.push(perrec);
     }
     console.log(perCkpListThree);
@@ -4776,8 +4782,8 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
       };
     }
     // 同月同品番のものは集約する
-    bugCkpListThreewithT = recas.reduce(function (result, current) {
-      var element = result.find(function (p) {
+    bugCkpListThreewithT = recas.reduce(function(result, current) {
+      var element = result.find(function(p) {
         return p.date === current.date && p.code === current.code && p.rank === current.rank
       });
       if (element) {
@@ -4832,8 +4838,8 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
       };
     }
     // 同月同品番のものは集約する
-    var sumrecsal = recas.reduce(function (result, current) {
-      var element = result.find(function (p) {
+    var sumrecsal = recas.reduce(function(result, current) {
+      var element = result.find(function(p) {
         return p.date === current.date && p.code === current.code && p.rank === current.rank
       });
       if (element) {
@@ -4855,9 +4861,9 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
     console.log(sumrecsal);
     // 生産実績と販売実績の連想配列をマージ
     for (let iz = 0; iz < sumrecsal.length; iz++) {
-      for (let iu = 0; iu < bugCkpListThreewithT.length; iu ++) {
-        if (sumrecsal[iz].date === bugCkpListThreewithT[iu].date && sumrecsal[iz].code === bugCkpListThreewithT[iu].code
-           && sumrecsal[iz].rank === bugCkpListThreewithT[iu].rank) {
+      for (let iu = 0; iu < bugCkpListThreewithT.length; iu++) {
+        if (sumrecsal[iz].date === bugCkpListThreewithT[iu].date && sumrecsal[iz].code === bugCkpListThreewithT[iu].code &&
+          sumrecsal[iz].rank === bugCkpListThreewithT[iu].rank) {
           bugCkpListThreewithT[iu]['salweight'] = sumrecsal[iz].salweight;
           bugCkpListThreewithT[iu]['salprice'] = sumrecsal[iz].salprice;
         }
@@ -4892,8 +4898,8 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
     }
     console.log(recas);
     // 同月同得意先のものは集約する
-    var sumrec = recas.reduce(function (result, current) {
-      var element = result.find(function (p) {
+    var sumrec = recas.reduce(function(result, current) {
+      var element = result.find(function(p) {
         return p.date === current.date && p.cstcode === current.cstcode
       });
       if (element) {
@@ -4931,7 +4937,7 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
     var runk = "Ａ";
     for (let ix = 0; ix < sumrec.length; ix++) {
       let cstPerSale = {};
-      var salunit= 0;
+      var salunit = 0;
       cstPerSale = sumrec[ix];
       cstPerSale.perSalprice = parseFloat(sumrec[ix]['salPrice'] / sumrec[ix]['salweight']); // 販売単価
       cstPerSale.perProfit = parseFloat(sumrec[ix]['salprofit'] * 100 / sumrec[ix]['salPrice']).toFixed(2); // 粗利率

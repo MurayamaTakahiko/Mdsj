@@ -194,7 +194,7 @@ jQuery.noConflict();
       '予定',
       '円/kg'
     ];
-  };  // 通常の際のカラム設定
+  }; // 通常の際のカラム設定
   gridVal.getGridColumns = function(showType, sumFlg) {
     switch (showType) {
       case '稼働状況':
@@ -560,13 +560,17 @@ jQuery.noConflict();
     let whereOption = {};
     let codeName = '品種カテゴリー';
 
-    if (type === 'tab4') { /* Ｐ／Ｌ */
+    if (type === 'tab4') {
+      /* Ｐ／Ｌ */
       codeName = '担当者コード';
-    } else if (type === 'tab3') { /* 稼働状況 */
+    } else if (type === 'tab3') {
+      /* 稼働状況 */
       codeName = '担当者コード';
-//    } else if (type === 'tab2') { /* 売上高・在庫 */
-//      codeName = '担当者コード';
-    } else { /* 仕入・在庫 */ /* 売上高・在庫 */
+      //    } else if (type === 'tab2') { /* 売上高・在庫 */
+      //      codeName = '担当者コード';
+    } else {
+      /* 仕入・在庫 */
+      /* 売上高・在庫 */
 
     }
     // order by はコードで寄せる。

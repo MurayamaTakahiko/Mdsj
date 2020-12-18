@@ -68,8 +68,8 @@ jQuery.noConflict();
     button.id = 'updateButton';
     kintone.app.getHeaderMenuSpaceElement().appendChild(button);
     button.addEventListener('click', function() {
-      getRecords(kintone.app.getId()).then(function(records){
-        putRecords(kintone.app.getId(),records.map(function(record){
+      getRecords(kintone.app.getId()).then(function(records) {
+        putRecords(kintone.app.getId(), records.map(function(record) {
           return {
             id: record.レコード番号.value,
             record: {
@@ -81,7 +81,7 @@ jQuery.noConflict();
               }
             }
           };
-        })).then(function(){
+        })).then(function() {
           location.reload();
         });
       });

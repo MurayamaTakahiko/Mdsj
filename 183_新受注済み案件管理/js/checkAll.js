@@ -135,7 +135,7 @@ jQuery.noConflict();
       }
       var selectedUsers = row.value['担当者']['value'];
       if (selectedUsers.length > 1) {
-        event.error = "担当者は一人しか指定できません。";
+        event.error += "担当者は一人しか指定できません。";
       }
     });
     record['契約期間開始']['value'] = minPrdDate;

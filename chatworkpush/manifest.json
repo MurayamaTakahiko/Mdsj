@@ -1,0 +1,49 @@
+{
+    "manifest_version":1,
+    "version":1,
+    "type":"APP",
+    "name":{
+        "ja":"kintone チャットワーク連携プラグイン【通知編】",
+        "en":"kintone ChatWork Push plug-in",
+        "zh":"kintone チャットワーク連携プラグイン【通知編】"
+    },
+    "description":{
+        "ja":"レコードの登録・更新・削除やステータス変更をチャットワークに通知するプラグインです。",
+        "en":"This plug-in notifies chat work about registration, update, deletion and status change of records.",
+        "zh":"レコードの登録・更新・削除やステータス変更をチャットワークに通知するプラグインです。"
+    },
+    "icon": "image/icon.png",
+    "homepage_url":{
+        "ja":"http://www.tis2010.jp/",
+        "en":"http://www.tis2010.jp/",
+        "zh":"http://www.tis2010.jp/"
+    },
+    "desktop":{
+        "js":[
+            "https://tis2010.jp/library/kintone/jquery-tis.js",
+            "https://tis2010.jp/library/kintone/tis.js",
+            "https://tis2010.jp/library/kintone/sweetalert.min.js",
+            "js/chatworkpush.js"
+        ]
+    },
+    "mobile":{
+        "js":[
+            "https://tis2010.jp/library/kintone/jquery-tis.js",
+            "https://tis2010.jp/library/kintone/tis.js",
+            "https://tis2010.jp/library/kintone/sweetalert.min.js",
+            "js/chatworkpush.js"
+        ]
+    },
+    "config":{
+        "html":"html/config.html",
+        "js":[
+            "https://tis2010.jp/library/kintone/jquery-tis.js",
+            "https://tis2010.jp/library/kintone/tis.js",
+            "https://tis2010.jp/library/kintone/sweetalert.min.js",
+            "js/config.js"
+        ],
+        "css":[
+            "css/51-jp-default.css"
+        ]
+    }
+}

@@ -554,28 +554,21 @@ jQuery.noConflict();
     let err = [];
     // 期間をsessionStorageに保存
     sessionStorage.setItem(val.SELECT_PERIOD_YEARMONTH, func.makeStorageYearMonth(period));
-
     let query = '';
     // 各アプリからのデータ取得の際に、自前で絞り込む条件を持つ
     let whereOption = {};
     let codeName = '品種カテゴリー';
-
     if (type === 'tab4') {
       /* Ｐ／Ｌ */
       codeName = '担当者コード';
     } else if (type === 'tab3') {
       /* 稼働状況 */
       codeName = '担当者コード';
-      //    } else if (type === 'tab2') { /* 売上高・在庫 */
-      //      codeName = '担当者コード';
     } else {
-      /* 仕入・在庫 */
-      /* 売上高・在庫 */
-
+      /* 予実比較 */
     }
     // order by はコードで寄せる。
     whereOption.orderBy = codeName; // 並び替え
-
     // データの取得
     if (type === 'tab4' || type === 'Ｐ／Ｌ') {
       // 売上実績管理と在庫実績管理と予算管理のデータを取得
@@ -635,113 +628,5 @@ jQuery.noConflict();
       });
     }
   }
-
-  /**
-   * 事務所全体用の計算表示を作成します。
-   * 単月、または期間のどちらかのみです。
-   */
-  var getProductionAnalysisLine = function(reword, manHour, laborCosts, hourlyWage1) {
-    var hourlayWage = getHourlyWageLine(reword, manHour, hourlyWage1);
-    var profitAnadLoss = getProfitAndLossLine(reword, laborCosts);
-    return $('<div>').append(hourlayWage).append(profitAnadLoss);
-  }
-  /**
-   * 個人用の計算表示を作成します。
-   * 単月、または期間のどちらかのみです。
-   */
-  var getPersonalAnalysisLine = function(reword, manHour, hourlyWage) {
-    return $('<div>').append(getHourlyWageLine(reword, manHour, hourlyWage));
-  }
-  /**
-   * 工数分析の損益の計算表示を作成します
-   * 「報酬 － 人件費 ＝ 損益」を表示します。
-   */
-  var getProfitAndLossLine = function(reword, laborCosts) {
-    let rewordSt = (reword === '') ? '' : Number(reword).toLocaleString();
-    // 人件費
-    let costSt = (laborCosts === '') ? '' : numbro(Number(laborCosts)).format('0,0');
-    // 損益
-    let profitLoss = func.toNumber(reword) - func.toNumber(laborCosts);
-    let profitLossSt = '';
-    if (reword === '' && laborCosts === '') {
-      profitLossSt = '';
-    } else if (profitLoss >= 0) {
-      profitLossSt = numbro(Number(profitLoss)).format('0,0');
-    } else {
-      let span = $('<span>').css('color', func.COLOR_LOSS).text('△ ' + numbro(Math.abs(Number(profitLoss))).format('0,0'));
-      profitLossSt = span[0].outerHTML;
-    }
-    var oneMonthHoshu = $('<div>').addClass('one-val-box').append(makeValueBox('報酬', '円', rewordSt, 'val-box-single'))
-      .append(makeCalculateBox('－'))
-      .append(makeValueBox('人件費', '円', costSt, 'val-box-single'))
-      .append(makeCalculateBox('＝'))
-      .append(makeValueBox('損益', '円', profitLossSt, 'val-box-double2'))
-    return oneMonthHoshu;
-  };
-  /**
-   * 工数分析の、時間当たり報酬を出す計算式表示を作成します
-   * 「報酬 ÷ 工数 ＝ 時間あたり報酬」を表示します。
-   */
-  var getHourlyWageLine = function(reword, manHour, hourlyWage) {
-    let rewordSt = (reword === '') ? '' : Number(reword).toLocaleString();
-    let manHourSt = (manHour === '') ? '' : func.toManHourSt(manHour);
-    let hourlyWageSt = (hourlyWage === '') ? '' : Number(hourlyWage).toLocaleString();
-
-    var oneMonthHoshu = $('<div>').addClass('one-val-box').append(makeValueBox('報酬', '円', rewordSt, 'val-box-single'))
-      .append(makeCalculateBox('÷'))
-      .append(makeValueBox('工数', '時間', manHourSt, 'val-box-single'))
-      .append(makeCalculateBox('＝'))
-      .append(makeValueBox('時間あたり報酬', '円', hourlyWageSt, 'val-box-double'))
-    return oneMonthHoshu;
-  }
-  /**
-   * 四角の中に値が入ったタグを作成します
-   * 左上に値名、値の後ろに単位、値は渡されたそのままを扱います。
-   */
-  var makeValueBox = function(name, unitName, value, className) {
-    return $('<div>').addClass(className)
-      .append($('<span>').addClass('val-box-title').html(name))
-      .append($('<span>').addClass('val-box-num').html(value))
-      .append($('<span>').addClass('val-box-unit').html(unitName));
-  };
-  var makeCalculateBox = function(calcSt) {
-    return $('<div>').addClass('calc-box')
-      .append($('<span>').addClass('calc-box-text').text(calcSt));
-  };
-
-  /**
-   * 1ヶ月毎の集計データが配列に入ってくるので、集計する。
-   * それらを、足し合わせる。
-   */
-  var getDailyReportData = function(query, whereOption, period, codeName) {
-    return func.getOneMonthDailyReport([], query, whereOption, period, codeName, 0).then(function(resp) {
-      let periodList = [];
-      let oneList = [];
-      // 全期間分のデータを集約
-      func.integratePeriodData(resp, periodList);
-      // 最後の1ヶ月分を集約(工数(分)→工数(時間)に変換のために必要)
-      func.integratePeriodData([resp[resp.length - 1]], oneList);
-
-      // 最後の1ヶ月分と、全部集約したものを返す
-      let retVal = {};
-      retVal.one = oneList;
-      retVal.period = periodList;
-      return Promise.resolve(retVal);
-    });
-  };
-
-  /**
-   * 担当者コードが一致する行を見つけたら、その行のデータだけ返します。
-   * 存在しない場合は何も返しません。
-   */
-  var findChargeLine = function(chargeCode, list) {
-    for (let ix = 0; ix < list.length; ix++) {
-      let one = list[ix];
-      if (one['担当者コード'] === chargeCode) {
-        return one;
-      }
-    }
-    return;
-  };
 
 })(jQuery);

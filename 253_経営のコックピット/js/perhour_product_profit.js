@@ -58,7 +58,7 @@ jQuery.noConflict();
 
   let gridVal = {};
   // グリッド幅
-  gridVal.GRID_WIDTH = '1256';
+  gridVal.GRID_WIDTH = 'auto';
   // 通常のセル幅（CKP）
   gridVal.COL_WIDTH_CKP = [90, 90, 90, 75, 75, 90, 75, 75, 90, 75, 90, 75, 75, 75, 75, 75, 75, 90, 90];
   // 選択したタブのセル幅保持（初期値：顧客別）
@@ -80,22 +80,22 @@ jQuery.noConflict();
     '<rowspan type="top">商品名</rowspan>',
     '<rowspan type="top">製品<br>サイズ</rowspan>',
     '<rowspan type="top">h当たり<br>生産量(kg)</rowspan>',
-    '<colspan type="top">販売重量</colspan>',
-    '<colspan type="top">販売単価</colspan>',
-    '<colspan type="top">販売金額</colspan>',
-    '<colspan type="top">母材重量</colspan>',
-    '<colspan type="top">母材単価</colspan>',
-    '<colspan type="top">母材金額</colspan>',
-    '<colspan type="top">実ﾛｽ重量</colspan>',
-    '<colspan type="top">実ﾛｽ金額</colspan>',
-    '<colspan type="top">実ﾛｽ率</colspan>',
-    '<colspan type="top">製品重量</colspan>',
-    '<colspan type="top">製品単価</colspan>',
-    '<colspan type="top">製品歩留<br>(理論)</colspan>',
-    '<colspan type="top">実際歩留</colspan>',
-    '<colspan type="top">金額</colspan>',
-    '<colspan type="top">％</colspan>',
-    '<colspan type="top">時間<br>当たり</colspan>',
+    '<rowspan type="top">販売重量</rowspan>',
+    '<rowspan type="top">販売単価</rowspan>',
+    '<rowspan type="top">販売金額</rowspan>',
+    '<rowspan type="top">母材重量</rowspan>',
+    '<rowspan type="top">母材単価</rowspan>',
+    '<rowspan type="top">母材金額</rowspan>',
+    '<rowspan type="top">実ﾛｽ重量</rowspan>',
+    '<rowspan type="top">実ﾛｽ金額</rowspan>',
+    '<rowspan type="top">実ﾛｽ率</rowspan>',
+    '<rowspan type="top">製品重量</rowspan>',
+    '<rowspan type="top">製品単価</rowspan>',
+    '<rowspan type="top">製品歩留<br>(理論)</rowspan>',
+    '<rowspan type="top">実際歩留</rowspan>',
+    '<rowspan type="top">金額</rowspan>',
+    '<rowspan type="top">％</rowspan>',
+    '<rowspan type="top">時間<br>当たり</rowspan>',
   ];
   // 通常の際のカラム設定
   gridVal.getGridColumns = function(sumFlg) {
@@ -247,11 +247,6 @@ jQuery.noConflict();
     // ユーザの設定値(期間)の読み込み
     let period = func.getPeriodFromTo();
     let err = [];
-    /** if (!func.checkPeriod(period, err)) {
-      alert(err);
-      spinner.hideSpinner();
-      return;
-    } */
     // 期間をsessionStorageに保存
     sessionStorage.setItem(val.SELECT_PERIOD_YEARMONTH, func.makeStorageYearMonth(period));
     // データの取得

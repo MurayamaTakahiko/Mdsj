@@ -3159,7 +3159,7 @@ jQuery.noConflict();
         columns: gridVal.getGridColumns(),
         colHeaders: gridVal.GRID_COL_HEADERS,
         colWidths: gridVal.COL_WIDTH_CKP,
-        columnSorting: (dispViewId == emxasConf.getConfig('VIEW_PRD_PERHOUR_PROFIT') ? false : true),
+        columnSorting: (dispViewId == emxasConf.getConfig('VIEW_PRC_PDCT_ANALYSIS') ? false : true),
         sortIndicator: true,
         stretchH: 'last',
         // width: gridVal.GRID_WIDTH,
@@ -3173,16 +3173,6 @@ jQuery.noConflict();
         },
         // autoColumnSize: true
       });
-      // 合計行用のtable表示
-      /** totalHot = new Handsontable(totalContainer, {
-        data: [totalRec],
-        columns: getTotalGridColumns(),
-        colHeaders: false,
-        colWidths: gridVal.COL_WIDTH,
-        stretchH: 'last',
-        width: gridVal.GRID_WIDTH,
-      }); */
-
       // 独自ソート関数
       const customSort = function(selectedColumn, sortConfig) {
         dataList.sort(function(a, b) {
@@ -3197,14 +3187,13 @@ jQuery.noConflict();
             if (!a[selectedColumn] && b[selectedColumn]) return (sortConfig === 0 ? 1 : sortConfig);
             if (a[selectedColumn] && !b[selectedColumn]) return (sortConfig === 0 ? -1 : (sortConfig * -1));
           }
-
-          // コードの昇順は全てのケースで行う
-          if (a[(showType === '顧客別' ? '３コード' : '担当者コード')] < b[(showType === '顧客別' ? '３コード' : '担当者コード')]) return -1;
-          if (a[(showType === '顧客別' ? '３コード' : '担当者コード')] > b[(showType === '顧客別' ? '３コード' : '担当者コード')]) return 1;
-
+          // 商品名、製品サイズの昇順は全てのケースで行う
+          if (a['商品名'] < b['商品名']) return -1;
+          if (a['商品名'] > b['商品名']) return 1;
+          if (a['製品サイズ'] < b['製品サイズ']) return -1;
+          if (a['製品サイズ'] > b['製品サイズ']) return 1;
           return 0;
         });
-
         // // ソート無しの場合、コード未選択を最終行にする。
         // if (sortConfig === 0) {
         //     let noCodeData = [];
@@ -3221,9 +3210,8 @@ jQuery.noConflict();
         // }
         hot.render();
       };
-
-      // 生産性分析時のみの独自ソートトリガー用クリックイベント
-      if (dispViewId == emxasConf.getConfig('VIEW_PRC_PDCT_ANALYSIS')) {
+      // 製品別時間当たり収益用　独自ソートトリガー用クリックイベント
+      if (dispViewId == emxasConf.getConfig('VIEW_PRD_PERHOUR_PROFIT')) {
         $('table.htCore th span.colHeader').parent('div').addClass('custom-sort-header');
         $(document).off('click', 'table.htCore span.colHeader');
         $(document).on('click', 'table.htCore span.colHeader', function(e) {
@@ -3234,34 +3222,29 @@ jQuery.noConflict();
           let sortedColumn = $('.sort-indicator').parents('th').index();
           // 前回ソート内容
           let beforeSortConfig = 0;
-
           // 前回ソート内容取得
           if ($(this).parents('th').find(".ascending").length > 0) {
             beforeSortConfig = -1;
           } else if ($(this).parents('th').find(".descending").length > 0) {
             beforeSortConfig = 1;
           }
-
           // 前回ソート内容保持クラス削除
           $(this).removeClass("ascending");
           $(this).removeClass("descending");
           $(this).parents('tr').find('.sort-indicator').remove();
-
           // 現在ソート無し or 前回ソートと違う列をクリック ⇒ 昇順でソートする
           if (beforeSortConfig === 0 || clickedColumn !== sortedColumn) {
             sortConfig = -1;
             e.target.classList.add("ascending");
             e.target.classList.remove("descending");
             $(this).after('<span class="sort-indicator">▲</span>');
-
-            // 現在昇順 and 前回ソートと同じ列をクリック ⇒ 降順でソートする
+          // 現在昇順 and 前回ソートと同じ列をクリック ⇒ 降順でソートする
           } else if (beforeSortConfig === -1 && clickedColumn === sortedColumn) {
             sortConfig = 1;
             e.target.classList.add("descending");
             e.target.classList.remove("ascending");
             $(this).after('<span class="sort-indicator">▼</span>');
-
-            // 現在降順 and 前回ソートと同じ列をクリック ⇒ ３コード／担当者コード順でソート（初期表示状態）
+          // 現在降順 and 前回ソートと同じ列をクリック ⇒ ３コード／担当者コード順でソート（初期表示状態）
           } else if (beforeSortConfig === 1 && clickedColumn === sortedColumn) {
             sortConfig = 0; // ソート無し
             clickedColumn = 0; // ３コード／担当者コード列をクリックした事にする。
@@ -3272,7 +3255,6 @@ jQuery.noConflict();
           customSort(columnName, sortConfig);
         });
       }
-
       ////// グリッドの表示 end ///////
       spinner.hideSpinner();
     }).catch(function(error) {
@@ -3749,17 +3731,7 @@ jQuery.noConflict();
         return Promise.reject('分析対象が存在しません。');
       }
     }).then(function(resp) {
-      //////// 取得データの加工 ////////
-      let totalRec = {
-        '報酬': '',
-        '人件費': '',
-        '工数': '',
-        '担当者名': '合計',
-        '損益': '',
-        '利益率': ''
-      };
       let dataList = resp;
-      ////// 取得データの加工 end //////
       if (dataList.length < 1) {
         return Promise.reject('分析対象が存在しません。');
       }
@@ -3787,8 +3759,7 @@ jQuery.noConflict();
         columns: gridVal.getGridColumns(showType),
         colHeaders: gridVal.GRID_COL_HEADERS,
         colWidths: gridVal.COL_WIDTH_CKP,
-        columnSorting: (dispViewId == emxasConf.getConfig('VIEW_PRC_PDCT_ANALYSIS') ? false : true),
-        sortIndicator: true,
+        columnSorting: false,
         stretchH: 'last',
         width: gridVal.GRID_WIDTH,
         afterGetColHeader: null,
@@ -3801,16 +3772,6 @@ jQuery.noConflict();
         },
         autoColumnSize: true
       });
-      // 合計行用のtable表示
-      /** totalHot = new Handsontable(totalContainer, {
-        data: [totalRec],
-        columns: getTotalGridColumns(showType),
-        colHeaders: false,
-        colWidths: gridVal.COL_WIDTH,
-        stretchH: 'last',
-        width: gridVal.GRID_WIDTH,
-      }); */
-
       // 独自ソート関数
       const customSort = function(selectedColumn, sortConfig) {
         dataList.sort(function(a, b) {
@@ -3825,14 +3786,12 @@ jQuery.noConflict();
             if (!a[selectedColumn] && b[selectedColumn]) return (sortConfig === 0 ? 1 : sortConfig);
             if (a[selectedColumn] && !b[selectedColumn]) return (sortConfig === 0 ? -1 : (sortConfig * -1));
           }
-
           // コードの昇順は全てのケースで行う
           if (a[(showType === '顧客別' ? '３コード' : '担当者コード')] < b[(showType === '顧客別' ? '３コード' : '担当者コード')]) return -1;
           if (a[(showType === '顧客別' ? '３コード' : '担当者コード')] > b[(showType === '顧客別' ? '３コード' : '担当者コード')]) return 1;
 
           return 0;
         });
-
         // // ソート無しの場合、コード未選択を最終行にする。
         // if (sortConfig === 0) {
         //     let noCodeData = [];
@@ -3849,7 +3808,6 @@ jQuery.noConflict();
         // }
         hot.render();
       };
-
       // 生産性分析時のみの独自ソートトリガー用クリックイベント
       if (dispViewId == emxasConf.getConfig('VIEW_PRC_PDCT_ANALYSIS')) {
         $('table.htCore th span.colHeader').parent('div').addClass('custom-sort-header');
@@ -3862,34 +3820,29 @@ jQuery.noConflict();
           let sortedColumn = $('.sort-indicator').parents('th').index();
           // 前回ソート内容
           let beforeSortConfig = 0;
-
           // 前回ソート内容取得
           if ($(this).parents('th').find(".ascending").length > 0) {
             beforeSortConfig = -1;
           } else if ($(this).parents('th').find(".descending").length > 0) {
             beforeSortConfig = 1;
           }
-
           // 前回ソート内容保持クラス削除
           $(this).removeClass("ascending");
           $(this).removeClass("descending");
           $(this).parents('tr').find('.sort-indicator').remove();
-
           // 現在ソート無し or 前回ソートと違う列をクリック ⇒ 昇順でソートする
           if (beforeSortConfig === 0 || clickedColumn !== sortedColumn) {
             sortConfig = -1;
             e.target.classList.add("ascending");
             e.target.classList.remove("descending");
             $(this).after('<span class="sort-indicator">▲</span>');
-
-            // 現在昇順 and 前回ソートと同じ列をクリック ⇒ 降順でソートする
+          // 現在昇順 and 前回ソートと同じ列をクリック ⇒ 降順でソートする
           } else if (beforeSortConfig === -1 && clickedColumn === sortedColumn) {
             sortConfig = 1;
             e.target.classList.add("descending");
             e.target.classList.remove("ascending");
             $(this).after('<span class="sort-indicator">▼</span>');
-
-            // 現在降順 and 前回ソートと同じ列をクリック ⇒ ３コード／担当者コード順でソート（初期表示状態）
+          // 現在降順 and 前回ソートと同じ列をクリック ⇒ ３コード／担当者コード順でソート（初期表示状態）
           } else if (beforeSortConfig === 1 && clickedColumn === sortedColumn) {
             sortConfig = 0; // ソート無し
             clickedColumn = 0; // ３コード／担当者コード列をクリックした事にする。
@@ -3900,7 +3853,6 @@ jQuery.noConflict();
           customSort(columnName, sortConfig);
         });
       }
-
       ////// グリッドの表示 end ///////
       spinner.hideSpinner();
     }).catch(function(error) {
@@ -3967,8 +3919,7 @@ jQuery.noConflict();
         columns: gridVal.getGridColumns(showType),
         colHeaders: gridVal.GRID_COL_WORK_HEADERS,
         colWidths: gridVal.COL_WIDTH_WORK_CKP,
-        columnSorting: (dispViewId == emxasConf.getConfig('VIEW_PRC_PDCT_ANALYSIS') ? false : true),
-        sortIndicator: true,
+        columnSorting: false,
         stretchH: 'last',
         width: gridVal.GRID_WIDTH_WORK,
         afterGetColHeader: null,
@@ -4871,9 +4822,6 @@ jQuery.noConflict();
     }
     console.log(bugCkpListThreewithT);
     return bugCkpListThreewithT;
-    // 合計行を求める
-    // integrateTotal(bugCkpListThree, bugCkpListThreewithT);
-    // console.log(bugCkpListThreewithT);
   }
 
   /**

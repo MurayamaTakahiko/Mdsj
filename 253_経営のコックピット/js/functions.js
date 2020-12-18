@@ -624,6 +624,8 @@ jQuery.noConflict();
     totalKey.shift();
     let bugrec = {};
     bugrec.name = list[0].code + "合計";
+    bugrec.nblsprcweight = list.reduce((p, x) => toNumber(p) + toNumber(x.nblsprcweight), 0);
+    bugrec.nblsprcPrice = list.reduce((p, x) => toNumber(p) + toNumber(x.nblsprcPrice), 0);
     bugrec.nbplweight = list.reduce((p, x) => toNumber(p) + toNumber(x.nbplweight), 0);
     bugrec.nbplPrice = list.reduce((p, x) => toNumber(p) + toNumber(x.nbplPrice), 0);
     bugrec.nbppweight = list.reduce((p, x) => toNumber(p) + toNumber(x.nbppweight), 0);
@@ -632,24 +634,31 @@ jQuery.noConflict();
     bugrec.nbprcPrice = list.reduce((p, x) => toNumber(p) + toNumber(x.nbprcPrice), 0);
     bugrec.nbsalweight = list.reduce((p, x) => toNumber(p) + toNumber(x.nbsalweight), 0);
     bugrec.nbsalPrice = list.reduce((p, x) => toNumber(p) + toNumber(x.nbsalPrice), 0);
+    bugrec.ntlsprcweight = list.reduce((p, x) => toNumber(p) + toNumber(x.ntlsprcweight), 0);
+    bugrec.ntlsprcPrice = list.reduce((p, x) => toNumber(p) + toNumber(x.ntlsprcPrice), 0);
     bugrec.ntplweight = list.reduce((p, x) => toNumber(p) + toNumber(x.ntplweight), 0);
     bugrec.ntplPrice = list.reduce((p, x) => toNumber(p) + toNumber(x.ntplPrice), 0);
     bugrec.ntpsweight = list.reduce((p, x) => toNumber(p) + toNumber(x.ntpsweight), 0);
     bugrec.ntpsPrice = list.reduce((p, x) => toNumber(p) + toNumber(x.ntpsPrice), 0);
     bugrec.ntppweight = list.reduce((p, x) => toNumber(p) + toNumber(x.ntppweight), 0);
     bugrec.ntppPrice = list.reduce((p, x) => toNumber(p) + toNumber(x.ntppPrice), 0);
+    bugrec.nalsprcweight = list.reduce((p, x) => toNumber(p) + toNumber(x.nalsprcweight), 0);
+    bugrec.nalsprcPrice = list.reduce((p, x) => toNumber(p) + toNumber(x.nalsprcPrice), 0);
     bugrec.naplweight = list.reduce((p, x) => toNumber(p) + toNumber(x.naplweight), 0);
     bugrec.naplPrice = list.reduce((p, x) => toNumber(p) + toNumber(x.naplPrice), 0);
     bugrec.napsweight = list.reduce((p, x) => toNumber(p) + toNumber(x.napsweight), 0);
     bugrec.napsPrice = list.reduce((p, x) => toNumber(p) + toNumber(x.napsPrice), 0);
     // 率は後で合計値から算出
+    bugrec.nblsprcUnit = Math.floor(bugrec.nblsprcPrice / bugrec.nblsprcweight);
     bugrec.nbplUnit = Math.floor(bugrec.nbplPrice / bugrec.nbplweight);
     bugrec.nbppUnit = Math.floor(bugrec.nbppPrice / bugrec.nbppweight);
     bugrec.nbprcUnit = Math.floor(bugrec.nbprcPrice / bugrec.nbprcweight);
     bugrec.nbsalUnit = Math.floor(bugrec.nbsalPrice / bugrec.nbsalweight);
+    bugrec.ntlsprcUnit = Math.floor(bugrec.ntlsprcPrice / bugrec.ntlsprcweight);
     bugrec.ntplUnit = Math.floor(bugrec.ntplPrice / bugrec.ntplweight);
     bugrec.ntpsUnit = Math.floor(bugrec.ntpsPrice / bugrec.ntpsweight);
     bugrec.ntppUnit = Math.floor(bugrec.ntppPrice / bugrec.ntppweight);
+    bugrec.nalsprcUnit = Math.floor(bugrec.nalsprcPrice / bugrec.nalsprcweight);
     bugrec.naplUnit = Math.floor(bugrec.naplPrice / bugrec.naplweight);
     bugrec.napsUnit = Math.floor(bugrec.napsPrice / bugrec.napsweight);
     list.push(bugrec);
@@ -907,7 +916,10 @@ jQuery.noConflict();
       // 期間の絞り込み
       let fromDate = makeFromPreDateSt(period.moment.apply);
       let toDate = makeToNxDateSt(period.moment.apply);
-      let periodSt = '(対象年月 <= "' + toDate + '" and ' + '対象年月 >= "' + fromDate + '") and ';
+      let lastFromDate = makeFromLastPreDateSt(period.moment.apply);
+      let lastToDate = makeToLastNxDateSt(period.moment.apply);
+      let periodSt = '((対象年月 <= "' + toDate + '" and ' + '対象年月 >= "' + fromDate
+        + '") or (対象年月 <= "' + lastToDate + '" and 対象年月 >= "' + lastFromDate + '")) and ';
       querySt = periodSt + querySt;
     }
     return kintoneUtility.rest.getAllRecordsByQuery({
@@ -965,7 +977,10 @@ jQuery.noConflict();
       // 期間の絞り込み
       let fromDate = makeFromPreDateSt(period.moment.apply);
       let toDate = makeToNxDateSt(period.moment.apply);
-      let periodSt = '(対象年月 <= "' + toDate + '" and ' + '対象年月 >= "' + fromDate + '") and ';
+      let lastFromDate = makeFromLastPreDateSt(period.moment.apply);
+      let lastToDate = makeToLastNxDateSt(period.moment.apply);
+      let periodSt = '((対象年月 <= "' + toDate + '" and ' + '対象年月 >= "' + fromDate
+        + '") or (対象年月 <= "' + lastToDate + '" and 対象年月 >= "' + lastFromDate + '")) and ';
       querySt = periodSt + querySt;
     }
     return kintoneUtility.rest.getAllRecordsByQuery({
@@ -1023,7 +1038,10 @@ jQuery.noConflict();
       // 期間の絞り込み
       let fromDate = makeFromPreDateSt(period.moment.apply);
       let toDate = makeToNxDateSt(period.moment.apply);
-      let periodSt = '(対象年月 <= "' + toDate + '" and ' + '対象年月 >= "' + fromDate + '") and ';
+      let lastFromDate = makeFromLastPreDateSt(period.moment.apply);
+      let lastToDate = makeToLastNxDateSt(period.moment.apply);
+      let periodSt = '((対象年月 <= "' + toDate + '" and ' + '対象年月 >= "' + fromDate
+        + '") or (対象年月 <= "' + lastToDate + '" and 対象年月 >= "' + lastFromDate + '")) and ';
       querySt = periodSt + querySt;
     }
     return kintoneUtility.rest.getAllRecordsByQuery({
@@ -1163,16 +1181,21 @@ jQuery.noConflict();
       // 期間の絞り込み
       let fromDate = "";
       let toDate = "";
+      let periodSt = "";
       if (prflg) {
         // 対象月のみ
         fromDate = makeFromDateSt(period.apply.year, period.apply.month);
         toDate = makeToDateSt(period.apply.year, period.apply.month);
+        periodSt = '(生産日付 <= "' + toDate + '" and ' + '生産日付 >= "' + fromDate + '")';
       } else {
         // 対象月前後３ヶ月
         fromDate = makeFromPreDateSt(period.moment.apply);
         toDate = makeToNxDateSt(period.moment.apply);
+        let lastFromDate = makeFromLastPreDateSt(period.moment.apply);
+        let lastToDate = makeToLastNxDateSt(period.moment.apply);
+        periodSt = '(生産日付 <= "' + toDate + '" and 生産日付 >= "' + fromDate
+          + '") or (生産日付 <= "' + lastToDate + '" and 生産日付 >= "' + lastFromDate + '")';
       }
-      let periodSt = '(生産日付 <= "' + toDate + '" and ' + '生産日付 >= "' + fromDate + '")';
       querySt = periodSt + querySt;
     }
     return kintoneUtility.rest.getAllRecordsByQuery({
@@ -1302,16 +1325,21 @@ jQuery.noConflict();
       // 期間の絞り込み
       let fromDate = "";
       let toDate = "";
+      let periodSt = "";
       if (prflg) {
         // 対象月のみ
         fromDate = makeFromDateSt(period.apply.year, period.apply.month);
         toDate = makeToDateSt(period.apply.year, period.apply.month);
+        periodSt = '(販売日付 <= "' + toDate + '" and ' + '販売日付 >= "' + fromDate + '")';
       } else {
         // 対象月前後３ヶ月
         fromDate = makeFromPreDateSt(period.moment.apply);
         toDate = makeToNxDateSt(period.moment.apply);
+        let lastFromDate = makeFromLastPreDateSt(period.moment.apply);
+        let lastToDate = makeToLastNxDateSt(period.moment.apply);
+        periodSt = '(販売日付 <= "' + toDate + '" and 販売日付 >= "' + fromDate
+          + '") or (販売日付 <= "' + lastToDate + '" and 販売日付 >= "' + lastFromDate + '")';
       }
-      let periodSt = '(販売日付 <= "' + toDate + '" and ' + '販売日付 >= "' + fromDate + '")';
       querySt = periodSt + querySt;
     }
     return kintoneUtility.rest.getAllRecordsByQuery({
@@ -1393,16 +1421,21 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
     // 期間の絞り込み
     let fromDate = "";
     let toDate = "";
+    let periodSt = "";
     if (prflg) {
       // 対象月のみ
       fromDate = makeFromDateSt(period.apply.year, period.apply.month);
       toDate = makeToDateSt(period.apply.year, period.apply.month);
+      periodSt = '(販売日付 <= "' + toDate + '" and ' + '販売日付 >= "' + fromDate + '")';
     } else {
       // 対象月前後３ヶ月
       fromDate = makeFromPreDateSt(period.moment.apply);
       toDate = makeToNxDateSt(period.moment.apply);
+      let lastFromDate = makeFromLastPreDateSt(period.moment.apply);
+      let lastToDate = makeToLastNxDateSt(period.moment.apply);
+      periodSt = '(販売日付 <= "' + toDate + '" and 販売日付 >= "' + fromDate
+        + '") or (販売日付 <= "' + lastToDate + '" and 販売日付 >= "' + lastFromDate + '")';
     }
-    let periodSt = '(販売日付 <= "' + toDate + '" and ' + '販売日付 >= "' + fromDate + '")';
     querySt = periodSt + querySt;
   }
   return kintoneUtility.rest.getAllRecordsByQuery({
@@ -1491,7 +1524,10 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
       // 期間の絞り込み
       let fromDate = makeFromPreDateSt(period.moment.apply);
       let toDate = makeToNxDateSt(period.moment.apply);
-      let periodSt = '(生産日付 <= "' + toDate + '" and ' + '生産日付 >= "' + fromDate + '")';
+      let lastFromDate = makeFromLastPreDateSt(period.moment.apply);
+      let lastToDate = makeToLastNxDateSt(period.moment.apply);
+      let periodSt = '(生産日付 <= "' + toDate + '" and 生産日付 >= "' + fromDate
+        + '") or (生産日付 <= "' + lastToDate + '" and 生産日付 >= "' + lastFromDate + '")';
       querySt = periodSt + querySt;
     }
     return kintoneUtility.rest.getAllRecordsByQuery({
@@ -4307,38 +4343,48 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
       }, []);
       return perCkpList;
     });
+    console.log(bugCkpList);
     // 配列を1ヶ月単位に3ヶ月レイアウトに変更し、仕入CKPの後ろに追加
     // 合計行を出すために、生産実績のみのリストを作成
     let perCkpListBefore = [];
     let perCkpListBeforewithT = [];
-    for (let ix = 0; ix < bugCkpList.length; ix = ix + 3) {
+    for (let ix = 0; ix < bugCkpList.length; ix = ix + 6) {
       let bugrec = {};
-      bugrec.code = bugCkpList[ix].code;
-      bugrec.name = bugCkpList[ix].name;
-      bugrec.nbplweight = bugCkpList[ix].plweight;
-      bugrec.nbplPrice = bugCkpList[ix].plPrice;
-      bugrec.nbplUnit = bugCkpList[ix].plUnit;
-      bugrec.nbppweight = bugCkpList[ix].ppweight;
-      bugrec.nbppPrice = bugCkpList[ix].ppPrice;
-      bugrec.nbppUnit = bugCkpList[ix].ppUnit;
-      bugrec.nbprcweight = bugCkpList[ix].prdweight;
+      bugrec.code = bugCkpList[ix+3].code;
+      bugrec.name = bugCkpList[ix+3].name;
+      bugrec.nblsprcweight = bugCkpList[ix].prdweight;
+      bugrec.nblsprcPrice = "";
+      bugrec.nblsprcUnit = bugCkpList[ix].prcUnit;
+      bugrec.nbplweight = bugCkpList[ix+3].plweight;
+      bugrec.nbplPrice = bugCkpList[ix+3].plPrice;
+      bugrec.nbplUnit = bugCkpList[ix+3].plUnit;
+      bugrec.nbppweight = bugCkpList[ix+3].ppweight;
+      bugrec.nbppPrice = bugCkpList[ix+3].ppPrice;
+      bugrec.nbppUnit = bugCkpList[ix+3].ppUnit;
+      bugrec.nbprcweight = bugCkpList[ix+3].prdweight;
       bugrec.nbprcPrice = "";
-      bugrec.nbprcUnit = bugCkpList[ix].prcUnit;
-      bugrec.ntplweight = bugCkpList[ix+1].plweight;
-      bugrec.ntplPrice = bugCkpList[ix+1].plPrice;
-      bugrec.ntplUnit = bugCkpList[ix+1].plUnit;
-      bugrec.ntpsweight = bugCkpList[ix+1].psweight;
-      bugrec.ntpsPrice = bugCkpList[ix+1].psPrice;
-      bugrec.ntpsUnit = bugCkpList[ix+1].psUnit;
-      bugrec.ntppweight = bugCkpList[ix+1].ppweight;
-      bugrec.ntppPrice = bugCkpList[ix+1].ppPrice;
-      bugrec.ntppUnit = bugCkpList[ix+1].ppUnit;
-      bugrec.naplweight = bugCkpList[ix+2].plweight;
-      bugrec.naplPrice = bugCkpList[ix+2].plPrice;
-      bugrec.naplUnit = bugCkpList[ix+2].plUnit;
-      bugrec.napsweight = bugCkpList[ix+2].psweight;
-      bugrec.napsPrice = bugCkpList[ix+2].psPrice;
-      bugrec.napsUnit = bugCkpList[ix+2].psUnit;
+      bugrec.nbprcUnit = bugCkpList[ix+3].prcUnit;
+      bugrec.ntlsprcweight = bugCkpList[ix+1].prdweight;
+      bugrec.ntlsprcPrice = "";;
+      bugrec.ntlsprcUnit = bugCkpList[ix+1].prcUnit;
+      bugrec.ntplweight = bugCkpList[ix+4].plweight;
+      bugrec.ntplPrice = bugCkpList[ix+4].plPrice;
+      bugrec.ntplUnit = bugCkpList[ix+4].plUnit;
+      bugrec.ntpsweight = bugCkpList[ix+4].psweight;
+      bugrec.ntpsPrice = bugCkpList[ix+4].psPrice;
+      bugrec.ntpsUnit = bugCkpList[ix+4].psUnit;
+      bugrec.ntppweight = bugCkpList[ix+4].ppweight;
+      bugrec.ntppPrice = bugCkpList[ix+4].ppPrice;
+      bugrec.ntppUnit = bugCkpList[ix+4].ppUnit;
+      bugrec.nalsprcweight = bugCkpList[ix+2].prdweight;
+      bugrec.nalsprcPrice = "";
+      bugrec.nalsprcUnit = bugCkpList[ix+2].prcUnit;
+      bugrec.naplweight = bugCkpList[ix+5].plweight;
+      bugrec.naplPrice = bugCkpList[ix+5].plPrice;
+      bugrec.naplUnit = bugCkpList[ix+5].plUnit;
+      bugrec.napsweight = bugCkpList[ix+5].psweight;
+      bugrec.napsPrice = bugCkpList[ix+5].psPrice;
+      bugrec.napsUnit = bugCkpList[ix+5].psUnit;
       perCkpListBefore.push(bugrec);
     }
     integrateTotal(perCkpListBefore, perCkpListBeforewithT);
@@ -4382,37 +4428,47 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
       }, []);
       return perCkpList;
     });
+    console.log(bugCkpList);
     // 配列を1ヶ月単位に3ヶ月レイアウトに変更
     let salCkpListBefore = [];
     let salCkpListBeforewithT = [];
-    for (let ix = 0; ix < bugCkpList.length; ix = ix + 3) {
+    for (let ix = 0; ix < bugCkpList.length; ix = ix + 6) {
       let bugrec = {};
-      bugrec.code = bugCkpList[ix].code;
-      bugrec.name = bugCkpList[ix].name;
-      bugrec.nbplweight = bugCkpList[ix].plweight;
-      bugrec.nbplPrice = bugCkpList[ix].plPrice;
-      bugrec.nbplUnit = bugCkpList[ix].plUnit;
-      bugrec.nbppweight = bugCkpList[ix].ppweight;
-      bugrec.nbppPrice = bugCkpList[ix].ppPrice;
-      bugrec.nbppUnit = bugCkpList[ix].ppUnit;
-      bugrec.nbprcweight = bugCkpList[ix].salweight;
-      bugrec.nbprcPrice = bugCkpList[ix].salPrice;
-      bugrec.nbprcUnit = bugCkpList[ix].salUnit;
-      bugrec.ntplweight = bugCkpList[ix+1].plweight;
-      bugrec.ntplPrice = bugCkpList[ix+1].plPrice;
-      bugrec.ntplUnit = bugCkpList[ix+1].plUnit;
-      bugrec.ntpsweight = bugCkpList[ix+1].psweight;
-      bugrec.ntpsPrice = bugCkpList[ix+1].psPrice;
-      bugrec.ntpsUnit = bugCkpList[ix+1].psUnit;
-      bugrec.ntppweight = bugCkpList[ix+1].ppweight;
-      bugrec.ntppPrice = bugCkpList[ix+1].ppPrice;
-      bugrec.ntppUnit = bugCkpList[ix+1].ppUnit;
-      bugrec.naplweight = bugCkpList[ix+2].plweight;
-      bugrec.naplPrice = bugCkpList[ix+2].plPrice;
-      bugrec.naplUnit = bugCkpList[ix+2].plUnit;
-      bugrec.napsweight = bugCkpList[ix+2].psweight;
-      bugrec.napsPrice = bugCkpList[ix+2].psPrice;
-      bugrec.napsUnit = bugCkpList[ix+2].psUnit;
+      bugrec.code = bugCkpList[ix+3].code;
+      bugrec.name = bugCkpList[ix+3].name;
+      bugrec.nblsprcweight = bugCkpList[ix].salweight;
+      bugrec.nblsprcPrice = bugCkpList[ix].salPrice;
+      bugrec.nblsprcUnit = bugCkpList[ix].salUnit;
+      bugrec.nbplweight = bugCkpList[ix+3].plweight;
+      bugrec.nbplPrice = bugCkpList[ix+3].plPrice;
+      bugrec.nbplUnit = bugCkpList[ix+3].plUnit;
+      bugrec.nbppweight = bugCkpList[ix+3].ppweight;
+      bugrec.nbppPrice = bugCkpList[ix+3].ppPrice;
+      bugrec.nbppUnit = bugCkpList[ix+3].ppUnit;
+      bugrec.nbprcweight = bugCkpList[ix+3].salweight;
+      bugrec.nbprcPrice = bugCkpList[ix+3].salPrice;
+      bugrec.nbprcUnit = bugCkpList[ix+3].salUnit;
+      bugrec.ntlsprcweight = bugCkpList[ix+1].salweight;
+      bugrec.ntlsprcPrice = bugCkpList[ix+1].salPrice;
+      bugrec.ntlsprcUnit = bugCkpList[ix+1].salUnit;
+      bugrec.ntplweight = bugCkpList[ix+4].plweight;
+      bugrec.ntplPrice = bugCkpList[ix+4].plPrice;
+      bugrec.ntplUnit = bugCkpList[ix+4].plUnit;
+      bugrec.ntpsweight = bugCkpList[ix+4].psweight;
+      bugrec.ntpsPrice = bugCkpList[ix+4].psPrice;
+      bugrec.ntpsUnit = bugCkpList[ix+4].psUnit;
+      bugrec.ntppweight = bugCkpList[ix+4].ppweight;
+      bugrec.ntppPrice = bugCkpList[ix+4].ppPrice;
+      bugrec.ntppUnit = bugCkpList[ix+4].ppUnit;
+      bugrec.nalsprcweight = bugCkpList[ix+2].salweight;
+      bugrec.nalsprcPrice = bugCkpList[ix+2].salPrice;
+      bugrec.nalsprcUnit = bugCkpList[ix+2].salUnit;
+      bugrec.naplweight = bugCkpList[ix+5].plweight;
+      bugrec.naplPrice = bugCkpList[ix+5].plPrice;
+      bugrec.naplUnit = bugCkpList[ix+5].plUnit;
+      bugrec.napsweight = bugCkpList[ix+5].psweight;
+      bugrec.napsPrice = bugCkpList[ix+5].psPrice;
+      bugrec.napsUnit = bugCkpList[ix+5].psUnit;
       salCkpListBefore.push(bugrec);
     }
     integrateTotal(salCkpListBefore, salCkpListBeforewithT);
@@ -4456,38 +4512,48 @@ var getSalesCustomerList = function(period, prflg, whereOption) {
       }, []);
       return perCkpList;
     });
+    console.log(bugCkpList);
     // 配列を1ヶ月単位に3ヶ月レイアウトに変更し、売上高CKPの後ろに追加
     // 合計行を出すために、生産実績のみのリストを作成
     let stcCkpListBefore = [];
     let stcCkpListBeforewithT = [];
-    for (let ix = 0; ix < bugCkpList.length; ix = ix + 3) {
+    for (let ix = 0; ix < bugCkpList.length; ix = ix + 6) {
       let bugrec = {};
-      bugrec.code = bugCkpList[ix].code;
-      bugrec.name = bugCkpList[ix].name;
-      bugrec.nbplweight = bugCkpList[ix].plweight;
-      bugrec.nbplPrice = bugCkpList[ix].plPrice;
-      bugrec.nbplUnit = bugCkpList[ix].plUnit;
-      bugrec.nbppweight = bugCkpList[ix].ppweight;
-      bugrec.nbppPrice = bugCkpList[ix].ppPrice;
-      bugrec.nbppUnit = bugCkpList[ix].ppUnit;
-      bugrec.nbprcweight = bugCkpList[ix].stcweight;
-      bugrec.nbprcPrice = bugCkpList[ix].stcPrice;
-      bugrec.nbprcUnit = bugCkpList[ix].stcUnit;
-      bugrec.ntplweight = bugCkpList[ix+1].plweight;
-      bugrec.ntplPrice = bugCkpList[ix+1].plPrice;
-      bugrec.ntplUnit = bugCkpList[ix+1].plUnit;
-      bugrec.ntpsweight = bugCkpList[ix+1].psweight;
-      bugrec.ntpsPrice = bugCkpList[ix+1].psPrice;
-      bugrec.ntpsUnit = bugCkpList[ix+1].psUnit;
-      bugrec.ntppweight = bugCkpList[ix+1].ppweight;
-      bugrec.ntppPrice = bugCkpList[ix+1].ppPrice;
-      bugrec.ntppUnit = bugCkpList[ix+1].ppUnit;
-      bugrec.naplweight = bugCkpList[ix+2].plweight;
-      bugrec.naplPrice = bugCkpList[ix+2].plPrice;
-      bugrec.naplUnit = bugCkpList[ix+2].plUnit;
-      bugrec.napsweight = bugCkpList[ix+2].psweight;
-      bugrec.napsPrice = bugCkpList[ix+2].psPrice;
-      bugrec.napsUnit = bugCkpList[ix+2].psUnit;
+      bugrec.code = bugCkpList[ix+3].code;
+      bugrec.name = bugCkpList[ix+3].name;
+      bugrec.nblsprcweight = bugCkpList[ix].stcweight;
+      bugrec.nblsprcPrice = bugCkpList[ix].stcPrice;
+      bugrec.nblsprcUnit = bugCkpList[ix].stcUnit;
+      bugrec.nbplweight = bugCkpList[ix+3].plweight;
+      bugrec.nbplPrice = bugCkpList[ix+3].plPrice;
+      bugrec.nbplUnit = bugCkpList[ix+3].plUnit;
+      bugrec.nbppweight = bugCkpList[ix+3].ppweight;
+      bugrec.nbppPrice = bugCkpList[ix+3].ppPrice;
+      bugrec.nbppUnit = bugCkpList[ix+3].ppUnit;
+      bugrec.nbprcweight = bugCkpList[ix+3].stcweight;
+      bugrec.nbprcPrice = bugCkpList[ix+3].stcPrice;
+      bugrec.nbprcUnit = bugCkpList[ix+3].stcUnit;
+      bugrec.ntlsprcweight = bugCkpList[ix+1].stcweight;
+      bugrec.ntlsprcPrice = bugCkpList[ix+1].stcPrice;
+      bugrec.ntlsprcUnit = bugCkpList[ix+1].stcUnit;
+      bugrec.ntplweight = bugCkpList[ix+4].plweight;
+      bugrec.ntplPrice = bugCkpList[ix+4].plPrice;
+      bugrec.ntplUnit = bugCkpList[ix+4].plUnit;
+      bugrec.ntpsweight = bugCkpList[ix+4].psweight;
+      bugrec.ntpsPrice = bugCkpList[ix+4].psPrice;
+      bugrec.ntpsUnit = bugCkpList[ix+4].psUnit;
+      bugrec.ntppweight = bugCkpList[ix+4].ppweight;
+      bugrec.ntppPrice = bugCkpList[ix+4].ppPrice;
+      bugrec.ntppUnit = bugCkpList[ix+4].ppUnit;
+      bugrec.nalsprcweight = bugCkpList[ix+2].stcweight;
+      bugrec.nalsprcPrice = bugCkpList[ix+2].stcPrice;
+      bugrec.nalsprcUnit = bugCkpList[ix+2].stcUnit;
+      bugrec.naplweight = bugCkpList[ix+5].plweight;
+      bugrec.naplPrice = bugCkpList[ix+5].plPrice;
+      bugrec.naplUnit = bugCkpList[ix+5].plUnit;
+      bugrec.napsweight = bugCkpList[ix+5].psweight;
+      bugrec.napsPrice = bugCkpList[ix+5].psPrice;
+      bugrec.napsUnit = bugCkpList[ix+5].psUnit;
       stcCkpListBefore.push(bugrec);
     }
     integrateTotal(stcCkpListBefore, stcCkpListBeforewithT);

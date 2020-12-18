@@ -46,4 +46,22 @@ jQuery.noConflict();
     }
     return event;
   });
+  // 保存時も同様にチェック
+  var dbevents = [
+    'app.record.create.submit',
+    'app.record.edit.submit'
+  ];
+  kintone.events.on(dbevents, function(event) {
+    var record = event.record;
+    record.売上管理表.value.forEach(function(row) {
+      var sellDate = row.value['売上月']['value'];
+      console.log("sellDate = " + sellDate);
+      if (moment(sellDate).isBefore(moment().add(-5, 'days'), 'day')) {
+        row.value['売上月']['value'] = "";
+        event.error = "過去日での売上計上はできません。";
+      }
+    });
+    console.log(event.error);
+    return event;
+  });
 })(jQuery);

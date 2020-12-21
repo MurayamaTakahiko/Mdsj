@@ -1033,7 +1033,50 @@ jQuery.noConflict();
    */
   var getStockBudgetList = function(period, whereOption, period2) {
     let isAllList = (period === void 0);
+    // 製品在庫予算
     let querySt = ' 予算種別 in ("製品在庫") order by 品種コード asc, 対象年月 asc ';
+    if (!isAllList) {
+      // 期間の絞り込み
+      let fromDate = makeFromPreDateSt(period.moment.apply);
+      let toDate = makeToNxDateSt(period.moment.apply);
+      let lastFromDate = makeFromLastPreDateSt(period.moment.apply);
+      let lastToDate = makeToLastNxDateSt(period.moment.apply);
+      let periodSt = '((対象年月 <= "' + toDate + '" and ' + '対象年月 >= "' + fromDate +
+        '") or (対象年月 <= "' + lastToDate + '" and 対象年月 >= "' + lastFromDate + '")) and ';
+      querySt = periodSt + querySt;
+    }
+    kintoneUtility.rest.getAllRecordsByQuery({
+      app: emxasConf.getConfig('APP_BUDGET_LIST'),
+      query: querySt,
+      isGuest: true
+    }).then(function(resp) {
+      let rec = [];
+      let prcd = "";
+      let records = resp.records;
+      for (let ix = 0; ix < records.length; ix++) {
+        prcd = makeYearMonthSt(records[ix]['対象年月'].value);
+        rec[ix] = {
+          month: prcd, // 対象年月
+          code: records[ix]['品種コード'].value, // 品種コード
+          name: records[ix]['品種名'].value, // 品種名
+          plweight: records[ix]['計画重量'].value, // 計画重量
+          plPrice: records[ix]['計画金額'].value, // 計画金額
+          psweight: records[ix]['予定重量'].value, // 予定重量
+          psPrice: records[ix]['予定金額'].value, // 予定金額
+          ppweight: records[ix]['実績見込み重量'].value, // 見込重量
+          ppPrice: records[ix]['実績見込み金額'].value // 見込金額
+        };
+      }
+      console.log(rec);
+      if (isAllList) {
+        myVal.ALL_LIST_PRDSTOCK_BUDGET = rec;
+        myVal.ALL_SRC_LIST_PRDSTOCK_BUDGET = records;
+      }
+      myVal.LIST_PRDSTOCK_BUDGET = rec;
+      myVal.SRC_LIST_PRDSTOCK_BUDGET = records;
+    });
+    // 材料在庫予算
+    querySt = ' 予算種別 in ("材料在庫") order by 品種コード asc, 対象年月 asc ';
     if (!isAllList) {
       // 期間の絞り込み
       let fromDate = makeFromPreDateSt(period.moment.apply);
@@ -1068,11 +1111,11 @@ jQuery.noConflict();
       }
       console.log(rec);
       if (isAllList) {
-        myVal.ALL_LIST_PRDSTOCK_BUDGET = rec;
-        myVal.ALL_SRC_LIST_PRDSTOCK_BUDGET = records;
+        myVal.ALL_LIST_PRCSTOCK_BUDGET = rec;
+        myVal.ALL_SRC_LIST_PRCSTOCK_BUDGET = records;
       }
-      myVal.LIST_PRDSTOCK_BUDGET = rec;
-      myVal.SRC_LIST_PRDSTOCK_BUDGET = records;
+      myVal.LIST_PRCSTOCK_BUDGET = rec;
+      myVal.SRC_LIST_PRCSTOCK_BUDGET = records;
       return Promise.resolve(rec);
     });
   };
@@ -1522,8 +1565,8 @@ jQuery.noConflict();
    * @see getPeriodFromTo
    */
   var getStockPerformList = function(period, whereOption, period2) {
-    // TODO 仕入在庫の実装
     let isAllList = (period === void 0);
+    // 製品在庫実績
     let querySt = ' order by 品種コード asc, 生産日付 asc ';
     if (!isAllList) {
       // 期間の絞り込み
@@ -1535,7 +1578,7 @@ jQuery.noConflict();
         '") or (生産日付 <= "' + lastToDate + '" and 生産日付 >= "' + lastFromDate + '")';
       querySt = periodSt + querySt;
     }
-    return kintoneUtility.rest.getAllRecordsByQuery({
+    kintoneUtility.rest.getAllRecordsByQuery({
       app: emxasConf.getConfig('APP_PRDSTOCK_PERFORM_LIST'),
       query: querySt,
       isGuest: true
@@ -1588,6 +1631,69 @@ jQuery.noConflict();
       }
       myVal.LIST_PRDSTOCK_PERFORM = sumrec;
       myVal.SRC_LIST_PRDSTOCK_PERFORM = records;
+    });
+    // 材料在庫実績
+    querySt = ' order by 品種コード asc, 仕入日付 asc ';
+    if (!isAllList) {
+      // 期間の絞り込み
+      let fromDate = makeFromPreDateSt(period.moment.apply);
+      let toDate = makeToNxDateSt(period.moment.apply);
+      let lastFromDate = makeFromLastPreDateSt(period.moment.apply);
+      let lastToDate = makeToLastNxDateSt(period.moment.apply);
+      let periodSt = '(仕入日付 <= "' + toDate + '" and 仕入日付 >= "' + fromDate +
+        '") or (仕入日付 <= "' + lastToDate + '" and 仕入日付 >= "' + lastFromDate + '")';
+      querySt = periodSt + querySt;
+    }
+    return kintoneUtility.rest.getAllRecordsByQuery({
+      app: emxasConf.getConfig('APP_PRCSTOCK_PERFORM_LIST'),
+      query: querySt,
+      isGuest: true
+    }).then(function(resp) {
+      let rec = [];
+      let recas = [];
+      let prcd = "";
+      let records = resp.records;
+      for (let ix = 0; ix < records.length; ix++) {
+        prcd = makeYearMonthSt(records[ix]['仕入日付'].value);
+        recas[ix] = {
+          date: prcd, // 仕入日付
+          code: records[ix]['品種コード'].value, // 品種コード
+          name: records[ix]['品種名'].value, // 品種名
+          stcweight: records[ix]['材料重量'].value, // 在庫重量
+          stclength: records[ix]['総ロール長'].value, // 総ロール長
+          stcPrice: records[ix]['仕入価格'].value // 仕入価格
+        };
+      }
+      // 同月同品種のものは集約する
+      var sumrec = recas.reduce(function(result, current) {
+        var element = result.find(function(p) {
+          return p.date === current.date && p.code === current.code
+        });
+        if (element) {
+          var ele1 = parseFloat(element.stcweight);
+          element.stcweight = String(ele1 + parseFloat(current.stcweight));
+          var ele2 = parseFloat(element.stclength);
+          element.stclength = String(ele2 + parseFloat(current.stclength));
+          var ele3 = parseFloat(element.stcPrice);
+          element.stcPrice = String(ele3 + parseFloat(current.stcPrice));
+        } else {
+          result.push({
+            date: current.date,
+            code: current.code,
+            stcweight: current.stcweight,
+            stclength: current.stclength,
+            stcPrice: current.stcPrice
+          });
+        }
+        return result;
+      }, []);
+      console.log(sumrec);
+      if (isAllList) {
+        myVal.ALL_LIST_PRCSTOCK_PERFORM = sumrec;
+        myVal.ALL_SRC_LIST_PRCSTOCK_PERFORM = records;
+      }
+      myVal.LIST_PRCSTOCK_PERFORM = sumrec;
+      myVal.SRC_LIST_PRCSTOCK_PERFORM = records;
       return Promise.resolve(sumrec);
     });
   };
@@ -4365,7 +4471,7 @@ jQuery.noConflict();
           resultp = {
             month: itemb.month, // 対象年月
             // code: itemb.code, // 品種コード
-            code: "売上高",
+            code: "販売",
             name: itemb.name, // 品種名
             plweight: itemb.plweight, // 計画重量
             plPrice: itemb.plPrice, // 計画金額
@@ -4439,17 +4545,18 @@ jQuery.noConflict();
    * 在庫CKPエリアのデータに整理する
    */
   var getStockReport = function(period, salCkpListThreewithT, stcCkpListThreewithT) {
-    let bugTList = myVal.LIST_PRDSTOCK_BUDGET;
-    let perTList = myVal.LIST_PRDSTOCK_PERFORM;
+    // 材料在庫実績
+    let bugTList = myVal.LIST_PRCSTOCK_BUDGET;
+    let perTList = myVal.LIST_PRCSTOCK_PERFORM;
     stcCkpListThreewithT = salCkpListThreewithT;
     // 予定は必ず全品種コード分登録することを前提とする
     var bugCkpList = bugTList.map(function(itemb) {
       var perCkpList = perTList.reduce(function(resultp, itemp) {
-        if (itemb.month === itemp.date && itemb.code === itemp.type) {
+        if (itemb.month === itemp.date && itemb.code === itemp.code) {
           resultp = {
             month: itemb.month, // 対象年月
             // code: itemb.code, // 品種コード
-            code: "在庫",
+            code: "材料",
             name: itemb.name, // 品種名
             plweight: itemb.plweight, // 計画重量
             plPrice: itemb.plPrice, // 計画金額
@@ -4474,6 +4581,85 @@ jQuery.noConflict();
     // 合計行を出すために、生産実績のみのリストを作成
     let stcCkpListBefore = [];
     let stcCkpListBeforewithT = [];
+    for (let ix = 0; ix < bugCkpList.length; ix = ix + 6) {
+      let bugrec = {};
+      bugrec.code = bugCkpList[ix + 3].code;
+      bugrec.name = bugCkpList[ix + 3].name;
+      bugrec.nblsprcweight = bugCkpList[ix].stcweight;
+      bugrec.nblsprcPrice = bugCkpList[ix].stcPrice;
+      bugrec.nblsprcUnit = bugCkpList[ix].stcUnit;
+      bugrec.nbplweight = bugCkpList[ix + 3].plweight;
+      bugrec.nbplPrice = bugCkpList[ix + 3].plPrice;
+      bugrec.nbplUnit = bugCkpList[ix + 3].plUnit;
+      bugrec.nbppweight = bugCkpList[ix + 3].ppweight;
+      bugrec.nbppPrice = bugCkpList[ix + 3].ppPrice;
+      bugrec.nbppUnit = bugCkpList[ix + 3].ppUnit;
+      bugrec.nbprcweight = bugCkpList[ix + 3].stcweight;
+      bugrec.nbprcPrice = bugCkpList[ix + 3].stcPrice;
+      bugrec.nbprcUnit = bugCkpList[ix + 3].stcUnit;
+      bugrec.ntlsprcweight = bugCkpList[ix + 1].stcweight;
+      bugrec.ntlsprcPrice = bugCkpList[ix + 1].stcPrice;
+      bugrec.ntlsprcUnit = bugCkpList[ix + 1].stcUnit;
+      bugrec.ntplweight = bugCkpList[ix + 4].plweight;
+      bugrec.ntplPrice = bugCkpList[ix + 4].plPrice;
+      bugrec.ntplUnit = bugCkpList[ix + 4].plUnit;
+      bugrec.ntpsweight = bugCkpList[ix + 4].psweight;
+      bugrec.ntpsPrice = bugCkpList[ix + 4].psPrice;
+      bugrec.ntpsUnit = bugCkpList[ix + 4].psUnit;
+      bugrec.ntppweight = bugCkpList[ix + 4].ppweight;
+      bugrec.ntppPrice = bugCkpList[ix + 4].ppPrice;
+      bugrec.ntppUnit = bugCkpList[ix + 4].ppUnit;
+      bugrec.nalsprcweight = bugCkpList[ix + 2].stcweight;
+      bugrec.nalsprcPrice = bugCkpList[ix + 2].stcPrice;
+      bugrec.nalsprcUnit = bugCkpList[ix + 2].stcUnit;
+      bugrec.naplweight = bugCkpList[ix + 5].plweight;
+      bugrec.naplPrice = bugCkpList[ix + 5].plPrice;
+      bugrec.naplUnit = bugCkpList[ix + 5].plUnit;
+      bugrec.napsweight = bugCkpList[ix + 5].psweight;
+      bugrec.napsPrice = bugCkpList[ix + 5].psPrice;
+      bugrec.napsUnit = bugCkpList[ix + 5].psUnit;
+      stcCkpListBefore.push(bugrec);
+    }
+    integrateTotal(stcCkpListBefore, stcCkpListBeforewithT);
+    for (var ix = 0; ix < stcCkpListBeforewithT.length; ix++) {
+      stcCkpListThreewithT.push(stcCkpListBeforewithT[ix]);
+    }
+    console.log(stcCkpListThreewithT);
+    // 製品在庫実績
+    bugTList = myVal.LIST_PRDSTOCK_BUDGET;
+    perTList = myVal.LIST_PRDSTOCK_PERFORM;
+    // 予定は必ず全品種コード分登録することを前提とする
+    var bugCkpList = bugTList.map(function(itemb) {
+      var perCkpList = perTList.reduce(function(resultp, itemp) {
+        if (itemb.month === itemp.date && itemb.code === itemp.type) {
+          resultp = {
+            month: itemb.month, // 対象年月
+            // code: itemb.code, // 品種コード
+            code: "製品",
+            name: itemb.name, // 品種名
+            plweight: itemb.plweight, // 計画重量
+            plPrice: itemb.plPrice, // 計画金額
+            plUnit: toNumber(Math.floor(itemb.plPrice / itemb.plweight)),
+            psweight: itemb.psweight, // 予定重量
+            psPrice: itemb.psPrice, // 予定金額
+            psUnit: toNumber(Math.floor(itemb.psPrice / itemb.psweight)),
+            ppweight: itemb.ppweight, // 見込重量
+            ppPrice: itemb.ppPrice, // 見込金額
+            ppUnit: toNumber(Math.floor(itemb.ppPrice / itemb.ppweight)),
+            stcweight: itemp.stcweight, // 実績重量
+            stcPrice: itemp.stcPrice, // 実績金額
+            stcUnit: toNumber(Math.floor(itemp.stcPrice / itemp.stcweight)),
+          };
+        }
+        return resultp;
+      }, []);
+      return perCkpList;
+    });
+    console.log(bugCkpList);
+    // 配列を1ヶ月単位に3ヶ月レイアウトに変更し、売上高CKPの後ろに追加
+    // 合計行を出すために、生産実績のみのリストを作成
+    stcCkpListBefore = [];
+    stcCkpListBeforewithT = [];
     for (let ix = 0; ix < bugCkpList.length; ix = ix + 6) {
       let bugrec = {};
       bugrec.code = bugCkpList[ix + 3].code;
@@ -5011,6 +5197,12 @@ jQuery.noConflict();
   /** 製品在庫予算一覧(期間指定) */
   myVal.LIST_PRDSTOCK_BUDGET;
   myVal.SRC_LIST_PRDSTOCK_BUDGET;
+  /** 材料在庫予算一覧 */
+  myVal.ALL_LIST_PRCSTOCK_BUDGET;
+  myVal.ALL_SRC_LIST_PRCSTOCK_BUDGET;
+  /** 材料在庫予算一覧(期間指定) */
+  myVal.LIST_PRCSTOCK_BUDGET;
+  myVal.SRC_LIST_PRCSTOCK_BUDGET;
   /** 販売予算一覧 */
   myVal.ALL_LIST_SALES_BUDGET;
   myVal.ALL_SRC_LIST_SALES_BUDGET;
@@ -5050,6 +5242,12 @@ jQuery.noConflict();
   /** 製品在庫実績一覧(期間指定) */
   myVal.LIST_PRDSTOCK_PERFORM;
   myVal.SRC_LIST_PRDSTOCK_PERFORM;
+  /** 材料在庫実績一覧 */
+  myVal.ALL_LIST_PRCSTOCK_PERFORM;
+  myVal.ALL_SRC_LIST_PRCSTOCK_PERFORM;
+  /** 材料在庫実績一覧(期間指定) */
+  myVal.LIST_PRCSTOCK_PERFORM;
+  myVal.SRC_LIST_PRCSTOCK_PERFORM;
   /** 稼働状況実績一覧 */
   myVal.ALL_LIST_HUMAN_PERFORM;
   myVal.ALL_SRC_LIST_HUMAN_PERFORM;

@@ -226,7 +226,7 @@ jQuery.noConflict();
     SALES_APPID = emxasConf.getConfig('APP_SALES_APPID');
     PROP_APPID = emxasConf.getConfig('APP_PROP_APPID');
     // 今月から一年前までのレコード取得
-    fetchRecords(SALES_APPID, '(契約期間開始 <= ' + maxMonth + ' and 契約期間開始 >= ' + minMonth + ') or (契約期間終了 <= ' + maxMonth + ' and 契約期間終了 >= ' + minMonth + ') order by OMS顧客コード asc')
+    fetchRecords(SALES_APPID, '契約期間開始 <= ' + maxMonth + ' and 契約期間終了 >= ' + minMonth + ' order by OMS顧客コード asc')
       .then(function(canvas1Rec) {
         fetchRecords(PROP_APPID, 'order by 決算開始日 desc')
           .then(function(canvas1Rec2) {
@@ -435,7 +435,7 @@ jQuery.noConflict();
             ];
             rate = refreshData(rate);
 
-            fetchRecords(SALES_APPID, '(契約期間開始 <= ' + maxMonth2 + ' and 契約期間開始 >= ' + minMonth2 + ') or (契約期間終了 <= ' + maxMonth2 + ' and 契約期間終了 >= ' + minMonth2 + ') order by OMS顧客コード asc')
+            fetchRecords(SALES_APPID, '契約期間開始 <= ' + maxMonth2 + ' and 契約期間終了 >= ' + minMonth2 + ' order by OMS顧客コード asc')
               .then(function(canvas1Rec2) {
                 data = refreshData(data);
                 // 前年同月比グラフのデータ作成
@@ -1323,9 +1323,9 @@ jQuery.noConflict();
     minMonthP = '"' + moment(minMonthP).format('YYYY-MM-DD') + '"';
 
     SALES_APPID = emxasConf.getConfig('APP_SALES_APPID');
-    fetchRecords(SALES_APPID, '((契約期間開始 <= ' + maxMonthP + ' and 契約期間開始 >= ' + minMonthP + ') or (契約期間終了 <= ' + maxMonthP + ' and 契約期間終了 >= ' + minMonthP + ')) and 案件タイプ in ("' + sprd + '") order by OMS顧客コード asc')
+    fetchRecords(SALES_APPID, '(契約期間開始 <= ' + maxMonthP + ' and 契約期間終了 >= ' + minMonthP + ') and 案件タイプ in ("' + sprd + '") order by OMS顧客コード asc')
       .then(function(prod1Canvas) {
-        fetchRecords(SALES_APPID, '((契約期間開始 <= ' + maxMonthP2 + ' and 契約期間開始 >= ' + minMonthP2 + ') or (契約期間終了 <= ' + maxMonthP2 + ' and 契約期間終了 >= ' + minMonthP2 + ')) and 案件タイプ in ("' + sprd + '") order by OMS顧客コード asc')
+        fetchRecords(SALES_APPID, '(契約期間開始 <= ' + maxMonthP2 + ' and 契約期間終了 >= ' + minMonthP2 + ') and 案件タイプ in ("' + sprd + '") order by OMS顧客コード asc')
           .then(function(prod1Canvas2) {
             var data = [];
             data[elevenMonthsBeforeP] = 0;
@@ -1799,9 +1799,9 @@ jQuery.noConflict();
     var scod = susr.split(':')[1];
 
     SALES_APPID = emxasConf.getConfig('APP_SALES_APPID');
-    fetchRecords(SALES_APPID, '((契約期間開始 <= ' + maxMonthU + ' and 契約期間開始 >= ' + minMonthU + ') or (契約期間終了 <= ' + maxMonthU + ' and 契約期間終了 >= ' + minMonthU + ')) and 担当者 in ("' + scod + '") order by OMS顧客コード asc')
+    fetchRecords(SALES_APPID, '(契約期間開始 <= ' + maxMonthU + ' and 契約期間終了 >= ' + minMonthU + ') and 担当者 in ("' + scod + '") order by OMS顧客コード asc')
       .then(function(user1Canvas) {
-        fetchRecords(SALES_APPID, '((契約期間開始 <= ' + maxMonthU2 + ' and 契約期間開始 >= ' + minMonthU2 + ') or (契約期間終了 <= ' + maxMonthU2 + ' and 契約期間終了 >= ' + minMonthU2 + ')) and 担当者 in ("' + scod + '") order by OMS顧客コード asc')
+        fetchRecords(SALES_APPID, '(契約期間開始 <= ' + maxMonthU2 + ' and 契約期間終了 >= ' + minMonthU2 + ') and 担当者 in ("' + scod + '") order by OMS顧客コード asc')
           .then(function(user1Canvas2) {
             var data = [];
             data[elevenMonthsBeforeU] = 0;

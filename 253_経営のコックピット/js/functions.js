@@ -810,10 +810,10 @@ jQuery.noConflict();
       let records = resp.records;
       for (let ix = 0; ix < records.length; ix++) {
         rec[records[ix]['担当者コード'].value] = {
-          name: records[ix]['担当者名'].value,
-          hourReward: records[ix]['担当者時給'].value, // 時給
-          periodStart: records[ix]['入社日'].value,
-          periodEnd: records[ix]['退社日'].value,
+          name: records[ix]['担当者名'].value
+          // hourReward: records[ix]['担当者時給'].value, // 時給
+          // periodStart: records[ix]['入社日'].value,
+          // periodEnd: records[ix]['退社日'].value,
         };
       }
       if (isAllList) {
@@ -3199,6 +3199,7 @@ jQuery.noConflict();
           break;
         case "tab4":
           showType = "Ｐ／Ｌ";
+          dispOneTermForthTab(period, showType);
           break;
         default:
           dispOneTerm(period);
@@ -4101,6 +4102,172 @@ jQuery.noConflict();
             $(this).after('<span class="sort-indicator">▼</span>');
 
             // 現在降順 and 前回ソートと同じ列をクリック ⇒ ３コード／担当者コード順でソート（初期表示状態）
+          } else if (beforeSortConfig === 1 && clickedColumn === sortedColumn) {
+            sortConfig = 0; // ソート無し
+            clickedColumn = 0; // ３コード／担当者コード列をクリックした事にする。
+            e.target.classList.remove("descending");
+            e.target.classList.remove("ascending");
+          }
+          let columnName = gridVal.getGridColumns(showType)[clickedColumn]['data'];
+          customSort(columnName, sortConfig);
+        });
+      }
+      ////// グリッドの表示 end ///////
+      spinner.hideSpinner();
+    }).catch(function(error) {
+      console.log(error);
+      spinner.hideSpinner();
+      if (typeof error === 'string') {
+        // グリッドが存在したら削除
+        destroyHandsonGrid(hot);
+        destroyHandsonGrid(totalHot);
+        destroyHandsonGrid(headerHot);
+        // エラーメッセージを画面に表示(#my-gridに)
+        let msg = $('<div>').attr('id', 'error_msg').text(error);
+        $('#my-grid').append(msg);
+        return;
+      }
+      alert('システムエラーが発生しました');
+    });
+  };
+
+  var dispOneTermForthTab = function(period, showType) {
+    console.log('------- dispOneTermForthTab --------');
+    // データ取得
+    kintone.Promise.all([
+      getPurchasePerformList(period), // 仕入実績取得
+      getSalesPerformList(period), // 販売実績取得
+      getStockPerformList(period), // 在庫実績取得
+      getTaxPerformList(period) // 会計実績取得
+    ]).then(function() {
+      let purList = [];
+      let proList = [];
+      let salList = [];
+      let stcList = [];
+      // 仕入実績、生産実績、販売実績、在庫実績いずれも1件以上あれば、次へ。
+      if (Object.keys(myVal.LIST_PURCHASE_PERFORM).length > 0 && Object.keys(myVal.LIST_PRODUCT_PERFORM).length &&
+        Object.keys(myVal.LIST_SALES_PERFORM).length > 0 && Object.keys(myVal.LIST_PRDSTOCK_BUDGET).length > 0) {
+        purList = getPurchaseReport(period, purList);
+        proList = getProductReport(period, purList, proList);
+        salList = getSalesReport(period, proList, salList);
+        return getStockReport(period, salList, stcList);
+      } else {
+        // 仕入実績＆生産実績＆販売実績＆在庫実績が共に1件以上存在しない場合は、分析対象が存在しないので、ここでデータ取得は離脱
+        return Promise.reject('分析対象が存在しません。');
+      }
+    }).then(function(resp) {
+      let dataList = resp;
+      if (dataList.length < 1) {
+        return Promise.reject('分析対象が存在しません。');
+      }
+      ////// グリッドの表示 ///////
+      let headerContainer = document.getElementById('my-top-grid');
+      let container = document.getElementById('my-grid');
+      let totalContainer = document.getElementById('total-grid');
+      // 既に存在していたら破棄
+      destroyHandsonGrid(hot);
+      destroyHandsonGrid(totalHot);
+      destroyHandsonGrid(headerHot);
+      // ヘッダー2段の場合の上部分
+      headerHot = new Handsontable(headerContainer, {
+        data: [],
+        columns: gridVal.getGridColumns(showType),
+        colHeaders: gridVal.GRID_TOP_COL_HEADERS,
+        colWidths: gridVal.COL_WIDTH_CKP,
+        columnSorting: false,
+        stretchH: 'last',
+        width: gridVal.GRID_WIDTH,
+      });
+      // グリッド本体
+      hot = new Handsontable(container, {
+        data: dataList,
+        columns: gridVal.getGridColumns(showType),
+        colHeaders: gridVal.GRID_COL_HEADERS,
+        colWidths: gridVal.COL_WIDTH_CKP,
+        columnSorting: false,
+        stretchH: 'last',
+        width: gridVal.GRID_WIDTH,
+        afterGetColHeader: null,
+        afterRender: function(isForced) {
+          // colspanとrowspanの処理をまとめて行う
+          // (下側のグリッド表示後に実行されるので、headerHotは描画済み)
+          if (isForced) {
+            treatMyHeaderTags();
+          }
+        },
+        autoColumnSize: true
+      });
+      // 独自ソート関数
+      const customSort = function(selectedColumn, sortConfig) {
+        dataList.sort(function(a, b) {
+          // 指定列のソート（列値有りの場合、値でソート。ソート無しの場合も昇順）
+          if (a[selectedColumn] && b[selectedColumn]) {
+            if (a[selectedColumn] < b[selectedColumn]) return (sortConfig === 0 ? -1 : sortConfig);
+            if (a[selectedColumn] > b[selectedColumn]) return (sortConfig === 0 ? 1 : (sortConfig * -1));
+          }
+          // 指定列のソート（列値無しの場合、値無しを優先でソート）
+          // ソート無しの場合、コード値無しは最終行に表示する為、降順になる
+          if (!a[selectedColumn] || !b[selectedColumn]) {
+            if (!a[selectedColumn] && b[selectedColumn]) return (sortConfig === 0 ? 1 : sortConfig);
+            if (a[selectedColumn] && !b[selectedColumn]) return (sortConfig === 0 ? -1 : (sortConfig * -1));
+          }
+          // コードの昇順は全てのケースで行う
+          if (a[(showType === '顧客別' ? '３コード' : '担当者コード')] < b[(showType === '顧客別' ? '３コード' : '担当者コード')]) return -1;
+          if (a[(showType === '顧客別' ? '３コード' : '担当者コード')] > b[(showType === '顧客別' ? '３コード' : '担当者コード')]) return 1;
+
+          return 0;
+        });
+        // // ソート無しの場合、コード未選択を最終行にする。
+        // if (sortConfig === 0) {
+        //     let noCodeData = [];
+        //     let dataListForSort = $.extend(true, [], dataList);
+        //     dataListForSort.forEach(function(data, i) {
+        //         // コード未選択以外はスキップ
+        //         if (data['no_code']) {
+        //             return;
+        //         }
+        //         noCodeData.push(data);
+        //         dataList.splice(i, 1);
+        //     });
+        //     dataList.push(noCodeData);
+        // }
+        hot.render();
+      };
+      // 生産性分析時のみの独自ソートトリガー用クリックイベント
+      if (dispViewId == emxasConf.getConfig('VIEW_PRC_PDCT_ANALYSIS')) {
+        $('table.htCore th span.colHeader').parent('div').addClass('custom-sort-header');
+        $(document).off('click', 'table.htCore span.colHeader');
+        $(document).on('click', 'table.htCore span.colHeader', function(e) {
+          let sortConfig = null;
+          // クリック列
+          let clickedColumn = $(this).parents('th').index();
+          // 前回ソート列
+          let sortedColumn = $('.sort-indicator').parents('th').index();
+          // 前回ソート内容
+          let beforeSortConfig = 0;
+          // 前回ソート内容取得
+          if ($(this).parents('th').find(".ascending").length > 0) {
+            beforeSortConfig = -1;
+          } else if ($(this).parents('th').find(".descending").length > 0) {
+            beforeSortConfig = 1;
+          }
+          // 前回ソート内容保持クラス削除
+          $(this).removeClass("ascending");
+          $(this).removeClass("descending");
+          $(this).parents('tr').find('.sort-indicator').remove();
+          // 現在ソート無し or 前回ソートと違う列をクリック ⇒ 昇順でソートする
+          if (beforeSortConfig === 0 || clickedColumn !== sortedColumn) {
+            sortConfig = -1;
+            e.target.classList.add("ascending");
+            e.target.classList.remove("descending");
+            $(this).after('<span class="sort-indicator">▲</span>');
+          // 現在昇順 and 前回ソートと同じ列をクリック ⇒ 降順でソートする
+          } else if (beforeSortConfig === -1 && clickedColumn === sortedColumn) {
+            sortConfig = 1;
+            e.target.classList.add("descending");
+            e.target.classList.remove("ascending");
+            $(this).after('<span class="sort-indicator">▼</span>');
+          // 現在降順 and 前回ソートと同じ列をクリック ⇒ ３コード／担当者コード順でソート（初期表示状態）
           } else if (beforeSortConfig === 1 && clickedColumn === sortedColumn) {
             sortConfig = 0; // ソート無し
             clickedColumn = 0; // ３コード／担当者コード列をクリックした事にする。

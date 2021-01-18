@@ -573,10 +573,11 @@ jQuery.noConflict();
     if (type === 'tab4' || type === 'Ｐ／Ｌ') {
       // 売上実績管理と在庫実績管理と予算管理のデータを取得
       kintone.Promise.all([
+        func.getPurchaseBudgetList(period),
         func.getSalesBudgetList(period),
         func.getStockBudgetList(period)
       ]).then(function() {
-        console.log(' -- get data process for disp tab2 --');
+        console.log(' -- get data process for disp tab4 --');
         // 表示を初期化
         $('#my-top-grid').empty();
         $('#my-grid').empty();

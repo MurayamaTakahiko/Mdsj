@@ -113,11 +113,10 @@ jQuery.noConflict();
   });
 
   // 保存時も同様にチェック
-  var dbevents = [
-    'app.record.create.submit',
-    'app.record.edit.submit'
+  var dbcevents = [
+    'app.record.create.submit'
   ];
-  kintone.events.on(dbevents, function(event) {
+  kintone.events.on(dbcevents, function(event) {
     var minPrdDate = "";
     var maxPrdDate = "";
     var record = event.record;
@@ -129,6 +128,42 @@ jQuery.noConflict();
         maxPrdDate = moment(row.value['売上月']['value']).format("YYYY-MM-DD");
       }
       var sellDate = row.value['売上月']['value'];
+      event.error = "";
+      if (moment(sellDate).isBefore(moment().add(-5, 'days'), 'day')) {
+        row.value['売上月']['value'] = "";
+        event.error = "過去日での売上計上はできません。";
+      }
+      var selectedUsers = row.value['担当者']['value'];
+      if (selectedUsers.length > 1) {
+        event.error += "担当者は一人しか指定できません。";
+      }
+      var planSale = row.value['計画額']['value'];
+      if (planSale !== 0) {
+        event.error += "期中での追加案件では計画額は0円にしてください。";
+      }
+    });
+    record['契約期間開始']['value'] = minPrdDate;
+    record['契約期間終了']['value'] = maxPrdDate;
+    return event;
+  });
+
+  // 保存時も同様にチェック
+  var dbeevents = [
+    'app.record.edit.submit'
+  ];
+  kintone.events.on(dbeevents, function(event) {
+    var minPrdDate = "";
+    var maxPrdDate = "";
+    var record = event.record;
+    record.売上管理表.value.forEach(function(row) {
+      if (!minPrdDate || (row.value['売上月']['value'] < minPrdDate)) {
+        minPrdDate = moment(row.value['売上月']['value']).format("YYYY-MM-DD");
+      }
+      if (!maxPrdDate || (row.value['売上月']['value'] > maxPrdDate)) {
+        maxPrdDate = moment(row.value['売上月']['value']).format("YYYY-MM-DD");
+      }
+      var sellDate = row.value['売上月']['value'];
+      event.error = "";
       if (moment(sellDate).isBefore(moment().add(-5, 'days'), 'day')) {
         row.value['売上月']['value'] = "";
         event.error = "過去日での売上計上はできません。";

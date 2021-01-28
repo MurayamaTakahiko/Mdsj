@@ -138,7 +138,7 @@ jQuery.noConflict();
         event.error += "担当者は一人しか指定できません。";
       }
       var planSale = row.value['計画額']['value'];
-      if (planSale !== 0) {
+      if (planSale != 0) {
         event.error += "期中での追加案件では計画額は0円にしてください。";
       }
     });

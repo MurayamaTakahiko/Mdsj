@@ -60,7 +60,7 @@ jQuery.noConflict();
   // グリッド幅
   gridVal.GRID_WIDTH = 'auto';
   // 通常のセル幅（CKP）
-  gridVal.COL_WIDTH_CKP = [60, 90, 90, 75, 75, 90, 90, 90, 90, 75, 75, 75, 75, 75, 75, 75, 100, 75, 75];
+  gridVal.COL_WIDTH_CKP = [60, 120, 120, 90, 80, 90, 90, 90, 90, 80, 80, 80, 80, 80, 90, 90, 120, 90, 120];
   // 選択したタブのセル幅保持（初期値：顧客別）
   gridVal.COL_WIDTH = gridVal.COL_WIDTH_CKP;
   // ヘッダ1段目

@@ -1261,10 +1261,13 @@ jQuery.noConflict();
         recas[ix] = {
           date: prcd, // 生産日付
           code: records[ix]['品番'].value, // 品番
+          name: records[ix]['規格'].value, // 規格
+          size: records[ix]['製品サイズ'].value, // 製品サイズ
           type: records[ix]['品種コード'].value, // 品種コード
           rank: records[ix]['等級コード'].value, // 等級コード
           mtrweight: records[ix]['母材重量'].value, // 母材重量
           prdweight: records[ix]['製品重量'].value, // 製品重量
+          losweight: records[ix]['ロス重量'].value, // ロス重量
           prdnum: records[ix]['本数'].value, // 本数
           prdhour: records[ix]['稼働時間'].value, // 稼働時間
           prdstop: records[ix]['停止時間'].value, // 停止時間
@@ -1339,13 +1342,55 @@ jQuery.noConflict();
         return result;
       }, []);
       console.log(totalrec);
+      // 同月同品番のものは集約する（品質状況向け）
+      var codeSumrec = recas.reduce(function(result, current) {
+        var element = result.find(function(p) {
+          return p.date === current.date && p.code === current.code
+        });
+        if (element) {
+          var ele1 = parseFloat(element.mtrweight);
+          element.mtrweight = String(ele1 + parseFloat(current.mtrweight));
+          var ele2 = parseFloat(element.prdweight);
+          element.prdweight = String(ele2 + parseFloat(current.prdweight));
+          var ele7 = parseFloat(element.losweight);
+          element.losweight = String(ele7 + parseFloat(current.losweight));
+          var ele3 = parseFloat(element.prdlength);
+          element.prdlength = String(ele3 + parseFloat(current.prdlength));
+          var ele4 = parseFloat(element.prdnum);
+          element.prdnum = String(ele4 + parseFloat(current.prdnum));
+          var ele5 = parseFloat(element.prdhour);
+          element.prdhour = String(ele5 + parseFloat(current.prdhour));
+          var ele6 = parseFloat(element.prdstop);
+          element.prdstop = String(ele6 + parseFloat(current.prdstop));
+        } else {
+          result.push({
+            date: current.date,
+            code: current.code,
+            name: current.name,
+            size: current.size,
+            type: current.type,
+            rank: current.rank,
+            mtrweight: current.mtrweight,
+            prdweight: current.prdweight,
+            losweight: current.losweight,
+            prdnum: current.prdnum,
+            prdhour: current.prdhour,
+            prdstop: current.prdstop,
+            prdlength: current.prdlength
+          });
+        }
+        return result;
+      }, []);
+      console.log(codeSumrec);
       if (isAllList) {
         myVal.ALL_LIST_PRODUCT_PERFORM = sumrec;
         myVal.ALL_LIST_PLANT_PERFORM = totalrec;
+        myVal.ALL_LIST_PRDCODE_PERFORM = codeSumrec;
         myVal.ALL_SRC_LIST_PRODUCT_PERFORM = records;
       }
       myVal.LIST_PRODUCT_PERFORM = sumrec;
       myVal.LIST_PLANT_PERFORM = totalrec;
+      myVal.LIST_PRDCODE_PERFORM = codeSumrec;
       myVal.SRC_LIST_PRODUCT_PERFORM = records;
       return Promise.resolve(rec);
     });
@@ -4131,6 +4176,154 @@ jQuery.noConflict();
     });
   };
 
+  var dispOneTermThirdTab = function(period, showType) { //稼働状況
+    console.log('------- dispOneTermThirdTab --------');
+    // データ取得
+    let prflg = 2;
+    getProductPerformList(period, prflg).then(function() {
+      let qalList = [];
+      // 稼働状況、生産実績どちらも1件以上あれば、次へ。
+      if (Object.keys(myVal.LIST_HUMAN_PERFORM).length > 0 && Object.keys(myVal.LIST_PRDCODE_PERFORM).length > 0) {
+        return getQualityReport(period, qalList);
+      } else {
+        // 稼働状況、生産実績が共に1件以上存在しない場合は、分析対象が存在しないので、ここでデータ取得は離脱
+        return Promise.reject('分析対象が存在しません。');
+      }
+    }).then(function(resp) {
+      // 稼働状況、生産実績どちらも1件以上あれば、次へ。
+      let dataList = resp;
+      if (dataList.length < 1) {
+        return Promise.reject('分析対象が存在しません。');
+      }
+      ////// グリッドの表示 ///////
+      let headerContainer = document.getElementById('my-top-grid');
+      let container = document.getElementById('my-grid');
+      let totalContainer = document.getElementById('total-grid');
+      // 既に存在していたら破棄
+      destroyHandsonGrid(hot);
+      destroyHandsonGrid(totalHot);
+      destroyHandsonGrid(headerHot);
+      // ヘッダー2段の場合の上部分
+      headerHot = new Handsontable(headerContainer, {
+        data: [],
+        columns: gridVal.getGridColumns(showType),
+        colHeaders: gridVal.GRID_TOP_COL_QUALITY_HEADERS,
+        colWidths: gridVal.COL_WIDTH_QUALITY_CKP,
+        columnSorting: false,
+        stretchH: 'last',
+        width: gridVal.GRID_WIDTH_WORK,
+      });
+      // グリッド本体
+      hot = new Handsontable(container, {
+        data: dataList,
+        columns: gridVal.getGridColumns(showType),
+        colHeaders: gridVal.GRID_COL_QUALITY_HEADERS,
+        colWidths: gridVal.COL_WIDTH_QUALITY_CKP,
+        columnSorting: false,
+        stretchH: 'last',
+        width: gridVal.GRID_WIDTH_WORK,
+        afterGetColHeader: null,
+        afterRender: function(isForced) {
+          // colspanとrowspanの処理をまとめて行う
+          // (下側のグリッド表示後に実行されるので、headerHotは描画済み)
+          if (isForced) {
+            treatMyHeaderTags();
+          }
+        },
+        autoColumnSize: true
+      });
+      // 独自ソート関数
+      const customSort = function(selectedColumn, sortConfig) {
+        dataList.sort(function(a, b) {
+          // 指定列のソート（列値有りの場合、値でソート。ソート無しの場合も昇順）
+          if (a[selectedColumn] && b[selectedColumn]) {
+            if (a[selectedColumn] < b[selectedColumn]) return (sortConfig === 0 ? -1 : sortConfig);
+            if (a[selectedColumn] > b[selectedColumn]) return (sortConfig === 0 ? 1 : (sortConfig * -1));
+          }
+          // 指定列のソート（列値無しの場合、値無しを優先でソート）
+          // ソート無しの場合、コード値無しは最終行に表示する為、降順になる
+          if (!a[selectedColumn] || !b[selectedColumn]) {
+            if (!a[selectedColumn] && b[selectedColumn]) return (sortConfig === 0 ? 1 : sortConfig);
+            if (a[selectedColumn] && !b[selectedColumn]) return (sortConfig === 0 ? -1 : (sortConfig * -1));
+          }
+
+          // コードの昇順は全てのケースで行う
+          if (a[(showType === '顧客別' ? '３コード' : '担当者コード')] < b[(showType === '顧客別' ? '３コード' : '担当者コード')]) return -1;
+          if (a[(showType === '顧客別' ? '３コード' : '担当者コード')] > b[(showType === '顧客別' ? '３コード' : '担当者コード')]) return 1;
+
+          return 0;
+        });
+        hot.render();
+      };
+      // 生産性分析時のみの独自ソートトリガー用クリックイベント
+      if (dispViewId == emxasConf.getConfig('VIEW_PRC_PDCT_ANALYSIS')) {
+        $('table.htCore th span.colHeader').parent('div').addClass('custom-sort-header');
+        $(document).off('click', 'table.htCore span.colHeader');
+        $(document).on('click', 'table.htCore span.colHeader', function(e) {
+          let sortConfig = null;
+          // クリック列
+          let clickedColumn = $(this).parents('th').index();
+          // 前回ソート列
+          let sortedColumn = $('.sort-indicator').parents('th').index();
+          // 前回ソート内容
+          let beforeSortConfig = 0;
+
+          // 前回ソート内容取得
+          if ($(this).parents('th').find(".ascending").length > 0) {
+            beforeSortConfig = -1;
+          } else if ($(this).parents('th').find(".descending").length > 0) {
+            beforeSortConfig = 1;
+          }
+
+          // 前回ソート内容保持クラス削除
+          $(this).removeClass("ascending");
+          $(this).removeClass("descending");
+          $(this).parents('tr').find('.sort-indicator').remove();
+
+          // 現在ソート無し or 前回ソートと違う列をクリック ⇒ 昇順でソートする
+          if (beforeSortConfig === 0 || clickedColumn !== sortedColumn) {
+            sortConfig = -1;
+            e.target.classList.add("ascending");
+            e.target.classList.remove("descending");
+            $(this).after('<span class="sort-indicator">▲</span>');
+
+            // 現在昇順 and 前回ソートと同じ列をクリック ⇒ 降順でソートする
+          } else if (beforeSortConfig === -1 && clickedColumn === sortedColumn) {
+            sortConfig = 1;
+            e.target.classList.add("descending");
+            e.target.classList.remove("ascending");
+            $(this).after('<span class="sort-indicator">▼</span>');
+
+            // 現在降順 and 前回ソートと同じ列をクリック ⇒ ３コード／担当者コード順でソート（初期表示状態）
+          } else if (beforeSortConfig === 1 && clickedColumn === sortedColumn) {
+            sortConfig = 0; // ソート無し
+            clickedColumn = 0; // ３コード／担当者コード列をクリックした事にする。
+            e.target.classList.remove("descending");
+            e.target.classList.remove("ascending");
+          }
+          let columnName = gridVal.getGridColumns(showType)[clickedColumn]['data'];
+          customSort(columnName, sortConfig);
+        });
+      }
+      ////// グリッドの表示 end ///////
+      spinner.hideSpinner();
+    }).catch(function(error) {
+      console.log(error);
+      spinner.hideSpinner();
+      if (typeof error === 'string') {
+        // グリッドが存在したら削除
+        destroyHandsonGrid(hot);
+        destroyHandsonGrid(totalHot);
+        destroyHandsonGrid(headerHot);
+        // エラーメッセージを画面に表示(#my-gridに)
+        let msg = $('<div>').attr('id', 'error_msg').text(error);
+        $('#my-grid').append(msg);
+        return;
+      }
+      alert('システムエラーが発生しました');
+    });
+  };
+
   var dispOneTermForthTab = function(period, showType) {
     console.log('------- dispOneTermForthTab --------');
     // データ取得
@@ -5056,6 +5249,47 @@ jQuery.noConflict();
   }
 
   /**
+   * 品質状況CKPエリアのデータに整理する
+   */
+  var getQualityReport = function(period, perCkpListThree) {
+    let perHList = myVal.LIST_PRDCODE_PERFORM;
+    let humHList = myVal.LIST_HUMAN_PERFORM;
+    console.log(perHList);
+    console.log(humHList);
+    // 歩留りを計算して項目に追加
+    var bugCkpList = [];
+    for (let ix = 0; ix < perHList.length; ix++) {
+      let bughour = {};
+      bughour = perHList[ix];
+      bughour.prdYield = parseFloat(perHList[ix]['prdweight'] * 100 / perHList[ix]['mtrweight']).toFixed(2); // 製品歩留
+      bugCkpList.push(bughour);
+      console.log(bughour);
+    }
+    console.log(bugCkpList);
+    // 配列を1ヶ月単位に3ヶ月レイアウトに変更し、品質状況CKPレイアウトを作成
+    for (let ix = 0; ix < bugCkpList.length; ix = ix + 3) {
+      let perrec = {};
+      perrec.name = bugCkpList[ix].name;
+      perrec.size = bugCkpList[ix].size;
+      perrec.nbmtrweight = bugCkpList[ix].mtrweight;
+      perrec.nbprdweight = bugCkpList[ix].prdweight;
+      perrec.nblosweight = bugCkpList[ix].losweight;
+      perrec.nbyield = bugCkpList[ix].prdYield;
+      perrec.ntmtrweight = bugCkpList[ix + 1].mtrweight;
+      perrec.ntprdweight = bugCkpList[ix + 1].prdweight;
+      perrec.ntlosweight = bugCkpList[ix + 1].losweight;
+      perrec.ntyield = bugCkpList[ix + 1].prdYield;
+      perrec.namtrweight = bugCkpList[ix + 2].mtrweight;
+      perrec.naprdweight = bugCkpList[ix + 2].prdweight;
+      perrec.nalosweight = bugCkpList[ix + 2].losweight;
+      perrec.nayield = bugCkpList[ix + 2].prdYield;
+      perCkpListThree.push(perrec);
+    }
+    console.log(perCkpListThree);
+    return perCkpListThree;
+  }
+
+  /**
    * 製品別時間当たり収益エリアのデータに整理する
    */
   var getPurhourReport = function(period, bugCkpListThreewithT) {
@@ -5391,6 +5625,9 @@ jQuery.noConflict();
   /** 生産実績一覧(稼働状況向け工場全体) */
   myVal.LIST_PLANT_PERFORM;
   myVal.ALL_LIST_PLANT_PERFORM;
+  /** 生産実績一覧(品質状況向け品番単位) */
+  myVal.LIST_PRDCODE_PERFORM;
+  myVal.ALL_LIST_PRDCODE_PERFORM;
   /** 販売実績一覧 */
   myVal.ALL_LIST_SALES_PERFORM;
   myVal.ALL_SRC_LIST_SALES_PERFORM;
@@ -5455,6 +5692,7 @@ jQuery.noConflict();
   window.func.getProductBudgetList = getProductBudgetList;
   window.func.getStockBudgetList = getStockBudgetList;
   window.func.getSalesBudgetList = getSalesBudgetList;
+  window.func.getPurchasePerformList = getPurchasePerformList;
   window.func.getProductPerformList = getProductPerformList;
   window.func.getSalesPerformList = getSalesPerformList;
   window.func.getHumanPerformList = getHumanPerformList;

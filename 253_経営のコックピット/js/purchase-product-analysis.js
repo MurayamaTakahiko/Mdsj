@@ -97,7 +97,9 @@ jQuery.noConflict();
   // 通常のセル幅（CKP）
   gridVal.COL_WIDTH_CKP = [30, 100, 60, 65, 45, 60, 65, 45, 60, 65, 45, 60, 65, 45, 60, 65, 45, 60, 65, 45, 60, 65, 45, 60, 65, 45, 60, 65, 45, 60, 65, 45, 60, 65, 45];
   // 通常のセル幅(稼働状況)
-  gridVal.COL_WIDTH_WORK_CKP = [110, 45, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100];
+  gridVal.COL_WIDTH_WORK_CKP = [150, 80, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150];
+  // 通常のセル幅(品質状況)
+  gridVal.COL_WIDTH_QUALITY_CKP = [150, 150, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120];
   // 2期比較の際のセル幅
   gridVal.COL_WIDTH_2TERM = [15, 60, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30, 30, 45, 30];
   // 通常のセル幅（顧客別）
@@ -111,43 +113,51 @@ jQuery.noConflict();
   gridVal.GRID_TOP_COL_HEADERS = [
     '<rowspan type="top"> </rowspan>', // タブ種
     '<rowspan type="top"> </rowspan>', // ＫＰＩ項目
-    '<colspan type="pre" cnt="12">10月度</colspan>', // 前月度
-    '<colspan type="pre" cnt="12">11月度</colspan>', // 当月度
-    '<colspan type="pre" cnt="9">12月度</colspan>', // 次月度
+    '<colspan type="pre" cnt="12">1月度</colspan>', // 前月度
+    '<colspan type="pre" cnt="12">2月度</colspan>', // 当月度
+    '<colspan type="pre" cnt="9">3月度</colspan>', // 次月度
   ];
   // ヘッダ1段目(稼働状況)
   gridVal.GRID_TOP_COL_WORK_HEADERS = [
     '<rowspan type="top"> </rowspan>', // タブ種
     '<rowspan type="top"> </rowspan>', // ＫＰＩ項目
-    '<colspan type="pre" cnt="4">10月度</colspan>', // 前月度
-    '<colspan type="pre" cnt="4">11月度</colspan>', // 当月度
-    '<colspan type="pre" cnt="3">12月度</colspan>', // 次月度
+    '<colspan type="pre" cnt="4">1月度</colspan>', // 前月度
+    '<colspan type="pre" cnt="4">2月度</colspan>', // 当月度
+    '<colspan type="pre" cnt="3">3月度</colspan>', // 次月度
+  ];
+  // ヘッダ1段目(品質状況)
+  gridVal.GRID_TOP_COL_QUALITY_HEADERS = [
+    '<rowspan type="top"> </rowspan>', // タブ種
+    '<rowspan type="top"> </rowspan>', // ＫＰＩ項目
+    '<colspan type="pre" cnt="4">1月度</colspan>', // 前月度
+    '<colspan type="pre" cnt="4">2月度</colspan>', // 当月度
+    '<colspan type="pre" cnt="4">3月度</colspan>', // 次月度
   ];
   // ヘッダ2段目
   gridVal.GRID_COL_HEADERS = [
     '<rowspan type="top"> </rowspan>', // タブ種
     '<rowspan type="top"> </rowspan>', // ＫＰＩ項目
-    '<colspan type="pre" cnt="2">前年<br>(t/千円)</colspan>',
+    '<colspan type="pre" cnt="2">前年<br>(t／千円)</colspan>',
     '<colspan type="top">円/kg</colspan>',
-    '<colspan type="pre" cnt="2">計画<br>(t/千円)</colspan>',
+    '<colspan type="pre" cnt="2">計画<br>(t／千円)</colspan>',
     '<colspan type="top">円/kg</colspan>',
-    '<colspan type="pre" cnt="2">実績見込<br>(t/千円)</colspan>',
+    '<colspan type="pre" cnt="2">実績見込<br>(t／千円)</colspan>',
     '<colspan type="top">円/kg</colspan>',
-    '<colspan type="pre" cnt="2">実績<br>(t/千円)</colspan>',
+    '<colspan type="pre" cnt="2">実績<br>(t／千円)</colspan>',
     '<colspan type="top">円/kg</colspan>',
-    '<colspan type="pre" cnt="2">前年<br>(t/千円)</colspan>',
+    '<colspan type="pre" cnt="2">前年<br>(t／千円)</colspan>',
     '<colspan type="top">円/kg</colspan>',
-    '<colspan type="pre" cnt="2">計画<br>(t/千円)</colspan>',
+    '<colspan type="pre" cnt="2">計画<br>(t／千円)</colspan>',
     '<colspan type="top">円/kg</colspan>',
-    '<colspan type="pre" cnt="2">予定<br>(t/千円)</colspan>',
+    '<colspan type="pre" cnt="2">予定<br>(t／千円)</colspan>',
     '<colspan type="top">円/kg</colspan>',
-    '<colspan type="pre" cnt="2">実績見込<br>(t/千円)</colspan>',
+    '<colspan type="pre" cnt="2">実績見込<br>(t／千円)</colspan>',
     '<colspan type="top">円/kg</colspan>',
-    '<colspan type="pre" cnt="2">前年<br>(t/千円)</colspan>',
+    '<colspan type="pre" cnt="2">前年<br>(t／千円)</colspan>',
     '<colspan type="top">円/kg</colspan>',
-    '<colspan type="pre" cnt="2">計画<br>(t/千円)</colspan>',
+    '<colspan type="pre" cnt="2">計画<br>(t／千円)</colspan>',
     '<colspan type="top">円/kg</colspan>',
-    '<colspan type="pre" cnt="2">予定<br>(t/千円)</colspan>',
+    '<colspan type="pre" cnt="2">予定<br>(t／千円)</colspan>',
     '<colspan type="top">円/kg</colspan>',
   ];
   // ヘッダ2段目(稼働状況)
@@ -165,6 +175,23 @@ jQuery.noConflict();
     '<colspan type="top">前年</colspan>',
     '<colspan type="top">計画</colspan>',
     '<colspan type="top">予定</colspan>'
+  ];
+  // ヘッダ2段目(稼働状況)
+  gridVal.GRID_COL_QUALITY_HEADERS = [
+    '<rowspan type="top"> </rowspan>', // タブ種
+    '<rowspan type="top"> </rowspan>', // 単位
+    '<colspan type="top">母材重量</colspan>',
+    '<colspan type="top">製品重量</colspan>',
+    '<colspan type="top">ロス重量</colspan>',
+    '<colspan type="top">歩留り</colspan>',
+    '<colspan type="top">母材重量</colspan>',
+    '<colspan type="top">製品重量</colspan>',
+    '<colspan type="top">ロス重量</colspan>',
+    '<colspan type="top">歩留り</colspan>',
+    '<colspan type="top">母材重量</colspan>',
+    '<colspan type="top">製品重量</colspan>',
+    '<colspan type="top">ロス重量</colspan>',
+    '<colspan type="top">歩留り</colspan>'
   ];
   // 通常のヘッダ（cnt属性は2期比較時のcolspan数）
   gridVal.getGridColHeaders = function(showType) {
@@ -197,6 +224,105 @@ jQuery.noConflict();
   }; // 通常の際のカラム設定
   gridVal.getGridColumns = function(showType, sumFlg) {
     switch (showType) {
+      case '品質状況':
+        return [{
+            data: 'name',
+            type: 'text',
+            readOnly: true,
+            renderer: colorRenderer
+          },
+          {
+            data: 'size',
+            type: 'text',
+            readOnly: true,
+            renderer: colorRenderer
+          },
+          {
+            data: 'nbmtrweight',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer,
+          },
+          {
+            data: 'nbprdweight',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: 'nblosweight',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: 'nbyield',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: manHourRenderer
+          },
+          {
+            data: 'ntmtrweight',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: 'ntprdweight',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer,
+          },
+          {
+            data: 'ntlosweight',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: 'ntyield',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: manHourRenderer
+          },
+          {
+            data: 'namtrweight',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: 'naprdweight',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer,
+          },
+          {
+            data: 'nalosweight',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: monetaryRenderer
+          },
+          {
+            data: 'nayield',
+            type: 'numeric',
+            format: '0,0',
+            readOnly: true,
+            renderer: manHourRenderer
+          },
+        ];
+        break;
       case '稼働状況':
         return [{
             data: 'name',
@@ -561,9 +687,6 @@ jQuery.noConflict();
     if (type === 'tab4') {
       /* Ｐ／Ｌ */
       codeName = '担当者コード';
-    } else if (type === 'tab3') {
-      /* 稼働状況 */
-      codeName = '担当者コード';
     } else {
       /* 予実比較 */
     }
@@ -573,11 +696,27 @@ jQuery.noConflict();
     if (type === 'tab4' || type === 'Ｐ／Ｌ') {
       // 売上実績管理と在庫実績管理と予算管理のデータを取得
       kintone.Promise.all([
-        func.getPurchaseBudgetList(period),
         func.getSalesBudgetList(period),
         func.getStockBudgetList(period)
       ]).then(function() {
         console.log(' -- get data process for disp tab4 --');
+        // 表示を初期化
+        $('#my-top-grid').empty();
+        $('#my-grid').empty();
+        // グリッドを表示
+        func.showPerformListGrid(period, w2ui['radio_choice_tab'].active);
+        spinner.hideSpinner();
+      }).catch(function(error) {
+        alert('システムエラーが発生しました');
+        console.log(error);
+        spinner.hideSpinner();
+      });
+    } else if (type === 'tab3' || type === '品質状況') {
+      // 品質状況管理のデータを取得
+      kintone.Promise.all([
+        func.getHumanPerformList(period)
+      ]).then(function() {
+        console.log(' -- get data process for disp tab3 --');
         // 表示を初期化
         $('#my-top-grid').empty();
         $('#my-grid').empty();

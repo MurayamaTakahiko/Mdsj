@@ -60,7 +60,7 @@ jQuery.noConflict();
   // グリッド幅
   gridVal.GRID_WIDTH = 'auto';
   // 通常のセル幅（CKP）
-  gridVal.COL_WIDTH_CKP = [90, 90, 90, 75, 75, 90, 75, 75, 90, 75, 90, 75, 75, 75, 75, 75, 75, 90, 90];
+  gridVal.COL_WIDTH_CKP = [120, 120, 100, 80, 80, 100, 80, 80, 100, 80, 90, 80, 80, 80, 100, 100, 100, 100, 100];
   // 選択したタブのセル幅保持（初期値：顧客別）
   gridVal.COL_WIDTH = gridVal.COL_WIDTH_CKP;
   // ヘッダ1段目
@@ -95,7 +95,7 @@ jQuery.noConflict();
     '<rowspan type="top">実際歩留</rowspan>',
     '<rowspan type="top">金額</rowspan>',
     '<rowspan type="top">％</rowspan>',
-    '<rowspan type="top">時間<br>当たり</rowspan>',
+    '<rowspan type="top">時間当たり<br>金額</rowspan>',
   ];
   // 通常の際のカラム設定
   gridVal.getGridColumns = function(sumFlg) {

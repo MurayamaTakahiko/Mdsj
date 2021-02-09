@@ -35,7 +35,7 @@ jQuery.noConflict();
     func.getPersonOfChargeList().then(function() {
       // ヘッダ（期間絞込みの設定）
       var today = moment();
-      var applySele = func.makeSelectYearMonth(today.year(), today.month(), 'select-year-apply', 'select-month-apply');
+      var applySele = func.makeSelectYearMonth(today.year(), today.month() + 1, 'select-year-apply', 'select-month-apply');
       var changeButton = $('<span>').append($('<button>').attr('id', 'change-button').text('変更').click());
       $('#header').append($('<div>').html('&emsp;&emsp;コックピット対象月：' + applySele.html() + '&emsp;' + changeButton.html()));
       $('#change-button').click(function() {
@@ -95,7 +95,7 @@ jQuery.noConflict();
   // グリッド幅(稼働状況)
   gridVal.GRID_WIDTH_WORK = 'auto';
   // 通常のセル幅（CKP）
-  gridVal.COL_WIDTH_CKP = [30, 100, 60, 65, 45, 60, 65, 45, 60, 65, 45, 60, 65, 45, 60, 65, 45, 60, 65, 45, 60, 65, 45, 60, 65, 45, 60, 65, 45, 60, 65, 45, 60, 65, 45];
+  gridVal.COL_WIDTH_CKP = [30, 100, 60, 65, 45, 60, 65, 45, 60, 65, 45, 60, 65, 45, 60, 65, 45, 60, 65, 45, 60, 65, 45, 60, 65, 45, 60, 65, 45, 60, 65, 45];
   // 通常のセル幅(稼働状況)
   gridVal.COL_WIDTH_WORK_CKP = [150, 80, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150];
   // 通常のセル幅(品質状況)
@@ -114,7 +114,7 @@ jQuery.noConflict();
     '<rowspan type="top"> </rowspan>', // タブ種
     '<rowspan type="top"> </rowspan>', // ＫＰＩ項目
     '<colspan type="pre" cnt="12">1月度</colspan>', // 前月度
-    '<colspan type="pre" cnt="12">2月度</colspan>', // 当月度
+    '<colspan type="pre" cnt="9">2月度</colspan>', // 当月度
     '<colspan type="pre" cnt="9">3月度</colspan>', // 次月度
   ];
   // ヘッダ1段目(稼働状況)
@@ -149,15 +149,13 @@ jQuery.noConflict();
     '<colspan type="top">円/kg</colspan>',
     '<colspan type="pre" cnt="2">計画<br>(t／千円)</colspan>',
     '<colspan type="top">円/kg</colspan>',
-    '<colspan type="pre" cnt="2">予定<br>(t／千円)</colspan>',
-    '<colspan type="top">円/kg</colspan>',
     '<colspan type="pre" cnt="2">実績見込<br>(t／千円)</colspan>',
     '<colspan type="top">円/kg</colspan>',
     '<colspan type="pre" cnt="2">前年<br>(t／千円)</colspan>',
     '<colspan type="top">円/kg</colspan>',
     '<colspan type="pre" cnt="2">計画<br>(t／千円)</colspan>',
     '<colspan type="top">円/kg</colspan>',
-    '<colspan type="pre" cnt="2">予定<br>(t／千円)</colspan>',
+    '<colspan type="pre" cnt="2">実績見込<br>(t／千円)</colspan>',
     '<colspan type="top">円/kg</colspan>',
   ];
   // ヘッダ2段目(稼働状況)
@@ -555,27 +553,6 @@ jQuery.noConflict();
             renderer: monetaryRenderer
           },
           {
-            data: 'ntpsweight',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: 'ntpsPrice',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
-            data: 'ntpsUnit',
-            type: 'numeric',
-            format: '0,0',
-            readOnly: true,
-            renderer: monetaryRenderer
-          },
-          {
             data: 'ntppweight',
             type: 'numeric',
             format: '0,0',
@@ -694,10 +671,12 @@ jQuery.noConflict();
     whereOption.orderBy = codeName; // 並び替え
     // データの取得
     if (type === 'tab4' || type === 'Ｐ／Ｌ') {
-      // 売上実績管理と在庫実績管理と予算管理のデータを取得
+      // 仕入実績管理と売上実績管理と在庫実績管理と予算管理と会計のデータを取得
       kintone.Promise.all([
+        func.getPurchaseBudgetList(period),
         func.getSalesBudgetList(period),
-        func.getStockBudgetList(period)
+        func.getStockBudgetList(period),
+        func.getAccountBudgetList(period)
       ]).then(function() {
         console.log(' -- get data process for disp tab4 --');
         // 表示を初期化

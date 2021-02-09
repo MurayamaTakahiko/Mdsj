@@ -1121,6 +1121,86 @@ jQuery.noConflict();
   };
 
   /**
+   * 会計予算一覧の取得
+   *
+   * 期間指定がない場合は、登録されている全予算を取得します。
+   * whereOptionが存在する場合は、各値が存在する場合、以下の絞込みを行います
+   *   keyword.customer:キーワードによる絞り込み
+   *   mainChargeCustomers:「主担当のみ」による絞り込み
+   *
+   * @param period 期間指定(オプション)
+   * @param whereOption makeWhereOption()で取得したオプションオブジェクト(オプション)
+   * @param period2 2つ目の期間指定(オプション)
+   *
+   * @see makeWhereOption
+   * @see getPeriodFromTo
+   */
+  var getAccountBudgetList = function(period) {
+    let isAllList = (period === void 0);
+    let querySt = ' order by 対象年月 asc ';
+    if (!isAllList) {
+      // 期間の絞り込み
+      let fromDate = makeFromPreDateSt(period.moment.apply);
+      let toDate = makeToNxDateSt(period.moment.apply);
+      let lastFromDate = makeFromLastPreDateSt(period.moment.apply);
+      let lastToDate = makeToLastNxDateSt(period.moment.apply);
+      let periodSt = '(対象年月 <= "' + toDate + '" and ' + '対象年月 >= "' + fromDate +
+        '") or (対象年月 <= "' + lastToDate + '" and 対象年月 >= "' + lastFromDate + '")';
+      querySt = periodSt + querySt;
+    }
+    return kintoneUtility.rest.getAllRecordsByQuery({
+      app: emxasConf.getConfig('APP_ACCOUNT_LIST'),
+      query: querySt,
+      isGuest: true
+    }).then(function(resp) {
+      let rec = [];
+      let prcd = "";
+      let records = resp.records;
+      for (let ix = 0; ix < records.length; ix++) {
+        prcd = makeYearMonthSt(records[ix]['対象年月'].value);
+        rec[ix] = {
+          month: prcd, // 対象年月
+          pllabor: records[ix]['計画人件費'].value, // 計画人件費
+          plutilty: records[ix]['計画光熱費'].value, // 計画光熱費
+          plsupply: records[ix]['計画消耗品費'].value, // 計画消耗品費
+          plrepair: records[ix]['計画修繕費'].value, // 計画修繕費
+          plexamna: records[ix]['計画試験検査費'].value, // 計画試験検査費
+          plland: records[ix]['計画地代家賃'].value, // 計画地代家賃
+          pldeprecia: records[ix]['計画減価償却費'].value, // 計画減価償却費
+          plother: records[ix]['計画その他'].value, // 計画その他
+          plsalling: records[ix]['計画販売管理費・営業外'].value, // 計画販売管理費・営業外
+          pplabor: records[ix]['実績見込み人件費'].value, // 見込人件費
+          pputilty: records[ix]['実績見込み光熱費'].value, // 見込光熱費
+          ppsupply: records[ix]['実績見込み消耗品費'].value, // 見込消耗品費
+          pprepair: records[ix]['実績見込み修繕費'].value, // 見込修繕費
+          ppexamna: records[ix]['実績見込み試験検査費'].value, // 見込試験検査費
+          ppland: records[ix]['実績見込み地代家賃'].value, // 見込地代家賃
+          ppdeprecia: records[ix]['実績見込み減価償却費'].value, // 見込減価償却費
+          ppother: records[ix]['実績見込みその他'].value, // 見込その他
+          ppsalling: records[ix]['実績見込み販売管理費・営業外'].value, // 見込販売管理費・営業外
+          pelabor: records[ix]['実績人件費'].value, // 実績人件費
+          peutilty: records[ix]['実績光熱費'].value, // 実績光熱費
+          pesupply: records[ix]['実績消耗品費'].value, // 実績消耗品費
+          perepair: records[ix]['実績修繕費'].value, // 実績修繕費
+          peexamna: records[ix]['実績試験検査費'].value, // 実績試験検査費
+          peland: records[ix]['実績地代家賃'].value, // 実績地代家賃
+          pedeprecia: records[ix]['実績減価償却費'].value, // 実績減価償却費
+          peother: records[ix]['実績その他'].value, // 実績その他
+          pesalling: records[ix]['実績販売管理費・営業外'].value // 実績販売管理費・営業外
+        };
+      }
+      console.log(rec);
+      if (isAllList) {
+        myVal.ALL_LIST_ACCOUNT_BUDGET = rec;
+        myVal.ALL_SRC_LIST_ACCOUNT_BUDGET = records;
+      }
+      myVal.LIST_ACCOUNT_BUDGET = rec;
+      myVal.SRC_LIST_ACCOUNT_BUDGET = records;
+      return Promise.resolve(rec);
+    });
+  };
+
+  /**
    * 仕入実績一覧の取得
    *
    * 期間指定がない場合は、登録されている全予算を取得します。
@@ -1741,6 +1821,24 @@ jQuery.noConflict();
       myVal.SRC_LIST_PRCSTOCK_PERFORM = records;
       return Promise.resolve(sumrec);
     });
+  };
+  /**
+   * 在庫実績一覧の取得
+   *
+   * 期間指定がない場合は、登録されている全予算を取得します。
+   * whereOptionが存在する場合は、各値が存在する場合、以下の絞込みを行います
+   *   keyword.customer:キーワードによる絞り込み
+   *   mainChargeCustomers:「主担当のみ」による絞り込み
+   *
+   * @param period 期間指定(オプション)
+   * @param whereOption makeWhereOption()で取得したオプションオブジェクト(オプション)
+   * @param period2 2つ目の期間指定(オプション)
+   *
+   * @see makeWhereOption
+   * @see getPeriodFromTo
+   */
+  var getAccountPerformList = function(period, whereOption, period2) {
+
   };
 
   /**
@@ -4331,7 +4429,7 @@ jQuery.noConflict();
       getPurchasePerformList(period), // 仕入実績取得
       getSalesPerformList(period), // 販売実績取得
       getStockPerformList(period), // 在庫実績取得
-      getTaxPerformList(period) // 会計実績取得
+      getAccountPerformList(period) // 会計実績取得
     ]).then(function() {
       let purList = [];
       let proList = [];
@@ -5610,6 +5708,12 @@ jQuery.noConflict();
   /** 販売予算一覧(期間指定) */
   myVal.LIST_SALES_BUDGET;
   myVal.SRC_LIST_SALES_BUDGET;
+  /** 会計一覧 */
+  myVal.ALL_LIST_ACCOUNT_BUDGET;
+  myVal.ALL_SRC_LIST_ACCOUNT_BUDGET;
+  /** 会計一覧(期間指定) */
+  myVal.LIST_ACCOUNT_BUDGET;
+  myVal.SRC_LIST_ACCOUNT_BUDGET;
   /** 仕入実績一覧 */
   myVal.ALL_LIST_PURCHASE_PERFORM;
   myVal.ALL_SRC_LIST_PURCHASE_PERFORM;
@@ -5692,6 +5796,7 @@ jQuery.noConflict();
   window.func.getProductBudgetList = getProductBudgetList;
   window.func.getStockBudgetList = getStockBudgetList;
   window.func.getSalesBudgetList = getSalesBudgetList;
+  window.func.getAccountBudgetList = getAccountBudgetList;
   window.func.getPurchasePerformList = getPurchasePerformList;
   window.func.getProductPerformList = getProductPerformList;
   window.func.getSalesPerformList = getSalesPerformList;

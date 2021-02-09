@@ -34,7 +34,7 @@ jQuery.noConflict();
     func.getPersonOfChargeList().then(function() {
       // ヘッダ（期間絞込みの設定）
       var today = moment();
-      var applySele = func.makeSelectYearMonth(today.year(), today.month(), 'select-year-apply', 'select-month-apply');
+      var applySele = func.makeSelectYearMonth(today.year(), today.month() + 1, 'select-year-apply', 'select-month-apply');
       var changeButton = $('<span>').append($('<button>').attr('id', 'change-button').text('変更').click());
 
       $('#header').append($('<div>').html('&emsp;&emsp;分析対象月：' + applySele.html() + '&emsp;' + changeButton.html()));

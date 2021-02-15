@@ -5,6 +5,19 @@
 (function() {
   'use strict';
 
+  var cfevents = [
+    'mobile.app.record.create.submit',
+    'mobile.app.record.edit.submit'
+  ];
+  kintone.events.on(cfevents, function(event) {
+    var res = confirm("本当にこの内容を反映させますか");
+    if (res === false) {
+      event.error = "キャンセルしました";
+      window.location.href = window.location.origin + window.location.pathname + "#record=" + event.record.$id.value; // 画面遷移
+    }
+    return event;
+  });
+
   var events = [
     'mobile.app.record.create.show',
     'mobile.app.record.edit.show',

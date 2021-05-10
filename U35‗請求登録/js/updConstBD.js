@@ -1,6 +1,7 @@
 /*
  * 工事依頼請求日更新プログラム
  * 20200825 MDSJ takahara
+ * 20210510 MDSJ takahara Update
  */
 jQuery.noConflict();
 (function($) {
@@ -10,9 +11,10 @@ jQuery.noConflict();
    * kintone REST APIで一括更新するrecordsデータを作成する関数
    * @param records kintone REST APIで一括取得したrecordsデータ
    * @param billDay 一括更新する請求日データ
+   * @param billDay 一括更新する請求番号データ
    * @returns {Array} kintone REST APIで一括更新するrecordsデータ
    */
-  function createPutRecords(records, billDay) {
+  function createPutRecords(records, billDay, billNum) {
     var putRecords = [];
     for (var i = 0, l = records.length; i < l; i++) {
       var record = records[i];
@@ -21,6 +23,9 @@ jQuery.noConflict();
         record: {
           請求日: {
             value: billDay
+          },
+          請求番号: {
+            value: billNum
           }
         }
       };
@@ -70,12 +75,12 @@ jQuery.noConflict();
           }
         }
       };
-    // 工事依頼請求日更新
+    // 工事依頼請求日・請求番号更新
     return kintone.api(kintone.api.url('/k/v1/records', true), 'GET', paramGet).then(function(resp) {
       var records = resp.records;
       var paramPut = {
         'app': relatedAppId,
-        'records': createPutRecords(records, billDay)
+        'records': createPutRecords(records, billDay, billNum)
       };
       return kintone.api(kintone.api.url('/k/v1/records', true), 'PUT', paramPut).then(function(resp) {
         // 入金管理アプリ登録処理

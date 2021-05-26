@@ -58,10 +58,6 @@ jQuery.noConflict();
           {
             id: 'tab3',
             caption: '品質状況'
-          },
-          {
-            id: 'tab4',
-            caption: 'Ｐ／Ｌ'
           }
         ],
         onClick: function(event) {
@@ -661,36 +657,10 @@ jQuery.noConflict();
     // 各アプリからのデータ取得の際に、自前で絞り込む条件を持つ
     let whereOption = {};
     let codeName = '品種カテゴリー';
-    if (type === 'tab4') {
-      /* Ｐ／Ｌ */
-      codeName = '担当者コード';
-    } else {
-      /* 予実比較 */
-    }
     // order by はコードで寄せる。
     whereOption.orderBy = codeName; // 並び替え
     // データの取得
-    if (type === 'tab4' || type === 'Ｐ／Ｌ') {
-      // 仕入実績管理と売上実績管理と在庫実績管理と予算管理と会計のデータを取得
-      kintone.Promise.all([
-        func.getPurchaseBudgetList(period),
-        func.getSalesBudgetList(period),
-        func.getStockBudgetList(period),
-        func.getAccountBudgetList(period)
-      ]).then(function() {
-        console.log(' -- get data process for disp tab4 --');
-        // 表示を初期化
-        $('#my-top-grid').empty();
-        $('#my-grid').empty();
-        // グリッドを表示
-        func.showPerformListGrid(period, w2ui['radio_choice_tab'].active);
-        spinner.hideSpinner();
-      }).catch(function(error) {
-        alert('システムエラーが発生しました');
-        console.log(error);
-        spinner.hideSpinner();
-      });
-    } else if (type === 'tab3' || type === '品質状況') {
+    if (type === 'tab3' || type === '品質状況') {
       // 品質状況管理のデータを取得
       kintone.Promise.all([
         func.getHumanPerformList(period)
@@ -727,11 +697,14 @@ jQuery.noConflict();
     } else {
       // 仕入実績管理と生産実績管理と予算管理のデータを取得
       // 売上実績管理と在庫実績管理と予算管理のデータを取得
+      // その他経費の予算実績データと会計の予算実績データ
       kintone.Promise.all([
         func.getPurchaseBudgetList(period),
         func.getProductBudgetList(period),
         func.getSalesBudgetList(period),
-        func.getStockBudgetList(period)
+        func.getStockBudgetList(period),
+        func.getOtherBudgetList(period),
+        func.getAccountBudgetList(period)
       ]).then(function() {
         console.log(' -- get data process for disp --');
         // 表示を初期化

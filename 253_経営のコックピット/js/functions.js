@@ -1121,6 +1121,69 @@ jQuery.noConflict();
   };
 
   /**
+   * その他経費予算一覧の取得
+   *
+   * 期間指定がない場合は、登録されている全予算を取得します。
+   * whereOptionが存在する場合は、各値が存在する場合、以下の絞込みを行います
+   *   keyword.customer:キーワードによる絞り込み
+   *   mainChargeCustomers:「主担当のみ」による絞り込み
+   *
+   * @param period 期間指定(オプション)
+   * @param whereOption makeWhereOption()で取得したオプションオブジェクト(オプション)
+   * @param period2 2つ目の期間指定(オプション)
+   *
+   * @see makeWhereOption
+   * @see getPeriodFromTo
+   */
+  var getOtherBudgetList = function(period, whereOption, period2) {
+    let isAllList = (period === void 0);
+    // 製品在庫予算
+    let querySt = ' order by 対象年月 asc ';
+    if (!isAllList) {
+      // 期間の絞り込み
+      let fromDate = makeFromPreDateSt(period.moment.apply);
+      let toDate = makeToNxDateSt(period.moment.apply);
+      let lastFromDate = makeFromLastPreDateSt(period.moment.apply);
+      let lastToDate = makeToLastNxDateSt(period.moment.apply);
+      let periodSt = '(対象年月 <= "' + toDate + '" and ' + '対象年月 >= "' + fromDate +
+        '") or (対象年月 <= "' + lastToDate + '" and 対象年月 >= "' + lastFromDate + '") ';
+      querySt = periodSt + querySt;
+    }
+    kintoneUtility.rest.getAllRecordsByQuery({
+      app: emxasConf.getConfig('APP_OTHER_LIST'),
+      query: querySt,
+      isGuest: true
+    }).then(function(resp) {
+      let rec = [];
+      let prcd = "";
+      let records = resp.records;
+      for (let ix = 0; ix < records.length; ix++) {
+        prcd = makeYearMonthSt(records[ix]['対象年月'].value);
+        rec[ix] = {
+          month: prcd, // 対象年月
+          plprocess: records[ix]['計画加工賃'].value, // 計画加工賃
+          plinsurance: records[ix]['計画保管料'].value, // 計画保管料
+          plfare: records[ix]['計画運賃等'].value, // 計画運賃等
+          ppprocess: records[ix]['実績見込み加工賃'].value, // 見込加工賃
+          ppinsurance: records[ix]['実績見込み保管料'].value, // 見込保管料
+          ppfare: records[ix]['実績見込み運賃等'].value, // 見込運賃等
+          peprocess: records[ix]['実績加工賃'].value, // 実績加工賃
+          peinsurance: records[ix]['実績保管料'].value, // 実績保管料
+          pefare: records[ix]['実績運賃等'].value // 実績運賃等
+        };
+      }
+      console.log(rec);
+      if (isAllList) {
+        myVal.ALL_LIST_OTHER_BUDGET = rec;
+        myVal.ALL_SRC_LIST_OTHER_BUDGET = records;
+      }
+      myVal.LIST_OTHER_BUDGET = rec;
+      myVal.SRC_LIST_OTHER_BUDGET = records;
+      return Promise.resolve(rec);
+    });
+  };
+
+  /**
    * 会計予算一覧の取得
    *
    * 期間指定がない場合は、登録されている全予算を取得します。
@@ -3340,10 +3403,6 @@ jQuery.noConflict();
           showType = "品質状況";
           dispOneTermThirdTab(period, showType);
           break;
-        case "tab4":
-          showType = "Ｐ／Ｌ";
-          dispOneTermForthTab(period, showType);
-          break;
         default:
           dispOneTerm(period);
       }
@@ -3969,13 +4028,19 @@ jQuery.noConflict();
       let proList = [];
       let salList = [];
       let stcList = [];
+      let accList = [];
+      let purListLog = [];
+      let salListLog = [];
       // 仕入実績、生産実績、販売実績、在庫実績いずれも1件以上あれば、次へ。
       if (Object.keys(myVal.LIST_PURCHASE_PERFORM).length > 0 && Object.keys(myVal.LIST_PRODUCT_PERFORM).length &&
-        Object.keys(myVal.LIST_SALES_PERFORM).length > 0 && Object.keys(myVal.LIST_PRDSTOCK_BUDGET).length > 0) {
+        Object.keys(myVal.LIST_SALES_PERFORM).length > 0 && Object.keys(myVal.LIST_PRDSTOCK_PERFORM).length > 0) {
         purList = getPurchaseReport(period, purList);
+        purListLog.push(purList[purList.length - 1]);
         proList = getProductReport(period, purList, proList);
         salList = getSalesReport(period, proList, salList);
-        return getStockReport(period, salList, stcList);
+        salListLog.push(salList[salList.length - 1]);
+        stcList = getStockReport(period, salList, stcList);
+        return getAccountReport(period, stcList, accList, purListLog, salListLog);
       } else {
         // 仕入実績＆生産実績＆販売実績＆在庫実績が共に1件以上存在しない場合は、分析対象が存在しないので、ここでデータ取得は離脱
         return Promise.reject('分析対象が存在しません。');
@@ -4393,172 +4458,6 @@ jQuery.noConflict();
             $(this).after('<span class="sort-indicator">▼</span>');
 
             // 現在降順 and 前回ソートと同じ列をクリック ⇒ ３コード／担当者コード順でソート（初期表示状態）
-          } else if (beforeSortConfig === 1 && clickedColumn === sortedColumn) {
-            sortConfig = 0; // ソート無し
-            clickedColumn = 0; // ３コード／担当者コード列をクリックした事にする。
-            e.target.classList.remove("descending");
-            e.target.classList.remove("ascending");
-          }
-          let columnName = gridVal.getGridColumns(showType)[clickedColumn]['data'];
-          customSort(columnName, sortConfig);
-        });
-      }
-      ////// グリッドの表示 end ///////
-      spinner.hideSpinner();
-    }).catch(function(error) {
-      console.log(error);
-      spinner.hideSpinner();
-      if (typeof error === 'string') {
-        // グリッドが存在したら削除
-        destroyHandsonGrid(hot);
-        destroyHandsonGrid(totalHot);
-        destroyHandsonGrid(headerHot);
-        // エラーメッセージを画面に表示(#my-gridに)
-        let msg = $('<div>').attr('id', 'error_msg').text(error);
-        $('#my-grid').append(msg);
-        return;
-      }
-      alert('システムエラーが発生しました');
-    });
-  };
-
-  var dispOneTermForthTab = function(period, showType) {
-    console.log('------- dispOneTermForthTab --------');
-    // データ取得
-    kintone.Promise.all([
-      getPurchasePerformList(period), // 仕入実績取得
-      getSalesPerformList(period), // 販売実績取得
-      getStockPerformList(period), // 在庫実績取得
-      getAccountPerformList(period) // 会計実績取得
-    ]).then(function() {
-      let purList = [];
-      let proList = [];
-      let salList = [];
-      let stcList = [];
-      // 仕入実績、生産実績、販売実績、在庫実績いずれも1件以上あれば、次へ。
-      if (Object.keys(myVal.LIST_PURCHASE_PERFORM).length > 0 && Object.keys(myVal.LIST_PRODUCT_PERFORM).length &&
-        Object.keys(myVal.LIST_SALES_PERFORM).length > 0 && Object.keys(myVal.LIST_PRDSTOCK_BUDGET).length > 0) {
-        purList = getPurchaseReport(period, purList);
-        proList = getProductReport(period, purList, proList);
-        salList = getSalesReport(period, proList, salList);
-        return getStockReport(period, salList, stcList);
-      } else {
-        // 仕入実績＆生産実績＆販売実績＆在庫実績が共に1件以上存在しない場合は、分析対象が存在しないので、ここでデータ取得は離脱
-        return Promise.reject('分析対象が存在しません。');
-      }
-    }).then(function(resp) {
-      let dataList = resp;
-      if (dataList.length < 1) {
-        return Promise.reject('分析対象が存在しません。');
-      }
-      ////// グリッドの表示 ///////
-      let headerContainer = document.getElementById('my-top-grid');
-      let container = document.getElementById('my-grid');
-      let totalContainer = document.getElementById('total-grid');
-      // 既に存在していたら破棄
-      destroyHandsonGrid(hot);
-      destroyHandsonGrid(totalHot);
-      destroyHandsonGrid(headerHot);
-      // ヘッダー2段の場合の上部分
-      headerHot = new Handsontable(headerContainer, {
-        data: [],
-        columns: gridVal.getGridColumns(showType),
-        colHeaders: gridVal.GRID_TOP_COL_HEADERS,
-        colWidths: gridVal.COL_WIDTH_CKP,
-        columnSorting: false,
-        stretchH: 'last',
-        width: gridVal.GRID_WIDTH,
-      });
-      // グリッド本体
-      hot = new Handsontable(container, {
-        data: dataList,
-        columns: gridVal.getGridColumns(showType),
-        colHeaders: gridVal.GRID_COL_HEADERS,
-        colWidths: gridVal.COL_WIDTH_CKP,
-        columnSorting: false,
-        stretchH: 'last',
-        width: gridVal.GRID_WIDTH,
-        afterGetColHeader: null,
-        afterRender: function(isForced) {
-          // colspanとrowspanの処理をまとめて行う
-          // (下側のグリッド表示後に実行されるので、headerHotは描画済み)
-          if (isForced) {
-            treatMyHeaderTags();
-          }
-        },
-        autoColumnSize: true
-      });
-      // 独自ソート関数
-      const customSort = function(selectedColumn, sortConfig) {
-        dataList.sort(function(a, b) {
-          // 指定列のソート（列値有りの場合、値でソート。ソート無しの場合も昇順）
-          if (a[selectedColumn] && b[selectedColumn]) {
-            if (a[selectedColumn] < b[selectedColumn]) return (sortConfig === 0 ? -1 : sortConfig);
-            if (a[selectedColumn] > b[selectedColumn]) return (sortConfig === 0 ? 1 : (sortConfig * -1));
-          }
-          // 指定列のソート（列値無しの場合、値無しを優先でソート）
-          // ソート無しの場合、コード値無しは最終行に表示する為、降順になる
-          if (!a[selectedColumn] || !b[selectedColumn]) {
-            if (!a[selectedColumn] && b[selectedColumn]) return (sortConfig === 0 ? 1 : sortConfig);
-            if (a[selectedColumn] && !b[selectedColumn]) return (sortConfig === 0 ? -1 : (sortConfig * -1));
-          }
-          // コードの昇順は全てのケースで行う
-          if (a[(showType === '顧客別' ? '３コード' : '担当者コード')] < b[(showType === '顧客別' ? '３コード' : '担当者コード')]) return -1;
-          if (a[(showType === '顧客別' ? '３コード' : '担当者コード')] > b[(showType === '顧客別' ? '３コード' : '担当者コード')]) return 1;
-
-          return 0;
-        });
-        // // ソート無しの場合、コード未選択を最終行にする。
-        // if (sortConfig === 0) {
-        //     let noCodeData = [];
-        //     let dataListForSort = $.extend(true, [], dataList);
-        //     dataListForSort.forEach(function(data, i) {
-        //         // コード未選択以外はスキップ
-        //         if (data['no_code']) {
-        //             return;
-        //         }
-        //         noCodeData.push(data);
-        //         dataList.splice(i, 1);
-        //     });
-        //     dataList.push(noCodeData);
-        // }
-        hot.render();
-      };
-      // 生産性分析時のみの独自ソートトリガー用クリックイベント
-      if (dispViewId == emxasConf.getConfig('VIEW_PRC_PDCT_ANALYSIS')) {
-        $('table.htCore th span.colHeader').parent('div').addClass('custom-sort-header');
-        $(document).off('click', 'table.htCore span.colHeader');
-        $(document).on('click', 'table.htCore span.colHeader', function(e) {
-          let sortConfig = null;
-          // クリック列
-          let clickedColumn = $(this).parents('th').index();
-          // 前回ソート列
-          let sortedColumn = $('.sort-indicator').parents('th').index();
-          // 前回ソート内容
-          let beforeSortConfig = 0;
-          // 前回ソート内容取得
-          if ($(this).parents('th').find(".ascending").length > 0) {
-            beforeSortConfig = -1;
-          } else if ($(this).parents('th').find(".descending").length > 0) {
-            beforeSortConfig = 1;
-          }
-          // 前回ソート内容保持クラス削除
-          $(this).removeClass("ascending");
-          $(this).removeClass("descending");
-          $(this).parents('tr').find('.sort-indicator').remove();
-          // 現在ソート無し or 前回ソートと違う列をクリック ⇒ 昇順でソートする
-          if (beforeSortConfig === 0 || clickedColumn !== sortedColumn) {
-            sortConfig = -1;
-            e.target.classList.add("ascending");
-            e.target.classList.remove("descending");
-            $(this).after('<span class="sort-indicator">▲</span>');
-          // 現在昇順 and 前回ソートと同じ列をクリック ⇒ 降順でソートする
-          } else if (beforeSortConfig === -1 && clickedColumn === sortedColumn) {
-            sortConfig = 1;
-            e.target.classList.add("descending");
-            e.target.classList.remove("ascending");
-            $(this).after('<span class="sort-indicator">▼</span>');
-          // 現在降順 and 前回ソートと同じ列をクリック ⇒ ３コード／担当者コード順でソート（初期表示状態）
           } else if (beforeSortConfig === 1 && clickedColumn === sortedColumn) {
             sortConfig = 0; // ソート無し
             clickedColumn = 0; // ３コード／担当者コード列をクリックした事にする。
@@ -5165,6 +5064,607 @@ jQuery.noConflict();
     return stcCkpListThreewithT;
   }
   /**
+   * P/L CKPエリアのデータに整理する
+   */
+  var getAccountReport = function(period, stcCkpListThreewithT, accCkpListThreewithT,
+    bugCkpListThreewithT, salCkpListThreewithT) {
+    accCkpListThreewithT = stcCkpListThreewithT;
+    let accCkpListBefore = [];
+    let accCkpListBeforewithT = [];
+    // 材料仕入
+    accCkpListBefore.push(bugCkpListThreewithT[bugCkpListThreewithT.length - 1]);
+    console.log(accCkpListBefore);
+    // 材料棚卸増減、製品在庫増減
+    // 材料費合計
+    integrateTotal(accCkpListBefore, accCkpListBeforewithT);
+    // 後で変動費合計の計算用
+    let bugCkpListT = [];
+    bugCkpListT.push(accCkpListBeforewithT[accCkpListBeforewithT.length - 1]);
+    // 材料費率
+    accCkpListBefore = [];
+    accCkpListBefore = {
+      name: "（材料費率）",
+      nblsprcUnit: toNumber(Math.floor(salCkpListThreewithT[salCkpListThreewithT.length - 1].nblsprcPrice /
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].nblsprcPrice)) * 100,
+      nbplUnit: toNumber(Math.floor(salCkpListThreewithT[salCkpListThreewithT.length - 1].nbplPrice /
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].nbplPrice)) * 100,
+      nbppUnit: toNumber(Math.floor(salCkpListThreewithT[salCkpListThreewithT.length - 1].nbppPrice /
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].nbppPrice)) * 100,
+      nbprcUnit: toNumber(Math.floor(salCkpListThreewithT[salCkpListThreewithT.length - 1].nbprcPrice /
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].nbprcPrice)) * 100,
+      ntlsprcUnit: toNumber(Math.floor(salCkpListThreewithT[salCkpListThreewithT.length - 1].ntlsprcPrice /
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].ntlsprcPrice)) * 100,
+      ntplUnit: toNumber(Math.floor(salCkpListThreewithT[salCkpListThreewithT.length - 1].ntplPrice /
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].ntplPrice)) * 100,
+      ntpsUnit: toNumber(Math.floor(salCkpListThreewithT[salCkpListThreewithT.length - 1].ntpsPrice /
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].ntpsPrice)) * 100,
+      ntppUnit: toNumber(Math.floor(salCkpListThreewithT[salCkpListThreewithT.length - 1].ntppPrice /
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].ntppPrice)) * 100,
+      nalsprcUnit: toNumber(Math.floor(salCkpListThreewithT[salCkpListThreewithT.length - 1].nalsprcPrice /
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].nalsprcPrice)) * 100,
+      naplUnit: toNumber(Math.floor(salCkpListThreewithT[salCkpListThreewithT.length - 1].naplPrice /
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].naplPrice)) * 100,
+      napsUnit: toNumber(Math.floor(salCkpListThreewithT[salCkpListThreewithT.length - 1].napsPrice /
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].napsPrice)) * 100
+    };
+    accCkpListBeforewithT.push(accCkpListBefore);
+    console.log(accCkpListBefore);
+    // 材料スプレッド
+    let splCkpList = [];
+    accCkpListBefore = [];
+    accCkpListBefore = {
+      name: "材料スプレッド",
+      nblsprcweight: toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].nblsprcweight -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].nblsprcweight),
+      nblsprcPrice: toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].nblsprcPrice -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].nblsprcPrice),
+      nblsprcUnit: Math.floor((toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].nblsprcPrice -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].nblsprcPrice)) /
+          (toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].nblsprcweight -
+          bugCkpListThreewithT[bugCkpListThreewithT.length - 1].nblsprcweight))),
+      nbplweight: toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].nbplweight -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].nbplweight),
+      nbplPrice: toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].nbplPrice -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].nbplPrice),
+      nbplUnit: Math.floor((toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].nbplPrice -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].nbplPrice)) /
+          (toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].nbplweight -
+          bugCkpListThreewithT[bugCkpListThreewithT.length - 1].nbplweight))),
+      nbppweight: toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].nbppweight -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].nbppweight),
+      nbppPrice: toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].nbppPrice -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].nbppPrice),
+      nbppUnit: Math.floor((toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].nbppPrice -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].nbppPrice)) /
+          (toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].nbppweight -
+          bugCkpListThreewithT[bugCkpListThreewithT.length - 1].nbppweight))),
+      nbprcweight: toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].nbprcweight -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].nbprcweight),
+      nbprcPrice: toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].nbprcPrice -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].nbprcPrice),
+      nbprcUnit: Math.floor((toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].nbprcPrice -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].nbprcPrice)) /
+          (toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].nbprcweight -
+          bugCkpListThreewithT[bugCkpListThreewithT.length - 1].nbprcweight))),
+      ntlsprcweight: toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].ntlsprcweight -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].ntlsprcweight),
+      ntlsprcPrice: toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].ntlsprcPrice -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].ntlsprcPrice),
+      ntlsprcUnit: Math.floor((toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].ntlsprcPrice -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].ntlsprcPrice)) /
+          (toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].ntlsprcweight -
+          bugCkpListThreewithT[bugCkpListThreewithT.length - 1].ntlsprcweight))),
+      ntplweight: toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].ntplweight -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].ntplweight),
+      ntplPrice: toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].ntplPrice -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].ntplPrice),
+      ntplUnit: Math.floor((toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].ntplPrice -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].ntplPrice)) /
+          (toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].ntplweight -
+          bugCkpListThreewithT[bugCkpListThreewithT.length - 1].ntplweight))),
+      ntpsweight: toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].ntpsweight -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].ntpsweight),
+      ntpsPrice: toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].ntpsPrice -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].ntpsPrice),
+      ntpsUnit: Math.floor((toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].ntpsPrice -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].ntpsPrice)) /
+          (toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].ntpsweight -
+          bugCkpListThreewithT[bugCkpListThreewithT.length - 1].ntpsweight))),
+      ntppweight: toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].ntppweight -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].ntppweight),
+      ntppPrice: toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].ntppPrice -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].ntppPrice),
+      ntppUnit: Math.floor((toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].ntppPrice -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].ntppPrice)) /
+          (toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].ntppweight -
+          bugCkpListThreewithT[bugCkpListThreewithT.length - 1].ntppweight))),
+      nalsprcweight: toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].nalsprcweight -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].nalsprcweight),
+      nalsprcPrice: toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].nalsprcPrice -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].nalsprcPrice),
+      nalsprcUnit: Math.floor((toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].nalsprcPrice -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].nalsprcPrice)) /
+          (toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].nalsprcweight -
+          bugCkpListThreewithT[bugCkpListThreewithT.length - 1].nalsprcweight))),
+      naplweight: toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].naplweight -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].naplweight),
+      naplPrice: toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].naplPrice -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].naplPrice),
+      naplUnit: Math.floor((toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].naplPrice -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].naplPrice)) /
+          (toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].naplweight -
+          bugCkpListThreewithT[bugCkpListThreewithT.length - 1].naplweight))),
+      napsweight: toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].napsweight -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].napsweight),
+      napsPrice: toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].napsPrice -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].napsPrice),
+      napsUnit: Math.floor((toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].napsPrice -
+        bugCkpListThreewithT[bugCkpListThreewithT.length - 1].napsPrice)) /
+          (toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].napsweight -
+          bugCkpListThreewithT[bugCkpListThreewithT.length - 1].napsweight)))
+    };
+    // 後で変動費合計の計算用
+    splCkpList = accCkpListBefore;
+    accCkpListBeforewithT.push(accCkpListBefore);
+    console.log(accCkpListBefore);
+    // その他経費 加工賃
+    let otrList = myVal.LIST_OTHER_BUDGET;
+    let otrCkpList = [];
+    for (let iy = 0; iy < otrList.length; iy = iy + 1) {
+      let bugrec = {};
+      bugrec = {
+        month: otrList[iy].month, // 対象年月
+        code: "Ｐ／Ｌ",
+        name: "加工賃", // 加工賃
+        plPrice: otrList[iy].plprocess, // 計画加工賃
+        psPrice: otrList[iy].plprocess, // 予定加工賃
+        ppPrice: otrList[iy].ppprocess, // 見込加工賃
+        stcPrice: otrList[iy].peprocess // 実績加工賃
+      };
+      otrCkpList.push(bugrec);
+    }
+    console.log(otrCkpList);
+    // その他経費 保管料
+    for (let iy = 0; iy < otrList.length; iy = iy + 1) {
+      let bugrec = {};
+      bugrec = {
+        month: otrList[iy].month, // 対象年月
+        code: "Ｐ／Ｌ",
+        name: "保管料", // 保管料
+        plPrice: otrList[iy].plinsurance, // 計画保管料
+        psPrice: otrList[iy].plinsurance, // 予定保管料
+        ppPrice: otrList[iy].ppinsurance, // 見込保管料
+        stcPrice: otrList[iy].peinsurance // 実績保管料
+      };
+      otrCkpList.push(bugrec);
+    }
+    console.log(otrCkpList);
+    // その他経費 運賃等
+    for (let iy = 0; iy < otrList.length; iy = iy + 1) {
+      let bugrec = {};
+      bugrec = {
+        month: otrList[iy].month, // 対象年月
+        code: "Ｐ／Ｌ",
+        name: "運賃等", // 運賃等
+        plPrice: otrList[iy].plfare, // 計画運賃等
+        psPrice: otrList[iy].plfare, // 予定運賃等
+        ppPrice: otrList[iy].ppfare, // 見込運賃等
+        stcPrice: otrList[iy].pefare // 実績運賃等
+      };
+      otrCkpList.push(bugrec);
+    }
+    console.log(otrCkpList);
+    // 配列を1ヶ月単位に3ヶ月レイアウトに変更し、売上高CKPの後ろに追加
+    // 合計行を出すために、生産実績のみのリストを作成
+    let otrCkpListBefore = [];
+    let otrCkpListBeforewithT = [];
+    for (let ix = 0; ix < otrCkpList.length; ix = ix + 6) {
+      let bugrec = {};
+      bugrec.code = otrCkpList[ix + 3].code;
+      bugrec.name = otrCkpList[ix + 3].name;
+      bugrec.nblsprcweight = otrCkpList[ix].stcweight;
+      bugrec.nblsprcPrice = otrCkpList[ix].stcPrice;
+      bugrec.nblsprcUnit = otrCkpList[ix].stcUnit;
+      bugrec.nbplweight = otrCkpList[ix + 3].plweight;
+      bugrec.nbplPrice = otrCkpList[ix + 3].plPrice;
+      bugrec.nbplUnit = otrCkpList[ix + 3].plUnit;
+      bugrec.nbppweight = otrCkpList[ix + 3].ppweight;
+      bugrec.nbppPrice = otrCkpList[ix + 3].ppPrice;
+      bugrec.nbppUnit = otrCkpList[ix + 3].ppUnit;
+      bugrec.nbprcweight = otrCkpList[ix + 3].stcweight;
+      bugrec.nbprcPrice = otrCkpList[ix + 3].stcPrice;
+      bugrec.nbprcUnit = otrCkpList[ix + 3].stcUnit;
+      bugrec.ntlsprcweight = otrCkpList[ix + 1].stcweight;
+      bugrec.ntlsprcPrice = otrCkpList[ix + 1].stcPrice;
+      bugrec.ntlsprcUnit = otrCkpList[ix + 1].stcUnit;
+      bugrec.ntplweight = otrCkpList[ix + 4].plweight;
+      bugrec.ntplPrice = otrCkpList[ix + 4].plPrice;
+      bugrec.ntplUnit = otrCkpList[ix + 4].plUnit;
+      bugrec.ntpsweight = otrCkpList[ix + 4].psweight;
+      bugrec.ntpsPrice = otrCkpList[ix + 4].psPrice;
+      bugrec.ntpsUnit = otrCkpList[ix + 4].psUnit;
+      bugrec.ntppweight = otrCkpList[ix + 4].ppweight;
+      bugrec.ntppPrice = otrCkpList[ix + 4].ppPrice;
+      bugrec.ntppUnit = otrCkpList[ix + 4].ppUnit;
+      bugrec.nalsprcweight = otrCkpList[ix + 2].stcweight;
+      bugrec.nalsprcPrice = otrCkpList[ix + 2].stcPrice;
+      bugrec.nalsprcUnit = otrCkpList[ix + 2].stcUnit;
+      bugrec.naplweight = otrCkpList[ix + 5].plweight;
+      bugrec.naplPrice = otrCkpList[ix + 5].plPrice;
+      bugrec.naplUnit = otrCkpList[ix + 5].plUnit;
+      bugrec.napsweight = otrCkpList[ix + 5].psweight;
+      bugrec.napsPrice = otrCkpList[ix + 5].psPrice;
+      bugrec.napsUnit = otrCkpList[ix + 5].psUnit;
+      otrCkpListBefore.push(bugrec);
+    }
+    integrateTotal(otrCkpListBefore, otrCkpListBeforewithT);
+    for (var ix = 0; ix < otrCkpListBefore.length; ix++) {
+      accCkpListBeforewithT.push(otrCkpListBefore[ix]);
+    }
+    console.log(accCkpListBeforewithT);
+    // 変動費合計
+    accCkpListBefore = [];
+    accCkpListBefore = {
+      name: "変動費合計",
+      nblsprcweight: toNumber(bugCkpListT.nblsprcweight +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nblsprcweight),
+      nblsprcPrice: toNumber(bugCkpListT.nblsprcPrice +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nblsprcPrice),
+      nblsprcUnit: Math.floor((toNumber(bugCkpListT.nblsprcPrice +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nblsprcPrice)) /
+          (toNumber(bugCkpListT.nblsprcweight +
+          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nblsprcweight))),
+      nbplweight: toNumber(bugCkpListT.nbplweight +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbplweight),
+      nbplPrice: toNumber(bugCkpListT.nbplPrice +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbplPrice),
+      nbplUnit: Math.floor((toNumber(bugCkpListT.nbplPrice +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbplPrice)) /
+          (toNumber(bugCkpListT.nbplweight +
+          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbplweight))),
+      nbppweight: toNumber(bugCkpListT.nbppweight +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbppweight),
+      nbppPrice: toNumber(bugCkpListT.nbppPrice +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbppPrice),
+      nbppUnit: Math.floor((toNumber(bugCkpListT.nbppPrice +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbppPrice)) /
+          (toNumber(bugCkpListT.nbppweight +
+          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbppweight))),
+      nbprcweight: toNumber(bugCkpListT.nbprcweight +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbprcweight),
+      nbprcPrice: toNumber(bugCkpListT.nbprcPrice +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbprcPrice),
+      nbprcUnit: Math.floor((toNumber(bugCkpListT.nbprcPrice +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbprcPrice)) /
+          (toNumber(bugCkpListT.nbprcweight +
+          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbprcweight))),
+      ntlsprcweight: toNumber(bugCkpListT.ntlsprcweight +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntlsprcweight),
+      ntlsprcPrice: toNumber(bugCkpListT.ntlsprcPrice +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntlsprcPrice),
+      ntlsprcUnit: Math.floor((toNumber(bugCkpListT.ntlsprcPrice +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntlsprcPrice)) /
+          (toNumber(bugCkpListT.ntlsprcweight +
+          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntlsprcweight))),
+      ntplweight: toNumber(bugCkpListT.ntplweight +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntplweight),
+      ntplPrice: toNumber(bugCkpListT.ntplPrice +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntplPrice),
+      ntplUnit: Math.floor((toNumber(bugCkpListT.ntplPrice +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntplPrice)) /
+          (toNumber(bugCkpListT.ntplweight +
+          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntplweight))),
+      ntpsweight: toNumber(bugCkpListT.ntpsweight +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntpsweight),
+      ntpsPrice: toNumber(bugCkpListT.ntpsPrice +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntpsPrice),
+      ntpsUnit: Math.floor((toNumber(bugCkpListT.ntpsPrice +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntpsPrice)) /
+          (toNumber(bugCkpListT.ntpsweight +
+          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntpsweight))),
+      ntppweight: toNumber(bugCkpListT.ntppweight +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntppweight),
+      ntppPrice: toNumber(bugCkpListT.ntppPrice +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntppPrice),
+      ntppUnit: Math.floor((toNumber(bugCkpListT.ntppPrice +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntppPrice)) /
+          (toNumber(bugCkpListT.ntppweight +
+          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntppweight))),
+      nalsprcweight: toNumber(bugCkpListT.nalsprcweight +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nalsprcweight),
+      nalsprcPrice: toNumber(bugCkpListT.nalsprcPrice +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nalsprcPrice),
+      nalsprcUnit: Math.floor((toNumber(bugCkpListT.nalsprcPrice +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nalsprcPrice)) /
+          (toNumber(bugCkpListT.nalsprcweight +
+          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nalsprcweight))),
+      naplweight: toNumber(bugCkpListT.naplweight +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].naplweight),
+      naplPrice: toNumber(bugCkpListT.naplPrice +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].naplPrice),
+      naplUnit: Math.floor((toNumber(bugCkpListT.naplPrice +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].naplPrice)) /
+          (toNumber(bugCkpListT.naplweight +
+          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].naplweight))),
+      napsweight: toNumber(bugCkpListT.napsweight +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].napsweight),
+      napsPrice: toNumber(bugCkpListT.napsPrice +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].napsPrice),
+      napsUnit: Math.floor((toNumber(bugCkpListT.napsPrice +
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].napsPrice)) /
+          (toNumber(bugCkpListT.napsweight +
+          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].napsweight)))
+    };
+    accCkpListBeforewithT.push(accCkpListBefore);
+    console.log(accCkpListBefore);
+    // 販売スプレッド利益
+    let salsplCkpList = [];
+    accCkpListBefore = [];
+    accCkpListBefore = {
+      name: "販売スプレッド利益",
+      nblsprcweight: toNumber(splCkpList.nblsprcweight -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nblsprcweight),
+      nblsprcPrice: toNumber(splCkpList.nblsprcPrice -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nblsprcPrice),
+      nblsprcUnit: Math.floor((toNumber(splCkpList.nblsprcPrice -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nblsprcPrice)) /
+          (toNumber(splCkpList.nblsprcweight -
+          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nblsprcweight))),
+      nbplweight: toNumber(splCkpList.nbplweight -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbplweight),
+      nbplPrice: toNumber(splCkpList.nbplPrice -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbplPrice),
+      nbplUnit: Math.floor((toNumber(splCkpList.nbplPrice -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbplPrice)) /
+          (toNumber(splCkpList.nbplweight -
+          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbplweight))),
+      nbppweight: toNumber(splCkpList.nbppweight -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbppweight),
+      nbppPrice: toNumber(splCkpList.nbppPrice -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbppPrice),
+      nbppUnit: Math.floor((toNumber(splCkpList.nbppPrice -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbppPrice)) /
+          (toNumber(splCkpList.nbppweight -
+          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbppweight))),
+      nbprcweight: toNumber(splCkpList.nbprcweight -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbprcweight),
+      nbprcPrice: toNumber(splCkpList.nbprcPrice -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbprcPrice),
+      nbprcUnit: Math.floor((toNumber(splCkpList.nbprcPrice -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbprcPrice)) /
+          (toNumber(splCkpList.nbprcweight -
+          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbprcweight))),
+      ntlsprcweight: toNumber(splCkpList.ntlsprcweight -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntlsprcweight),
+      ntlsprcPrice: toNumber(splCkpList.ntlsprcPrice -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntlsprcPrice),
+      ntlsprcUnit: Math.floor((toNumber(splCkpList.ntlsprcPrice -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntlsprcPrice)) /
+          (toNumber(splCkpList.ntlsprcweight -
+          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntlsprcweight))),
+      ntplweight: toNumber(splCkpList.ntplweight -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntplweight),
+      ntplPrice: toNumber(splCkpList.ntplPrice -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntplPrice),
+      ntplUnit: Math.floor((toNumber(splCkpList.ntplPrice -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntplPrice)) /
+          (toNumber(splCkpList.ntplweight -
+          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntplweight))),
+      ntpsweight: toNumber(splCkpList.ntpsweight -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntpsweight),
+      ntpsPrice: toNumber(splCkpList.ntpsPrice -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntpsPrice),
+      ntpsUnit: Math.floor((toNumber(splCkpList.ntpsPrice -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntpsPrice)) /
+          (toNumber(splCkpList.ntpsweight -
+          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntpsweight))),
+      ntppweight: toNumber(splCkpList.ntppweight -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntppweight),
+      ntppPrice: toNumber(splCkpList.ntppPrice -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntppPrice),
+      ntppUnit: Math.floor((toNumber(splCkpList.ntppPrice -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntppPrice)) /
+          (toNumber(splCkpList.ntppweight -
+          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntppweight))),
+      nalsprcweight: toNumber(splCkpList.nalsprcweight -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nalsprcweight),
+      nalsprcPrice: toNumber(splCkpList.nalsprcPrice -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nalsprcPrice),
+      nalsprcUnit: Math.floor((toNumber(splCkpList.nalsprcPrice -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nalsprcPrice)) /
+          (toNumber(splCkpList.nalsprcweight -
+          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nalsprcweight))),
+      naplweight: toNumber(splCkpList.naplweight -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].naplweight),
+      naplPrice: toNumber(splCkpList.naplPrice -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].naplPrice),
+      naplUnit: Math.floor((toNumber(splCkpList.naplPrice -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].naplPrice)) /
+          (toNumber(splCkpList.naplweight -
+          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].naplweight))),
+      napsweight: toNumber(splCkpList.napsweight -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].napsweight),
+      napsPrice: toNumber(splCkpList.napsPrice -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].napsPrice),
+      napsUnit: Math.floor((toNumber(splCkpList.napsPrice -
+        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].napsPrice)) /
+          (toNumber(splCkpList.napsweight -
+          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].napsweight)))
+    };
+    // 後で変動費合計の計算用
+    salsplCkpList = accCkpListBefore;
+    accCkpListBeforewithT.push(accCkpListBefore);
+    console.log(accCkpListBefore);
+    // 製造経費等
+    let accBugList = myVal.LIST_ACCOUNT_BUDGET;
+    let accCkpList = [];
+    accCkpList = {
+      month: accBugList.month, // 対象年月
+      code: "Ｐ／Ｌ",
+      name: accBugList.name, // 品種名
+      plweight: accBugList.plweight, // 計画重量
+      plPrice: accBugList.plPrice, // 計画金額
+      plUnit: toNumber(Math.floor(accBugList.plPrice / accBugList.plweight)),
+      psweight: accBugList.psweight, // 予定重量
+      psPrice: accBugList.psPrice, // 予定金額
+      psUnit: toNumber(Math.floor(accBugList.psPrice / accBugList.psweight)),
+      ppweight: accBugList.ppweight, // 見込重量
+      ppPrice: accBugList.ppPrice, // 見込金額
+      ppUnit: toNumber(Math.floor(accBugList.ppPrice / accBugList.ppweight)),
+      stcweight: accBugList.stcweight, // 実績重量
+      stcPrice: accBugList.stcPrice, // 実績金額
+      stcUnit: toNumber(Math.floor(accBugList.stcPrice / accBugList.stcweight)),
+    };
+    console.log(accBugList);
+    // 配列を1ヶ月単位に3ヶ月レイアウトに変更し、売上高CKPの後ろに追加
+    // 合計行を出すために、生産実績のみのリストを作成
+    accCkpListBefore = [];
+    let accCkpListwithT = [];
+    for (let ix = 0; ix < accBugList.length; ix = ix + 6) {
+      let bugrec = {};
+      bugrec.code = accBugList[ix + 3].code;
+      bugrec.name = accBugList[ix + 3].name;
+      bugrec.nblsprcweight = accBugList[ix].stcweight;
+      bugrec.nblsprcPrice = accBugList[ix].stcPrice;
+      bugrec.nblsprcUnit = accBugList[ix].stcUnit;
+      bugrec.nbplweight = accBugList[ix + 3].plweight;
+      bugrec.nbplPrice = accBugList[ix + 3].plPrice;
+      bugrec.nbplUnit = accBugList[ix + 3].plUnit;
+      bugrec.nbppweight = accBugList[ix + 3].ppweight;
+      bugrec.nbppPrice = accBugList[ix + 3].ppPrice;
+      bugrec.nbppUnit = accBugList[ix + 3].ppUnit;
+      bugrec.nbprcweight = accBugList[ix + 3].stcweight;
+      bugrec.nbprcPrice = accBugList[ix + 3].stcPrice;
+      bugrec.nbprcUnit = accBugList[ix + 3].stcUnit;
+      bugrec.ntlsprcweight = accBugList[ix + 1].stcweight;
+      bugrec.ntlsprcPrice = accBugList[ix + 1].stcPrice;
+      bugrec.ntlsprcUnit = accBugList[ix + 1].stcUnit;
+      bugrec.ntplweight = accBugList[ix + 4].plweight;
+      bugrec.ntplPrice = accBugList[ix + 4].plPrice;
+      bugrec.ntplUnit = accBugList[ix + 4].plUnit;
+      bugrec.ntpsweight = accBugList[ix + 4].psweight;
+      bugrec.ntpsPrice = accBugList[ix + 4].psPrice;
+      bugrec.ntpsUnit = accBugList[ix + 4].psUnit;
+      bugrec.ntppweight = accBugList[ix + 4].ppweight;
+      bugrec.ntppPrice = accBugList[ix + 4].ppPrice;
+      bugrec.ntppUnit = accBugList[ix + 4].ppUnit;
+      bugrec.nalsprcweight = accBugList[ix + 2].stcweight;
+      bugrec.nalsprcPrice = accBugList[ix + 2].stcPrice;
+      bugrec.nalsprcUnit = accBugList[ix + 2].stcUnit;
+      bugrec.naplweight = accBugList[ix + 5].plweight;
+      bugrec.naplPrice = accBugList[ix + 5].plPrice;
+      bugrec.naplUnit = accBugList[ix + 5].plUnit;
+      bugrec.napsweight = accBugList[ix + 5].psweight;
+      bugrec.napsPrice = accBugList[ix + 5].psPrice;
+      bugrec.napsUnit = accBugList[ix + 5].psUnit;
+      accCkpListBefore.push(bugrec);
+    }
+    integrateTotal(accCkpListBefore, accCkpListwithT);
+    for (var ix = 0; ix < accCkpListwithT.length; ix++) {
+      accCkpListBeforewithT.push(accCkpListwithT[ix]);
+    }
+    console.log(accCkpListBeforewithT);
+    // 経常利益
+    accCkpListBefore = [];
+    accCkpListBefore = {
+      name: "経常利益",
+      nblsprcweight: toNumber(salsplCkpList.nblsprcweight -
+        accCkpListwithT[accCkpListwithT.length - 1].nblsprcweight),
+      nblsprcPrice: toNumber(salsplCkpList.nblsprcPrice -
+        accCkpListwithT[accCkpListwithT.length - 1].nblsprcPrice),
+      nblsprcUnit: Math.floor((toNumber(salsplCkpList.nblsprcPrice -
+        accCkpListwithT[accCkpListwithT.length - 1].nblsprcPrice)) /
+          (toNumber(salsplCkpList.nblsprcweight -
+          accCkpListwithT[accCkpListwithT.length - 1].nblsprcweight))),
+      nbplweight: toNumber(salsplCkpList.nbplweight -
+        accCkpListwithT[accCkpListwithT.length - 1].nbplweight),
+      nbplPrice: toNumber(salsplCkpList.nbplPrice -
+        accCkpListwithT[accCkpListwithT.length - 1].nbplPrice),
+      nbplUnit: Math.floor((toNumber(salsplCkpList.nbplPrice -
+        accCkpListwithT[accCkpListwithT.length - 1].nbplPrice)) /
+          (toNumber(salsplCkpList.nbplweight -
+          accCkpListwithT[accCkpListwithT.length - 1].nbplweight))),
+      nbppweight: toNumber(salsplCkpList.nbppweight -
+        accCkpListwithT[accCkpListwithT.length - 1].nbppweight),
+      nbppPrice: toNumber(salsplCkpList.nbppPrice -
+        accCkpListwithT[accCkpListwithT.length - 1].nbppPrice),
+      nbppUnit: Math.floor((toNumber(salsplCkpList.nbppPrice -
+        accCkpListwithT[accCkpListwithT.length - 1].nbppPrice)) /
+          (toNumber(salsplCkpList.nbppweight -
+          accCkpListwithT[accCkpListwithT.length - 1].nbppweight))),
+      nbprcweight: toNumber(salsplCkpList.nbprcweight -
+        accCkpListwithT[accCkpListwithT.length - 1].nbprcweight),
+      nbprcPrice: toNumber(salsplCkpList.nbprcPrice -
+        accCkpListwithT[accCkpListwithT.length - 1].nbprcPrice),
+      nbprcUnit: Math.floor((toNumber(salsplCkpList.nbprcPrice -
+        accCkpListwithT[accCkpListwithT.length - 1].nbprcPrice)) /
+          (toNumber(salsplCkpList.nbprcweight -
+          accCkpListwithT[accCkpListwithT.length - 1].nbprcweight))),
+      ntlsprcweight: toNumber(salsplCkpList.ntlsprcweight -
+        accCkpListwithT[accCkpListwithT.length - 1].ntlsprcweight),
+      ntlsprcPrice: toNumber(salsplCkpList.ntlsprcPrice -
+        accCkpListwithT[accCkpListwithT.length - 1].ntlsprcPrice),
+      ntlsprcUnit: Math.floor((toNumber(salsplCkpList.ntlsprcPrice -
+        accCkpListwithT[accCkpListwithT.length - 1].ntlsprcPrice)) /
+          (toNumber(salsplCkpList.ntlsprcweight -
+          accCkpListwithT[accCkpListwithT.length - 1].ntlsprcweight))),
+      ntplweight: toNumber(salsplCkpList.ntplweight -
+        accCkpListwithT[accCkpListwithT.length - 1].ntplweight),
+      ntplPrice: toNumber(salsplCkpList.ntplPrice -
+        accCkpListwithT[accCkpListwithT.length - 1].ntplPrice),
+      ntplUnit: Math.floor((toNumber(salsplCkpList.ntplPrice -
+        accCkpListwithT[accCkpListwithT.length - 1].ntplPrice)) /
+          (toNumber(salsplCkpList.ntplweight -
+          accCkpListwithT[accCkpListwithT.length - 1].ntplweight))),
+      ntpsweight: toNumber(salsplCkpList.ntpsweight -
+        accCkpListwithT[accCkpListwithT.length - 1].ntpsweight),
+      ntpsPrice: toNumber(salsplCkpList.ntpsPrice -
+        accCkpListwithT[accCkpListwithT.length - 1].ntpsPrice),
+      ntpsUnit: Math.floor((toNumber(salsplCkpList.ntpsPrice -
+        accCkpListwithT[accCkpListwithT.length - 1].ntpsPrice)) /
+          (toNumber(salsplCkpList.ntpsweight -
+          accCkpListwithT[accCkpListwithT.length - 1].ntpsweight))),
+      ntppweight: toNumber(salsplCkpList.ntppweight -
+        accCkpListwithT[accCkpListwithT.length - 1].ntppweight),
+      ntppPrice: toNumber(salsplCkpList.ntppPrice -
+        accCkpListwithT[accCkpListwithT.length - 1].ntppPrice),
+      ntppUnit: Math.floor((toNumber(salsplCkpList.ntppPrice -
+        accCkpListwithT[accCkpListwithT.length - 1].ntppPrice)) /
+          (toNumber(salsplCkpList.ntppweight -
+          accCkpListwithT[accCkpListwithT.length - 1].ntppweight))),
+      nalsprcweight: toNumber(salsplCkpList.nalsprcweight -
+        accCkpListwithT[accCkpListwithT.length - 1].nalsprcweight),
+      nalsprcPrice: toNumber(salsplCkpList.nalsprcPrice -
+        accCkpListwithT[accCkpListwithT.length - 1].nalsprcPrice),
+      nalsprcUnit: Math.floor((toNumber(salsplCkpList.nalsprcPrice -
+        accCkpListwithT[accCkpListwithT.length - 1].nalsprcPrice)) /
+          (toNumber(salsplCkpList.nalsprcweight -
+          accCkpListwithT[accCkpListwithT.length - 1].nalsprcweight))),
+      naplweight: toNumber(salsplCkpList.naplweight -
+        accCkpListwithT[accCkpListwithT.length - 1].naplweight),
+      naplPrice: toNumber(salsplCkpList.naplPrice -
+        accCkpListwithT[accCkpListwithT.length - 1].naplPrice),
+      naplUnit: Math.floor((toNumber(salsplCkpList.naplPrice -
+        accCkpListwithT[accCkpListwithT.length - 1].naplPrice)) /
+          (toNumber(salsplCkpList.naplweight -
+          accCkpListwithT[accCkpListwithT.length - 1].naplweight))),
+      napsweight: toNumber(salsplCkpList.napsweight -
+        accCkpListwithT[accCkpListwithT.length - 1].napsweight),
+      napsPrice: toNumber(salsplCkpList.napsPrice -
+        accCkpListwithT[accCkpListwithT.length - 1].napsPrice),
+      napsUnit: Math.floor((toNumber(salsplCkpList.napsPrice -
+        accCkpListwithT[accCkpListwithT.length - 1].napsPrice)) /
+          (toNumber(salsplCkpList.napsweight -
+          accCkpListwithT[accCkpListwithT.length - 1].napsweight)))
+    };
+    accCkpListBeforewithT.push(accCkpListBefore);
+    console.log(accCkpListBeforewithT);
+    for (var ix = 0; ix < accCkpListBeforewithT.length; ix++) {
+      accCkpListThreewithT.push(accCkpListBeforewithT[ix]);
+    }
+    return accCkpListThreewithT;
+  }
+  /**
    * 稼働状況CKPエリアのデータに整理する
    */
   var getHumanReport = function(period, perCkpListThree) {
@@ -5708,6 +6208,12 @@ jQuery.noConflict();
   /** 販売予算一覧(期間指定) */
   myVal.LIST_SALES_BUDGET;
   myVal.SRC_LIST_SALES_BUDGET;
+  /** その他経費一覧 */
+  myVal.ALL_LIST_OTHER_BUDGET;
+  myVal.ALL_SRC_LIST_OTHER_BUDGET;
+  /** その他経費一覧(期間指定) */
+  myVal.LIST_OTHER_BUDGET;
+  myVal.SRC_LIST_OTHER_BUDGET;
   /** 会計一覧 */
   myVal.ALL_LIST_ACCOUNT_BUDGET;
   myVal.ALL_SRC_LIST_ACCOUNT_BUDGET;
@@ -5795,6 +6301,7 @@ jQuery.noConflict();
   window.func.getPurchaseBudgetList = getPurchaseBudgetList;
   window.func.getProductBudgetList = getProductBudgetList;
   window.func.getStockBudgetList = getStockBudgetList;
+  window.func.getOtherBudgetList = getOtherBudgetList;
   window.func.getSalesBudgetList = getSalesBudgetList;
   window.func.getAccountBudgetList = getAccountBudgetList;
   window.func.getPurchasePerformList = getPurchasePerformList;

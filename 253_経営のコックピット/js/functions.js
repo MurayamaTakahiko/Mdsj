@@ -5071,6 +5071,12 @@ jQuery.noConflict();
     accCkpListThreewithT = stcCkpListThreewithT;
     let accCkpListBefore = [];
     let accCkpListBeforewithT = [];
+    // Ｐ／Ｌ部分の境行
+    let linePL = [];
+    linePL = {
+      name: "ここより\r\nＰ／Ｌ"
+    };
+    accCkpListBefore.push(linePL);
     // 材料仕入
     accCkpListBefore.push(bugCkpListThreewithT[bugCkpListThreewithT.length - 1]);
     console.log(accCkpListBefore);
@@ -5110,7 +5116,9 @@ jQuery.noConflict();
     accCkpListBeforewithT.push(accCkpListBefore);
     console.log(accCkpListBefore);
     // 材料スプレッド
+    // 後で変動費合計の計算用
     let splCkpList = [];
+    splCkpList = salCkpListThreewithT[salCkpListThreewithT.length - 1];
     accCkpListBefore = [];
     accCkpListBefore = {
       name: "材料スプレッド",
@@ -5203,18 +5211,16 @@ jQuery.noConflict();
           (toNumber(salCkpListThreewithT[salCkpListThreewithT.length - 1].napsweight -
           bugCkpListThreewithT[bugCkpListThreewithT.length - 1].napsweight)))
     };
-    // 後で変動費合計の計算用
-    splCkpList = accCkpListBefore;
     accCkpListBeforewithT.push(accCkpListBefore);
     console.log(accCkpListBefore);
     // その他経費 加工賃
     let otrList = myVal.LIST_OTHER_BUDGET;
     let otrCkpList = [];
-    for (let iy = 0; iy < otrList.length; iy = iy + 1) {
+    for (let iy = 0; iy < otrList.length; iy++) {
       let bugrec = {};
       bugrec = {
         month: otrList[iy].month, // 対象年月
-        code: "Ｐ／Ｌ",
+        code: "諸経",
         name: "加工賃", // 加工賃
         plPrice: otrList[iy].plprocess, // 計画加工賃
         psPrice: otrList[iy].plprocess, // 予定加工賃
@@ -5223,13 +5229,12 @@ jQuery.noConflict();
       };
       otrCkpList.push(bugrec);
     }
-    console.log(otrCkpList);
     // その他経費 保管料
-    for (let iy = 0; iy < otrList.length; iy = iy + 1) {
+    for (let iy = 0; iy < otrList.length; iy++) {
       let bugrec = {};
       bugrec = {
         month: otrList[iy].month, // 対象年月
-        code: "Ｐ／Ｌ",
+        code: "諸経",
         name: "保管料", // 保管料
         plPrice: otrList[iy].plinsurance, // 計画保管料
         psPrice: otrList[iy].plinsurance, // 予定保管料
@@ -5238,13 +5243,12 @@ jQuery.noConflict();
       };
       otrCkpList.push(bugrec);
     }
-    console.log(otrCkpList);
     // その他経費 運賃等
-    for (let iy = 0; iy < otrList.length; iy = iy + 1) {
+    for (let iy = 0; iy < otrList.length; iy++) {
       let bugrec = {};
       bugrec = {
         month: otrList[iy].month, // 対象年月
-        code: "Ｐ／Ｌ",
+        code: "諸経",
         name: "運賃等", // 運賃等
         plPrice: otrList[iy].plfare, // 計画運賃等
         psPrice: otrList[iy].plfare, // 予定運賃等
@@ -5298,101 +5302,101 @@ jQuery.noConflict();
       otrCkpListBefore.push(bugrec);
     }
     integrateTotal(otrCkpListBefore, otrCkpListBeforewithT);
-    for (var ix = 0; ix < otrCkpListBefore.length; ix++) {
-      accCkpListBeforewithT.push(otrCkpListBefore[ix]);
+    for (var ix = 0; ix < otrCkpListBeforewithT.length; ix++) {
+      accCkpListBeforewithT.push(otrCkpListBeforewithT[ix]);
     }
     console.log(accCkpListBeforewithT);
     // 変動費合計
     accCkpListBefore = [];
     accCkpListBefore = {
       name: "変動費合計",
-      nblsprcweight: toNumber(bugCkpListT.nblsprcweight +
+      nblsprcweight: toNumber(bugCkpListT[0].nblsprcweight +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nblsprcweight),
-      nblsprcPrice: toNumber(bugCkpListT.nblsprcPrice +
+      nblsprcPrice: toNumber(bugCkpListT[0].nblsprcPrice +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nblsprcPrice),
-      nblsprcUnit: Math.floor((toNumber(bugCkpListT.nblsprcPrice +
+      nblsprcUnit: Math.floor((toNumber(bugCkpListT[0].nblsprcPrice +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nblsprcPrice)) /
-          (toNumber(bugCkpListT.nblsprcweight +
+          (toNumber(bugCkpListT[0].nblsprcweight +
           otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nblsprcweight))),
-      nbplweight: toNumber(bugCkpListT.nbplweight +
+      nbplweight: toNumber(bugCkpListT[0].nbplweight +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbplweight),
-      nbplPrice: toNumber(bugCkpListT.nbplPrice +
+      nbplPrice: toNumber(bugCkpListT[0].nbplPrice +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbplPrice),
-      nbplUnit: Math.floor((toNumber(bugCkpListT.nbplPrice +
+      nbplUnit: Math.floor((toNumber(bugCkpListT[0].nbplPrice +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbplPrice)) /
-          (toNumber(bugCkpListT.nbplweight +
+          (toNumber(bugCkpListT[0].nbplweight +
           otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbplweight))),
-      nbppweight: toNumber(bugCkpListT.nbppweight +
+      nbppweight: toNumber(bugCkpListT[0].nbppweight +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbppweight),
-      nbppPrice: toNumber(bugCkpListT.nbppPrice +
+      nbppPrice: toNumber(bugCkpListT[0].nbppPrice +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbppPrice),
-      nbppUnit: Math.floor((toNumber(bugCkpListT.nbppPrice +
+      nbppUnit: Math.floor((toNumber(bugCkpListT[0].nbppPrice +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbppPrice)) /
-          (toNumber(bugCkpListT.nbppweight +
+          (toNumber(bugCkpListT[0].nbppweight +
           otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbppweight))),
-      nbprcweight: toNumber(bugCkpListT.nbprcweight +
+      nbprcweight: toNumber(bugCkpListT[0].nbprcweight +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbprcweight),
-      nbprcPrice: toNumber(bugCkpListT.nbprcPrice +
+      nbprcPrice: toNumber(bugCkpListT[0].nbprcPrice +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbprcPrice),
-      nbprcUnit: Math.floor((toNumber(bugCkpListT.nbprcPrice +
+      nbprcUnit: Math.floor((toNumber(bugCkpListT[0].nbprcPrice +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbprcPrice)) /
-          (toNumber(bugCkpListT.nbprcweight +
+          (toNumber(bugCkpListT[0].nbprcweight +
           otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbprcweight))),
-      ntlsprcweight: toNumber(bugCkpListT.ntlsprcweight +
+      ntlsprcweight: toNumber(bugCkpListT[0].ntlsprcweight +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntlsprcweight),
-      ntlsprcPrice: toNumber(bugCkpListT.ntlsprcPrice +
+      ntlsprcPrice: toNumber(bugCkpListT[0].ntlsprcPrice +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntlsprcPrice),
-      ntlsprcUnit: Math.floor((toNumber(bugCkpListT.ntlsprcPrice +
+      ntlsprcUnit: Math.floor((toNumber(bugCkpListT[0].ntlsprcPrice +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntlsprcPrice)) /
-          (toNumber(bugCkpListT.ntlsprcweight +
+          (toNumber(bugCkpListT[0].ntlsprcweight +
           otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntlsprcweight))),
-      ntplweight: toNumber(bugCkpListT.ntplweight +
+      ntplweight: toNumber(bugCkpListT[0].ntplweight +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntplweight),
-      ntplPrice: toNumber(bugCkpListT.ntplPrice +
+      ntplPrice: toNumber(bugCkpListT[0].ntplPrice +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntplPrice),
-      ntplUnit: Math.floor((toNumber(bugCkpListT.ntplPrice +
+      ntplUnit: Math.floor((toNumber(bugCkpListT[0].ntplPrice +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntplPrice)) /
-          (toNumber(bugCkpListT.ntplweight +
+          (toNumber(bugCkpListT[0].ntplweight +
           otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntplweight))),
-      ntpsweight: toNumber(bugCkpListT.ntpsweight +
+      ntpsweight: toNumber(bugCkpListT[0].ntpsweight +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntpsweight),
-      ntpsPrice: toNumber(bugCkpListT.ntpsPrice +
+      ntpsPrice: toNumber(bugCkpListT[0].ntpsPrice +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntpsPrice),
-      ntpsUnit: Math.floor((toNumber(bugCkpListT.ntpsPrice +
+      ntpsUnit: Math.floor((toNumber(bugCkpListT[0].ntpsPrice +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntpsPrice)) /
-          (toNumber(bugCkpListT.ntpsweight +
+          (toNumber(bugCkpListT[0].ntpsweight +
           otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntpsweight))),
-      ntppweight: toNumber(bugCkpListT.ntppweight +
+      ntppweight: toNumber(bugCkpListT[0].ntppweight +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntppweight),
-      ntppPrice: toNumber(bugCkpListT.ntppPrice +
+      ntppPrice: toNumber(bugCkpListT[0].ntppPrice +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntppPrice),
-      ntppUnit: Math.floor((toNumber(bugCkpListT.ntppPrice +
+      ntppUnit: Math.floor((toNumber(bugCkpListT[0].ntppPrice +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntppPrice)) /
-          (toNumber(bugCkpListT.ntppweight +
+          (toNumber(bugCkpListT[0].ntppweight +
           otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntppweight))),
-      nalsprcweight: toNumber(bugCkpListT.nalsprcweight +
+      nalsprcweight: toNumber(bugCkpListT[0].nalsprcweight +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nalsprcweight),
-      nalsprcPrice: toNumber(bugCkpListT.nalsprcPrice +
+      nalsprcPrice: toNumber(bugCkpListT[0].nalsprcPrice +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nalsprcPrice),
-      nalsprcUnit: Math.floor((toNumber(bugCkpListT.nalsprcPrice +
+      nalsprcUnit: Math.floor((toNumber(bugCkpListT[0].nalsprcPrice +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nalsprcPrice)) /
-          (toNumber(bugCkpListT.nalsprcweight +
+          (toNumber(bugCkpListT[0].nalsprcweight +
           otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nalsprcweight))),
-      naplweight: toNumber(bugCkpListT.naplweight +
+      naplweight: toNumber(bugCkpListT[0].naplweight +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].naplweight),
-      naplPrice: toNumber(bugCkpListT.naplPrice +
+      naplPrice: toNumber(bugCkpListT[0].naplPrice +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].naplPrice),
-      naplUnit: Math.floor((toNumber(bugCkpListT.naplPrice +
+      naplUnit: Math.floor((toNumber(bugCkpListT[0].naplPrice +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].naplPrice)) /
-          (toNumber(bugCkpListT.naplweight +
+          (toNumber(bugCkpListT[0].naplweight +
           otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].naplweight))),
-      napsweight: toNumber(bugCkpListT.napsweight +
+      napsweight: toNumber(bugCkpListT[0].napsweight +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].napsweight),
-      napsPrice: toNumber(bugCkpListT.napsPrice +
+      napsPrice: toNumber(bugCkpListT[0].napsPrice +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].napsPrice),
-      napsUnit: Math.floor((toNumber(bugCkpListT.napsPrice +
+      napsUnit: Math.floor((toNumber(bugCkpListT[0].napsPrice +
         otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].napsPrice)) /
-          (toNumber(bugCkpListT.napsweight +
+          (toNumber(bugCkpListT[0].napsweight +
           otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].napsweight)))
     };
     accCkpListBeforewithT.push(accCkpListBefore);
@@ -5400,96 +5404,98 @@ jQuery.noConflict();
     // 販売スプレッド利益
     let salsplCkpList = [];
     accCkpListBefore = [];
+    console.log(splCkpList);
+    console.log(accCkpListBeforewithT[accCkpListBeforewithT.length - 1]);
     accCkpListBefore = {
       name: "販売スプレッド利益",
       nblsprcweight: toNumber(splCkpList.nblsprcweight -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nblsprcweight),
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].nblsprcweight),
       nblsprcPrice: toNumber(splCkpList.nblsprcPrice -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nblsprcPrice),
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].nblsprcPrice),
       nblsprcUnit: Math.floor((toNumber(splCkpList.nblsprcPrice -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nblsprcPrice)) /
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].nblsprcPrice)) /
           (toNumber(splCkpList.nblsprcweight -
-          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nblsprcweight))),
+          accCkpListBeforewithT[accCkpListBeforewithT.length - 1].nblsprcweight))),
       nbplweight: toNumber(splCkpList.nbplweight -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbplweight),
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].nbplweight),
       nbplPrice: toNumber(splCkpList.nbplPrice -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbplPrice),
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].nbplPrice),
       nbplUnit: Math.floor((toNumber(splCkpList.nbplPrice -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbplPrice)) /
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].nbplPrice)) /
           (toNumber(splCkpList.nbplweight -
-          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbplweight))),
+          accCkpListBeforewithT[accCkpListBeforewithT.length - 1].nbplweight))),
       nbppweight: toNumber(splCkpList.nbppweight -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbppweight),
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].nbppweight),
       nbppPrice: toNumber(splCkpList.nbppPrice -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbppPrice),
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].nbppPrice),
       nbppUnit: Math.floor((toNumber(splCkpList.nbppPrice -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbppPrice)) /
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].nbppPrice)) /
           (toNumber(splCkpList.nbppweight -
-          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbppweight))),
+          accCkpListBeforewithT[accCkpListBeforewithT.length - 1].nbppweight))),
       nbprcweight: toNumber(splCkpList.nbprcweight -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbprcweight),
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].nbprcweight),
       nbprcPrice: toNumber(splCkpList.nbprcPrice -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbprcPrice),
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].nbprcPrice),
       nbprcUnit: Math.floor((toNumber(splCkpList.nbprcPrice -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbprcPrice)) /
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].nbprcPrice)) /
           (toNumber(splCkpList.nbprcweight -
-          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nbprcweight))),
+          accCkpListBeforewithT[accCkpListBeforewithT.length - 1].nbprcweight))),
       ntlsprcweight: toNumber(splCkpList.ntlsprcweight -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntlsprcweight),
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].ntlsprcweight),
       ntlsprcPrice: toNumber(splCkpList.ntlsprcPrice -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntlsprcPrice),
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].ntlsprcPrice),
       ntlsprcUnit: Math.floor((toNumber(splCkpList.ntlsprcPrice -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntlsprcPrice)) /
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].ntlsprcPrice)) /
           (toNumber(splCkpList.ntlsprcweight -
-          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntlsprcweight))),
+          accCkpListBeforewithT[accCkpListBeforewithT.length - 1].ntlsprcweight))),
       ntplweight: toNumber(splCkpList.ntplweight -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntplweight),
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].ntplweight),
       ntplPrice: toNumber(splCkpList.ntplPrice -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntplPrice),
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].ntplPrice),
       ntplUnit: Math.floor((toNumber(splCkpList.ntplPrice -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntplPrice)) /
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].ntplPrice)) /
           (toNumber(splCkpList.ntplweight -
-          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntplweight))),
+          accCkpListBeforewithT[accCkpListBeforewithT.length - 1].ntplweight))),
       ntpsweight: toNumber(splCkpList.ntpsweight -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntpsweight),
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].ntpsweight),
       ntpsPrice: toNumber(splCkpList.ntpsPrice -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntpsPrice),
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].ntpsPrice),
       ntpsUnit: Math.floor((toNumber(splCkpList.ntpsPrice -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntpsPrice)) /
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].ntpsPrice)) /
           (toNumber(splCkpList.ntpsweight -
-          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntpsweight))),
+          accCkpListBeforewithT[accCkpListBeforewithT.length - 1].ntpsweight))),
       ntppweight: toNumber(splCkpList.ntppweight -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntppweight),
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].ntppweight),
       ntppPrice: toNumber(splCkpList.ntppPrice -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntppPrice),
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].ntppPrice),
       ntppUnit: Math.floor((toNumber(splCkpList.ntppPrice -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntppPrice)) /
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].ntppPrice)) /
           (toNumber(splCkpList.ntppweight -
-          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].ntppweight))),
+          accCkpListBeforewithT[accCkpListBeforewithT.length - 1].ntppweight))),
       nalsprcweight: toNumber(splCkpList.nalsprcweight -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nalsprcweight),
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].nalsprcweight),
       nalsprcPrice: toNumber(splCkpList.nalsprcPrice -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nalsprcPrice),
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].nalsprcPrice),
       nalsprcUnit: Math.floor((toNumber(splCkpList.nalsprcPrice -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nalsprcPrice)) /
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].nalsprcPrice)) /
           (toNumber(splCkpList.nalsprcweight -
-          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].nalsprcweight))),
+          accCkpListBeforewithT[accCkpListBeforewithT.length - 1].nalsprcweight))),
       naplweight: toNumber(splCkpList.naplweight -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].naplweight),
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].naplweight),
       naplPrice: toNumber(splCkpList.naplPrice -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].naplPrice),
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].naplPrice),
       naplUnit: Math.floor((toNumber(splCkpList.naplPrice -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].naplPrice)) /
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].naplPrice)) /
           (toNumber(splCkpList.naplweight -
-          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].naplweight))),
+          accCkpListBeforewithT[accCkpListBeforewithT.length - 1].naplweight))),
       napsweight: toNumber(splCkpList.napsweight -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].napsweight),
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].napsweight),
       napsPrice: toNumber(splCkpList.napsPrice -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].napsPrice),
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].napsPrice),
       napsUnit: Math.floor((toNumber(splCkpList.napsPrice -
-        otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].napsPrice)) /
+        accCkpListBeforewithT[accCkpListBeforewithT.length - 1].napsPrice)) /
           (toNumber(splCkpList.napsweight -
-          otrCkpListBeforewithT[otrCkpListBeforewithT.length - 1].napsweight)))
+          accCkpListBeforewithT[accCkpListBeforewithT.length - 1].napsweight)))
     };
     // 後で変動費合計の計算用
     salsplCkpList = accCkpListBefore;
@@ -5498,65 +5504,156 @@ jQuery.noConflict();
     // 製造経費等
     let accBugList = myVal.LIST_ACCOUNT_BUDGET;
     let accCkpList = [];
-    accCkpList = {
-      month: accBugList.month, // 対象年月
-      code: "Ｐ／Ｌ",
-      name: accBugList.name, // 品種名
-      plweight: accBugList.plweight, // 計画重量
-      plPrice: accBugList.plPrice, // 計画金額
-      plUnit: toNumber(Math.floor(accBugList.plPrice / accBugList.plweight)),
-      psweight: accBugList.psweight, // 予定重量
-      psPrice: accBugList.psPrice, // 予定金額
-      psUnit: toNumber(Math.floor(accBugList.psPrice / accBugList.psweight)),
-      ppweight: accBugList.ppweight, // 見込重量
-      ppPrice: accBugList.ppPrice, // 見込金額
-      ppUnit: toNumber(Math.floor(accBugList.ppPrice / accBugList.ppweight)),
-      stcweight: accBugList.stcweight, // 実績重量
-      stcPrice: accBugList.stcPrice, // 実績金額
-      stcUnit: toNumber(Math.floor(accBugList.stcPrice / accBugList.stcweight)),
-    };
-    console.log(accBugList);
+    for (let iy = 0; iy < accBugList.length; iy++) {
+      let bugrec = {};
+      bugrec = {
+        month: accBugList[iy].month, // 対象年月
+        code: "製経",
+        name: "人件費", // 人件費
+        plPrice: accBugList[iy].pllabor, // 計画
+        ppPrice: accBugList[iy].pplabor, // 見込
+        stcPrice: accBugList[iy].pelabor // 実績
+      };
+      accCkpList.push(bugrec);
+    }
+    for (let iy = 0; iy < accBugList.length; iy++) {
+      let bugrec = {};
+      bugrec = {
+        month: accBugList[iy].month, // 対象年月
+        code: "製経",
+        name: "光熱費", // 光熱費
+        plPrice: accBugList[iy].plutilty, // 計画
+        ppPrice: accBugList[iy].pputilty, // 見込
+        stcPrice: accBugList[iy].peutilty // 実績
+      };
+      accCkpList.push(bugrec);
+    }
+    for (let iy = 0; iy < accBugList.length; iy++) {
+      let bugrec = {};
+      bugrec = {
+        month: accBugList[iy].month, // 対象年月
+        code: "製経",
+        name: "消耗品費", // 消耗品費
+        plPrice: accBugList[iy].plsupply, // 計画
+        ppPrice: accBugList[iy].ppsupply, // 見込
+        stcPrice: accBugList[iy].pesupply // 実績
+      };
+      accCkpList.push(bugrec);
+    }
+    for (let iy = 0; iy < accBugList.length; iy++) {
+      let bugrec = {};
+      bugrec = {
+        month: accBugList[iy].month, // 対象年月
+        code: "製経",
+        name: "修繕費", // 修繕費
+        plPrice: accBugList[iy].plrepair, // 計画
+        ppPrice: accBugList[iy].pprepair, // 見込
+        stcPrice: accBugList[iy].perepair // 実績
+      };
+      accCkpList.push(bugrec);
+    }
+    for (let iy = 0; iy < accBugList.length; iy++) {
+      let bugrec = {};
+      bugrec = {
+        month: accBugList[iy].month, // 対象年月
+        code: "製経",
+        name: "試験検査費", // 試験検査費
+        plPrice: accBugList[iy].plexamna, // 計画
+        ppPrice: accBugList[iy].ppexamna, // 見込
+        stcPrice: accBugList[iy].peexamna // 実績
+      };
+      accCkpList.push(bugrec);
+    }
+    for (let iy = 0; iy < accBugList.length; iy++) {
+      let bugrec = {};
+      bugrec = {
+        month: accBugList[iy].month, // 対象年月
+        code: "製経",
+        name: "地代家賃", // 地代家賃
+        plPrice: accBugList[iy].plland, // 計画
+        ppPrice: accBugList[iy].ppland, // 見込
+        stcPrice: accBugList[iy].peland // 実績
+      };
+      accCkpList.push(bugrec);
+    }
+    for (let iy = 0; iy < accBugList.length; iy++) {
+      let bugrec = {};
+      bugrec = {
+        month: accBugList[iy].month, // 対象年月
+        code: "製経",
+        name: "減価償却費", // 減価償却費
+        plPrice: accBugList[iy].pldeprecia, // 計画
+        ppPrice: accBugList[iy].ppdeprecia, // 見込
+        stcPrice: accBugList[iy].pedeprecia // 実績
+      };
+      accCkpList.push(bugrec);
+    }
+    for (let iy = 0; iy < accBugList.length; iy++) {
+      let bugrec = {};
+      bugrec = {
+        month: accBugList[iy].month, // 対象年月
+        code: "製経",
+        name: "その他", // その他
+        plPrice: accBugList[iy].plother, // 計画
+        ppPrice: accBugList[iy].ppother, // 見込
+        stcPrice: accBugList[iy].peother // 実績
+      };
+      accCkpList.push(bugrec);
+    }
+    for (let iy = 0; iy < accBugList.length; iy++) {
+      let bugrec = {};
+      bugrec = {
+        month: accBugList[iy].month, // 対象年月
+        code: "製経",
+        name: "販売管理費・営業外", // 販売管理費・営業外
+        plPrice: accBugList[iy].plsalling, // 計画
+        ppPrice: accBugList[iy].ppsalling, // 見込
+        stcPrice: accBugList[iy].pesalling // 実績
+      };
+      accCkpList.push(bugrec);
+    }
+    console.log(accCkpList);
     // 配列を1ヶ月単位に3ヶ月レイアウトに変更し、売上高CKPの後ろに追加
     // 合計行を出すために、生産実績のみのリストを作成
     accCkpListBefore = [];
     let accCkpListwithT = [];
-    for (let ix = 0; ix < accBugList.length; ix = ix + 6) {
+    for (let ix = 0; ix < accCkpList.length; ix = ix + 6) {
       let bugrec = {};
-      bugrec.code = accBugList[ix + 3].code;
-      bugrec.name = accBugList[ix + 3].name;
-      bugrec.nblsprcweight = accBugList[ix].stcweight;
-      bugrec.nblsprcPrice = accBugList[ix].stcPrice;
-      bugrec.nblsprcUnit = accBugList[ix].stcUnit;
-      bugrec.nbplweight = accBugList[ix + 3].plweight;
-      bugrec.nbplPrice = accBugList[ix + 3].plPrice;
-      bugrec.nbplUnit = accBugList[ix + 3].plUnit;
-      bugrec.nbppweight = accBugList[ix + 3].ppweight;
-      bugrec.nbppPrice = accBugList[ix + 3].ppPrice;
-      bugrec.nbppUnit = accBugList[ix + 3].ppUnit;
-      bugrec.nbprcweight = accBugList[ix + 3].stcweight;
-      bugrec.nbprcPrice = accBugList[ix + 3].stcPrice;
-      bugrec.nbprcUnit = accBugList[ix + 3].stcUnit;
-      bugrec.ntlsprcweight = accBugList[ix + 1].stcweight;
-      bugrec.ntlsprcPrice = accBugList[ix + 1].stcPrice;
-      bugrec.ntlsprcUnit = accBugList[ix + 1].stcUnit;
-      bugrec.ntplweight = accBugList[ix + 4].plweight;
-      bugrec.ntplPrice = accBugList[ix + 4].plPrice;
-      bugrec.ntplUnit = accBugList[ix + 4].plUnit;
-      bugrec.ntpsweight = accBugList[ix + 4].psweight;
-      bugrec.ntpsPrice = accBugList[ix + 4].psPrice;
-      bugrec.ntpsUnit = accBugList[ix + 4].psUnit;
-      bugrec.ntppweight = accBugList[ix + 4].ppweight;
-      bugrec.ntppPrice = accBugList[ix + 4].ppPrice;
-      bugrec.ntppUnit = accBugList[ix + 4].ppUnit;
-      bugrec.nalsprcweight = accBugList[ix + 2].stcweight;
-      bugrec.nalsprcPrice = accBugList[ix + 2].stcPrice;
-      bugrec.nalsprcUnit = accBugList[ix + 2].stcUnit;
-      bugrec.naplweight = accBugList[ix + 5].plweight;
-      bugrec.naplPrice = accBugList[ix + 5].plPrice;
-      bugrec.naplUnit = accBugList[ix + 5].plUnit;
-      bugrec.napsweight = accBugList[ix + 5].psweight;
-      bugrec.napsPrice = accBugList[ix + 5].psPrice;
-      bugrec.napsUnit = accBugList[ix + 5].psUnit;
+      bugrec.code = accCkpList[ix + 3].code;
+      bugrec.name = accCkpList[ix + 3].name;
+      bugrec.nblsprcweight = accCkpList[ix].stcweight;
+      bugrec.nblsprcPrice = accCkpList[ix].stcPrice;
+      bugrec.nblsprcUnit = accCkpList[ix].stcUnit;
+      bugrec.nbplweight = accCkpList[ix + 3].plweight;
+      bugrec.nbplPrice = accCkpList[ix + 3].plPrice;
+      bugrec.nbplUnit = accCkpList[ix + 3].plUnit;
+      bugrec.nbppweight = accCkpList[ix + 3].ppweight;
+      bugrec.nbppPrice = accCkpList[ix + 3].ppPrice;
+      bugrec.nbppUnit = accCkpList[ix + 3].ppUnit;
+      bugrec.nbprcweight = accCkpList[ix + 3].stcweight;
+      bugrec.nbprcPrice = accCkpList[ix + 3].stcPrice;
+      bugrec.nbprcUnit = accCkpList[ix + 3].stcUnit;
+      bugrec.ntlsprcweight = accCkpList[ix + 1].stcweight;
+      bugrec.ntlsprcPrice = accCkpList[ix + 1].stcPrice;
+      bugrec.ntlsprcUnit = accCkpList[ix + 1].stcUnit;
+      bugrec.ntplweight = accCkpList[ix + 4].plweight;
+      bugrec.ntplPrice = accCkpList[ix + 4].plPrice;
+      bugrec.ntplUnit = accCkpList[ix + 4].plUnit;
+      bugrec.ntpsweight = accCkpList[ix + 4].psweight;
+      bugrec.ntpsPrice = accCkpList[ix + 4].psPrice;
+      bugrec.ntpsUnit = accCkpList[ix + 4].psUnit;
+      bugrec.ntppweight = accCkpList[ix + 4].ppweight;
+      bugrec.ntppPrice = accCkpList[ix + 4].ppPrice;
+      bugrec.ntppUnit = accCkpList[ix + 4].ppUnit;
+      bugrec.nalsprcweight = accCkpList[ix + 2].stcweight;
+      bugrec.nalsprcPrice = accCkpList[ix + 2].stcPrice;
+      bugrec.nalsprcUnit = accCkpList[ix + 2].stcUnit;
+      bugrec.naplweight = accCkpList[ix + 5].plweight;
+      bugrec.naplPrice = accCkpList[ix + 5].plPrice;
+      bugrec.naplUnit = accCkpList[ix + 5].plUnit;
+      bugrec.napsweight = accCkpList[ix + 5].psweight;
+      bugrec.napsPrice = accCkpList[ix + 5].psPrice;
+      bugrec.napsUnit = accCkpList[ix + 5].psUnit;
       accCkpListBefore.push(bugrec);
     }
     integrateTotal(accCkpListBefore, accCkpListwithT);
@@ -5679,7 +5776,7 @@ jQuery.noConflict();
     for (let ix = 0; ix < humHList.length; ix++) {
       recas[ix] = {
         date: humHList[ix].date,
-        name: "所定日数",
+        name: "所定日数\r\n",
         unit: "日",
         plworkDay: humHList[ix].plworkDay,
         psworkDay: humHList[ix].psworkDay,
@@ -5692,7 +5789,7 @@ jQuery.noConflict();
     for (let ix = 0; ix < humHList.length; ix++) {
       recas[recasLen + ix] = {
         date: humHList[ix].date,
-        name: "所定時間",
+        name: "所定時間\r\n",
         unit: "h",
         plworkDay: humHList[ix].plworkHour,
         psworkDay: humHList[ix].psworkHour,
@@ -5705,7 +5802,7 @@ jQuery.noConflict();
     for (let ix = 0; ix < humHList.length; ix++) {
       recas[recasLen + ix] = {
         date: humHList[ix].date,
-        name: "工場稼働日数",
+        name: "工場稼働日数\r\n",
         unit: "日",
         plworkDay: humHList[ix].plplantDay,
         psworkDay: humHList[ix].psplantDay,
@@ -5718,7 +5815,7 @@ jQuery.noConflict();
     for (let ix = 0; ix < humHList.length; ix++) {
       recas[recasLen + ix] = {
         date: humHList[ix].date,
-        name: "所定時間",
+        name: "所定時間\r\n",
         unit: "h",
         plworkDay: humHList[ix].plplantHour,
         psworkDay: humHList[ix].psplantHour,
@@ -5732,7 +5829,7 @@ jQuery.noConflict();
     for (let ix = 0; ix < perHList.length; ix++) {
       recas[recasLen + ix] = {
         date: perHList[ix].date,
-        name: "機器稼働時間",
+        name: "機器稼働時間\r\n",
         unit: "h",
         plworkDay: perHList[ix].prdhour,
         psworkDay: perHList[ix].prdhour,
@@ -5748,7 +5845,7 @@ jQuery.noConflict();
       // 稼働率
       recas[recasLen + ix] = {
         date: perHList[ix].date,
-        name: "稼働率",
+        name: "稼働率\r\n",
         unit: "%",
         plworkDay: prdHourUnit,
         psworkDay: prdHourUnit,
@@ -5761,7 +5858,7 @@ jQuery.noConflict();
     for (let ix = 0; ix < perHList.length; ix++) {
       recas[recasLen + ix] = {
         date: perHList[ix].date,
-        name: "総停止時間",
+        name: "総停止時間\r\n",
         unit: "h",
         plworkDay: perHList[ix].prdstop,
         psworkDay: perHList[ix].prdstop,
@@ -5775,7 +5872,7 @@ jQuery.noConflict();
       var sumprdHour = parseFloat(perHList[ix].prdhour) + parseFloat(perHList[ix].prdstop);
       recas[recasLen + ix] = {
         date: perHList[ix].date,
-        name: "合計時間",
+        name: "合計時間\r\n",
         unit: "h",
         plworkDay: sumprdHour,
         psworkDay: sumprdHour,
@@ -5788,7 +5885,7 @@ jQuery.noConflict();
     for (let ix = 0; ix < perHList.length; ix++) {
       recas[recasLen + ix] = {
         date: perHList[ix].date,
-        name: "総ロール長",
+        name: "総ロール長\r\n",
         unit: "m",
         plworkDay: perHList[ix].prdlength,
         psworkDay: perHList[ix].prdlength,
@@ -5803,7 +5900,7 @@ jQuery.noConflict();
       var perLength = parseFloat(perHList[ix].prdlength) / sumprdMinutes;
       recas[recasLen + ix] = {
         date: perHList[ix].date,
-        name: "ﾗｲﾝｽﾋﾟｰﾄﾞ",
+        name: "ﾗｲﾝｽﾋﾟｰﾄﾞ\r\n",
         unit: "m/分",
         plworkDay: perLength,
         psworkDay: perLength,
@@ -5818,7 +5915,7 @@ jQuery.noConflict();
       var perprdWeight = parseFloat(perHList[ix].prdweight) / sumprdHour;
       recas[recasLen + ix] = {
         date: perHList[ix].date,
-        name: "1級生産量/h",
+        name: "1級生産量/h\r\n",
         unit: "kg/h",
         plworkDay: perprdWeight,
         psworkDay: perprdWeight,

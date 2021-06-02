@@ -109,25 +109,25 @@ jQuery.noConflict();
   gridVal.GRID_TOP_COL_HEADERS = [
     '<rowspan type="top"> </rowspan>', // タブ種
     '<rowspan type="top"> </rowspan>', // ＫＰＩ項目
-    '<colspan type="pre" cnt="12">1月度</colspan>', // 前月度
-    '<colspan type="pre" cnt="9">2月度</colspan>', // 当月度
-    '<colspan type="pre" cnt="9">3月度</colspan>', // 次月度
+    '<colspan type="pre" cnt="12">5月度</colspan>', // 前月度
+    '<colspan type="pre" cnt="9">6月度</colspan>', // 当月度
+    '<colspan type="pre" cnt="9">7月度</colspan>', // 次月度
   ];
   // ヘッダ1段目(稼働状況)
   gridVal.GRID_TOP_COL_WORK_HEADERS = [
     '<rowspan type="top"> </rowspan>', // タブ種
     '<rowspan type="top"> </rowspan>', // ＫＰＩ項目
-    '<colspan type="pre" cnt="4">1月度</colspan>', // 前月度
-    '<colspan type="pre" cnt="4">2月度</colspan>', // 当月度
-    '<colspan type="pre" cnt="3">3月度</colspan>', // 次月度
+    '<colspan type="pre" cnt="4">5月度</colspan>', // 前月度
+    '<colspan type="pre" cnt="4">6月度</colspan>', // 当月度
+    '<colspan type="pre" cnt="3">7月度</colspan>', // 次月度
   ];
   // ヘッダ1段目(品質状況)
   gridVal.GRID_TOP_COL_QUALITY_HEADERS = [
     '<rowspan type="top"> </rowspan>', // タブ種
     '<rowspan type="top"> </rowspan>', // ＫＰＩ項目
-    '<colspan type="pre" cnt="4">1月度</colspan>', // 前月度
-    '<colspan type="pre" cnt="4">2月度</colspan>', // 当月度
-    '<colspan type="pre" cnt="4">3月度</colspan>', // 次月度
+    '<colspan type="pre" cnt="4">5月度</colspan>', // 前月度
+    '<colspan type="pre" cnt="4">6月度</colspan>', // 当月度
+    '<colspan type="pre" cnt="4">7月度</colspan>', // 次月度
   ];
   // ヘッダ2段目
   gridVal.GRID_COL_HEADERS = [

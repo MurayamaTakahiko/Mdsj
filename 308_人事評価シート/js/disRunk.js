@@ -18,23 +18,157 @@
     var jList = ["J", "S-1"];
     var sList = ["S-2", "Player", "Expert"];
     var mList = ["M-1", "M-2", "Professional", "Legend"];
-    var jItemList = [
-      "クレド１自己評価", "クレド１一次評価", "クレド１二次評価", "クレド１最終評価", "クレド１コメント",
-      "クレド２自己評価", "クレド２一次評価", "クレド２二次評価", "クレド２最終評価", "クレド２コメント",
-      "クレド３自己評価", "クレド３一次評価", "クレド３二次評価", "クレド３最終評価", "クレド３コメント",
-      "クレド４自己評価", "クレド４一次評価", "クレド４二次評価", "クレド４最終評価", "クレド４コメント",
-      "クレド５自己評価", "クレド５一次評価", "クレド５二次評価", "クレド５最終評価", "クレド５コメント",
-    ];
     // ランクによって、表示項目を変更する
+    // J,S-1
     for (var i = 0; i < jList.length; i++) {
-      // J,S-1
       if (runk === jList[i]) {
+        // クレド評価
         kintone.app.record.setFieldShown('クレド５自己評価', false);
         kintone.app.record.setFieldShown('クレド５一次評価', false);
         kintone.app.record.setFieldShown('クレド５二次評価', false);
         kintone.app.record.setFieldShown('クレド５最終評価', false);
         kintone.app.record.setFieldShown('クレド５コメント', false);
+        // 能力評価
+        // 行動評価
+        // 成果評価
+        kintone.app.record.setFieldShown('成果基準', false);
+        kintone.app.record.setFieldShown('成果実績', false);
+        kintone.app.record.setFieldShown('成果加点要素', false);
+        kintone.app.record.setFieldShown('成果最終評価', false);
+        kintone.app.record.setFieldShown('成果個人前々期', false);
+        kintone.app.record.setFieldShown('成果個人前期', false);
+        kintone.app.record.setFieldShown('成果個人今期', false);
+        kintone.app.record.setFieldShown('成果個人平均', false);
+        kintone.app.record.setFieldShown('目標課前々期', false);
+        kintone.app.record.setFieldShown('目標課前期', false);
+        kintone.app.record.setFieldShown('目標課今期', false);
+        kintone.app.record.setFieldShown('目標課平均', false);
+        kintone.app.record.setFieldShown('実績課前々期', false);
+        kintone.app.record.setFieldShown('実績課前期', false);
+        kintone.app.record.setFieldShown('実績課今期', false);
+        kintone.app.record.setFieldShown('実績課平均', false);
+        kintone.app.record.setFieldShown('目標チーム前々期', false);
+        kintone.app.record.setFieldShown('目標チーム前期', false);
+        kintone.app.record.setFieldShown('目標チーム今期', false);
+        kintone.app.record.setFieldShown('目標チーム平均', false);
+        kintone.app.record.setFieldShown('実績チーム前々期', false);
+        kintone.app.record.setFieldShown('実績チーム前期', false);
+        kintone.app.record.setFieldShown('実績チーム今期', false);
+        kintone.app.record.setFieldShown('実績チーム平均', false);
+        kintone.app.record.setFieldShown('成果振り返り', false);
+        kintone.app.record.setFieldShown('成果翌期目標', false);
+        kintone.app.record.setFieldShown('成果評価者コメント', false);
+        kintone.app.record.setFieldShown('当期実績年棒', false);
+        kintone.app.record.setFieldShown('来季希望年棒', false);
+        kintone.app.record.setFieldShown('来季決定年棒', false);
       }
+    }
+    // S-2相当
+    for (var i = 0; i < sList.length; i++) {
+      if (runk === sList[i]) {
+        // クレド評価
+        // 能力評価
+        // 行動評価
+        kintone.app.record.setFieldShown('行動自己評価', false);
+        kintone.app.record.setFieldShown('行動一次評価', false);
+        kintone.app.record.setFieldShown('行動二次評価', false);
+        kintone.app.record.setFieldShown('行動最終評価', false);
+        kintone.app.record.setFieldShown('行動コメント', false);
+        kintone.app.record.setFieldShown('目標管理シート', false);
+        // 成果評価
+        kintone.app.record.setFieldShown('成果個人前々期', false);
+        kintone.app.record.setFieldShown('成果個人前期', false);
+        kintone.app.record.setFieldShown('成果個人今期', false);
+        kintone.app.record.setFieldShown('成果個人平均', false);
+        kintone.app.record.setFieldShown('目標課前々期', false);
+        kintone.app.record.setFieldShown('目標課前期', false);
+        kintone.app.record.setFieldShown('目標課今期', false);
+        kintone.app.record.setFieldShown('目標課平均', false);
+        kintone.app.record.setFieldShown('実績課前々期', false);
+        kintone.app.record.setFieldShown('実績課前期', false);
+        kintone.app.record.setFieldShown('実績課今期', false);
+        kintone.app.record.setFieldShown('実績課平均', false);
+        kintone.app.record.setFieldShown('目標チーム前々期', false);
+        kintone.app.record.setFieldShown('目標チーム前期', false);
+        kintone.app.record.setFieldShown('目標チーム今期', false);
+        kintone.app.record.setFieldShown('目標チーム平均', false);
+        kintone.app.record.setFieldShown('実績チーム前々期', false);
+        kintone.app.record.setFieldShown('実績チーム前期', false);
+        kintone.app.record.setFieldShown('実績チーム今期', false);
+        kintone.app.record.setFieldShown('実績チーム平均', false);
+        kintone.app.record.setFieldShown('成果振り返り', false);
+        kintone.app.record.setFieldShown('成果翌期目標', false);
+        kintone.app.record.setFieldShown('成果評価者コメント', false);
+        kintone.app.record.setFieldShown('当期実績年棒', false);
+        kintone.app.record.setFieldShown('来季希望年棒', false);
+        kintone.app.record.setFieldShown('来季決定年棒', false);
+      }
+    }
+    // M以上
+    for (var i = 0; i < mList.length; i++) {
+      if (runk === mList[i]) {
+        // クレド評価
+        // 能力評価
+        kintone.app.record.setFieldShown('能力自己評価', false);
+        kintone.app.record.setFieldShown('能力一次評価', false);
+        kintone.app.record.setFieldShown('能力二次評価', false);
+        kintone.app.record.setFieldShown('能力最終評価', false);
+        kintone.app.record.setFieldShown('能力コメント', false);
+        kintone.app.record.setFieldShown('能力加点', false);
+        kintone.app.record.setFieldShown('能力加点コメント', false);
+        kintone.app.record.setFieldShown('能力小計', false);
+        // 行動評価
+        kintone.app.record.setFieldShown('行動自己評価', false);
+        kintone.app.record.setFieldShown('行動一次評価', false);
+        kintone.app.record.setFieldShown('行動二次評価', false);
+        kintone.app.record.setFieldShown('行動最終評価', false);
+        kintone.app.record.setFieldShown('行動コメント', false);
+        kintone.app.record.setFieldShown('目標管理シート', false);
+        // 成果評価
+        kintone.app.record.setFieldShown('成果基準', false);
+        kintone.app.record.setFieldShown('成果実績', false);
+        kintone.app.record.setFieldShown('成果加点要素', false);
+        kintone.app.record.setFieldShown('成果最終評価', false);
+        kintone.app.record.setFieldShown('合計', false);
+        kintone.app.record.setFieldShown('評価ランク', false);
+      }
+    }
+    return event;
+  });
+
+  var calevents = [
+    'app.record.create.change.クレド１最終評価',
+    'app.record.create.change.クレド２最終評価',
+    'app.record.create.change.クレド３最終評価',
+    'app.record.create.change.クレド４最終評価',
+    'app.record.create.change.クレド５最終評価',
+    'app.record.create.change.能力最終評価',
+    'app.record.create.change.能力加点',
+    'app.record.create.change.行動最終評価',
+    'app.record.create.change.成果最終評価',
+    'app.record.edit.change.クレド１最終評価',
+    'app.record.edit.change.クレド２最終評価',
+    'app.record.edit.change.クレド３最終評価',
+    'app.record.edit.change.クレド４最終評価',
+    'app.record.edit.change.クレド５最終評価',
+    'app.record.edit.change.能力最終評価',
+    'app.record.edit.change.能力加点',
+    'app.record.edit.change.行動最終評価',
+    'app.record.edit.change.成果最終評価'
+  ];
+  kintone.events.on(calevents, function(event) {
+    var record = event.record;
+    var score = record['合計'].value;
+    if (Number(score) >= 91) {
+      record['評価ランク']['value'] = "S";
+    } else if (Number(score) <= 90 && Number(score) >= 81) {
+      record['評価ランク']['value'] = "A+";
+    } else if (Number(score) <= 80 && Number(score) >= 71) {
+      record['評価ランク']['value'] = "A";
+    } else if (Number(score) <= 70 && Number(score) >= 61) {
+      record['評価ランク']['value'] = "B+";
+    } else if (Number(score) <= 60) {
+      record['評価ランク']['value'] = "B";
     }
     return event;
   });

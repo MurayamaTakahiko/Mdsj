@@ -176,7 +176,7 @@ jQuery.noConflict();
             if (tableList['利用開始日']['value'] <= staDay
               && (!tableList['利用終了日']['value'] || tableList['利用終了日']['value'] >= finDay)) {
                 setFields = {
-                  '種別': '',
+                  '種別': 'オプション',
                   'プラン・オプション': tableList['オプション']['value'],
                   '単価': tableList['オプション単価']['value'],
                   '数量': tableList['オプション契約数']['value']

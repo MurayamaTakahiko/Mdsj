@@ -6,6 +6,13 @@ jQuery.noConflict();
   var SALES_APPID = '';
   // ダッシュボード用初期設定アプリID
   var PROP_APPID = '';
+  // 案件タイプ別リスト
+  var taxList = ['税務顧問', '確定申告等税務スポット', '税務セミナー', '税務会計ツール・フィー'];
+  var mngList = ['経営コンサルティング', '経営セミナー', '経営ツール・フィー'];
+  var maList = ['事業承継', 'Ｍ＆Ａ', '承継セミナー'];
+  var propList = ['個人資産税', '建築同行フィー', '信託・遺言'];
+  var hrList = ['人事コンサルティング', '人事セミナー', '人事ツール・フィー'];
+  var itList = ['ITコンサルティング', 'ITセミナー', 'ITツール・フィー'];
 
   var oneTimeFlg = true;
   var chart1, chart2, chart3, chart4, chart5, chart6, chart7, chart8, chart9;
@@ -610,7 +617,22 @@ jQuery.noConflict();
                 var userLabels = [];
                 var userCodes = [];
                 for (var l = 0; l < canvas1Rec.length; l++) {
-                  var prod = canvas1Rec[l].案件タイプ.value;
+                  var prod;
+                  if (taxList.includes(canvas1Rec[l].案件タイプ.value)) {
+                    prod = '税務顧問';
+                  } else if (mngList.includes(canvas1Rec[l].案件タイプ.value)) {
+                    prod = '経営コンサルティング';
+                  } else if (maList.includes(canvas1Rec[l].案件タイプ.value)) {
+                    prod = '事業承継ＭＡ';
+                  } else if (propList.includes(canvas1Rec[l].案件タイプ.value)) {
+                    prod = '個人資産税';
+                  } else if (hrList.includes(canvas1Rec[l].案件タイプ.value)) {
+                    prod = '人事コンサルティング';
+                  } else if (itList.includes(canvas1Rec[l].案件タイプ.value)) {
+                    prod = 'ITコンサルティング';
+                  } else {
+                    prod = 'フィー手数料その他';
+                  }
                   if (typeof(prodData[prod]) === "undefined") {
                     prodData[prod] = 0;
                     prodLabels.push(prod);
@@ -667,11 +689,11 @@ jQuery.noConflict();
                 var prodBGColorMST = {
                   税務顧問: "rgba(128, 128, 0, 0.6)",
                   経営コンサルティング: "rgba(255, 0, 255, 0.6)",
-                  事業承継: "rgba(0, 255, 255, 0.6)",
-                  manda: "rgba(0, 255, 0, 0.6)",
-                  個人資産税: "rgba(0, 128, 0, 0.6)",
-                  人事コンサルティング: "rgba(255, 255, 0, 0.6)",
+                  事業承継ＭＡ: "rgba(0, 255, 255, 0.6)",
+                  個人資産税: "rgba(0, 255, 0, 0.6)",
+                  人事コンサルティング: "rgba(0, 128, 0, 0.6)",
                   ITコンサルティング: "rgba(0, 128, 128, 0.6)",
+                  フィー手数料その他: "rgba(255, 255, 0, 0.6)",
                   セミナー: "rgba(0, 0, 255, 0.6)",
                   確定申告等税務スポット: "rgba(128, 0, 0, 0.6)",
                   フィー手数料: "rgba(0, 0, 128, 0.6)",
@@ -1321,6 +1343,22 @@ jQuery.noConflict();
     var minMonthP2 = '"' + moment(minMonthP).add(-12, "months").startOf("month").format('YYYY-MM-DD') + '"';
     maxMonthP = '"' + moment(maxMonthP).format('YYYY-MM-DD') + '"';
     minMonthP = '"' + moment(minMonthP).format('YYYY-MM-DD') + '"';
+
+    if (sprd === "税務顧問") {
+      sprd = '税務顧問", "確定申告等税務スポット", "税務セミナー", "税務会計ツール・フィー';
+    } else if (sprd === "経営コンサルティング") {
+      sprd = '経営コンサルティング", "経営セミナー", "経営ツール・フィー';
+    } else if (sprd === "事業承継ＭＡ") {
+      sprd = '事業承継", "Ｍ＆Ａ", "承継セミナー';
+    } else if (sprd === "個人資産税") {
+      sprd = '個人資産税", "建築同行フィー", "信託・遺言';
+    } else if (sprd === "人事コンサルティング") {
+      sprd = '人事コンサルティング", "人事セミナー", "人事ツール・フィー';
+    } else if (sprd === "ITコンサルティング") {
+      sprd = 'ITコンサルティング", "ITセミナー", "ITツール・フィー';
+    } else {
+      sprd = 'フィー手数料（管理部のみ）", "雑収入（管理部のみ）", "原稿執筆", "共通セミナー（管理部のみ）", "計画・日報用';
+    }
 
     SALES_APPID = emxasConf.getConfig('APP_SALES_APPID');
     fetchRecords(SALES_APPID, '(契約期間開始 <= ' + maxMonthP + ' and 契約期間終了 >= ' + minMonthP + ') and 案件タイプ in ("' + sprd + '") order by OMS顧客コード asc')

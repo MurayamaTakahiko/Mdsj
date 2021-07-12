@@ -160,15 +160,17 @@ jQuery.noConflict();
         for (var i = 0; i < constlist.length; i++) {
           var record = constlist[i];
           // プラン分をまずセット
-          var setFields = {
-            '種別': record['プラン種別']['value'],
-            'プラン・オプション': record['プラン']['value'],
-            '単価': record['プラン料金']['value'],
-            '数量': 1
-          };
-          tbl.push({
-            'value' : getRowObject(resp, setFields)
-          });
+          for (var pTbl = 0; pTbl < record['プランリスト']['value'].length; pTbl++) {
+            var setFields = {
+              '種別': record['プランリスト']['value'][pTbl]['value']['プラン種別']['value'],
+              'プラン・オプション': record['プランリスト']['value'][pTbl]['value']['プラン']['value'],
+              '単価': record['プランリスト']['value'][pTbl]['value']['プラン料金']['value'],
+              '数量': 1
+            };
+            tbl.push({
+              'value' : getRowObject(resp, setFields)
+            });
+          }
           // オプション明細をセット
           for (var j = 0; j < record['オプション利用'].value.length; j++) {
             var tableList = record['オプション利用'].value[j].value;

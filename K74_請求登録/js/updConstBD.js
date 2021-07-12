@@ -1,6 +1,7 @@
 /*
  * 契約顧客請求日更新プログラム
  * 20210628 MDSJ takahara
+ * 20210712 MDSJ takahara Update
  */
 jQuery.noConflict();
 (function($) {

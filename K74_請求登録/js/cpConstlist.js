@@ -1,6 +1,7 @@
 /*
  * 契約プラン・オプションコピープログラム
  * 20210628 MDSJ takahara
+ * 20210712 MDSJ takahara Update
  */
 jQuery.noConflict();
 (function($) {
@@ -105,7 +106,7 @@ jQuery.noConflict();
       var param = {
         app: APP_CONSTLIST,
         query: "所属・会社名１ = \"" + custCd + "\" and " +
-          "利用開始日 <= \"" + staDay + "\" and " +
+          "オプション利用開始日 <= \"" + staDay + "\" and " +
           "退会日 = \"" + billDay + "\" " +
           "order by レコード番号 desc"
       };
@@ -161,22 +162,54 @@ jQuery.noConflict();
           var record = constlist[i];
           // プラン分をまずセット
           for (var pTbl = 0; pTbl < record['プランリスト']['value'].length; pTbl++) {
-            var setFields = {
-              '種別': record['プランリスト']['value'][pTbl]['value']['プラン種別']['value'],
-              'プラン・オプション': record['プランリスト']['value'][pTbl]['value']['プラン']['value'],
-              '単価': record['プランリスト']['value'][pTbl]['value']['プラン料金']['value'],
-              '数量': 1
-            };
-            tbl.push({
-              'value' : getRowObject(resp, setFields)
-            });
+            var planList = record['プランリスト'].value[pTbl].value;
+            // 利用期間内のプランのみ
+            if (planList['プラン利用開始日']['value'] <= staDay
+              && (!planList['プラン利用終了日']['value'] || planList['プラン利用終了日']['value'] >= finDay)) {
+                var setFields = {
+                  '種別': planList['プラン種別']['value'],
+                  'プラン・オプション': planList['プラン']['value'],
+                  '単価': planList['プラン料金']['value'],
+                  '数量': 1
+                };
+                tbl.push({
+                  'value' : getRowObject(resp, setFields)
+                });
+            }
+            // 入会金・保証金処理
+            var check = planList['請求済']['value'];
+            if (check.indexOf("済") < 0) {
+              var entryPrice = Number(planList['入会金']['value'].replace(/,/g, "").replace(/円/g, ""));
+              if (entryPrice > 0) {
+                setFields = {
+                  '種別': '入会金',
+                  'プラン・オプション': planList['プラン']['value'],
+                  '単価': entryPrice,
+                  '数量': 1
+                };
+                tbl.push({
+                  'value': getRowObject(resp, setFields)
+                });
+              }
+              if (planList['保証金']['value'] > 0) {
+                setFields = {
+                  '種別': '保証金',
+                  'プラン・オプション': planList['プラン']['value'],
+                  '単価': planList['保証金']['value'],
+                  '数量': 1
+                };
+                tbl.push({
+                  'value': getRowObject(resp, setFields)
+                });
+              }
+            }
           }
           // オプション明細をセット
           for (var j = 0; j < record['オプション利用'].value.length; j++) {
             var tableList = record['オプション利用'].value[j].value;
             // 利用期間内のオプションのみ
-            if (tableList['利用開始日']['value'] <= staDay
-              && (!tableList['利用終了日']['value'] || tableList['利用終了日']['value'] >= finDay)) {
+            if (tableList['オプション利用開始日']['value'] <= staDay
+              && (!tableList['オプション利用終了日']['value'] || tableList['オプション利用終了日']['value'] >= finDay)) {
                 setFields = {
                   '種別': 'オプション',
                   'プラン・オプション': tableList['オプション']['value'],

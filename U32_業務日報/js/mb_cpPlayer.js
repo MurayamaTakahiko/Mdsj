@@ -26,7 +26,7 @@
     var appId = kintone.mobile.app.getId();
     var query = '工事番号 = ' + clientRecordId + ' and 完工区分 in ("完")';
     var outputFields = ['日付'];
-    var appUrl = kintone.api.url('/k/v1/records');
+    var appUrl = kintone.api.url('/k/m/v1/records');
     var params = {
       'app': appId,
       'query': query,

@@ -26,7 +26,7 @@
     var appId = kintone.mobile.app.getLookupTargetAppId('工事番号');
     var query = '工事番号 = ' + clientRecordId + ' and 請求番号 = ""';
     var outputFields = ['工事番号'];
-    var appUrl = kintone.api.url('/k/m/v1/records');
+    var appUrl = kintone.api.url('/k/v1/records');
     var params = {
       'app': appId,
       'query': query,

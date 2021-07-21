@@ -21,11 +21,11 @@
     }
     record['作業者リスト']['value'] = plList;
     record['作業者リスト']['disabled'] = true;
-    // 完工済みの工事依頼かどうかチェック
+    // 請求済みの工事依頼かどうかチェック
     var clientRecordId = event.record.工事番号.value;
-    var appId = kintone.mobile.app.getId();
-    var query = '工事番号 = ' + clientRecordId + ' and 完工区分 in ("完")';
-    var outputFields = ['日付'];
+    var appId = kintone.mobile.app.getLookupTargetAppId('工事番号');
+    var query = '工事番号 = ' + clientRecordId + ' and 請求番号 = ""';
+    var outputFields = ['工事番号'];
     var appUrl = kintone.api.url('/k/m/v1/records');
     var params = {
       'app': appId,
@@ -33,8 +33,8 @@
       'fields': outputFields
     };
     return kintone.api(appUrl, 'GET', params).then(function(resp) {
-      if (resp.records.length > 0) {
-        event.error = '既に完工済みの工事依頼は使用できません。';
+      if (resp.records.length < 1) {
+        event.error = '既に請求済みの工事依頼は使用できません。';
       } else {
         var res = confirm("本当にこの内容を反映させますか");
         if (res === false) {

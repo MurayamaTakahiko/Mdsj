@@ -1,7 +1,7 @@
 /*
  * 契約プラン・オプションコピープログラム
  * 20210628 MDSJ takahara
- * 20210712 MDSJ takahara Update
+ * 20210802 MDSJ takahara Update
  */
 jQuery.noConflict();
 (function($) {

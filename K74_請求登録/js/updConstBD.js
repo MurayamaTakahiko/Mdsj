@@ -50,6 +50,7 @@ jQuery.noConflict();
     var billNum = record['請求番号'].value;
     var billCD = record['所属・会社名１'].value;
     var billCstName = record['顧客名'].value;
+    var billCstCd = record['顧客番号'].value;
     var billDay = record['請求日'].value;
     var billPrice = record['請求総額'].value;
     var params = {
@@ -75,6 +76,42 @@ jQuery.noConflict();
           }
         }
       };
+      // その他売上請求アプリID
+      var APP_OTHERBILL = 82;
+      var paramList = [];
+      // 請求明細分をそれぞれ別レコードで
+      for (var i = 0; i < record['請求明細']['value'].length; i++) {
+        var billList = record['請求明細'].value[i].value;
+        var paramOne = {
+          "顧客番号": {
+            "value": billCstCd
+          },
+          "所属・会社名１": {
+            "value": billCD
+          },
+          "対象顧客": {
+            "value": billCstName
+          },
+          "請求対象月": {
+            "value": billDay
+          },
+          "種別": {
+            "value": "月額請求"
+          },
+          "項目": {
+            "value": billList['プラン・オプション']['value']
+          },
+          "金額": {
+            "value": billList['小計']['value']
+          }
+        };
+        paramList.push(paramOne);
+        console.log(paramList);
+      }
+      var paramBulk = {
+        'app': APP_OTHERBILL,
+        'records': paramList
+      };
     // 契約顧客請求日・請求番号更新
     return kintone.api(kintone.api.url('/k/v1/records', true), 'GET', paramGet).then(function(resp) {
       var records = resp.records;
@@ -83,6 +120,14 @@ jQuery.noConflict();
         'records': createPutRecords(records, billDay, billNum)
       };
       return kintone.api(kintone.api.url('/k/v1/records', true), 'PUT', paramPut).then(function(resp) {
+        // 売上アプリ登録処理
+        kintone.api(kintone.api.url('/k/v1/records', true), 'POST', paramBulk, function(resp) {
+          // success
+          console.log(resp);
+        }, function(error) {
+          // error
+          console.log(error);
+        });
         // 入金管理アプリ登録処理
         return kintone.api(kintone.api.url('/k/v1/record', true), 'POST', params).then(function(resp) {
           console.log(resp);

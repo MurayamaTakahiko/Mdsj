@@ -160,21 +160,48 @@ jQuery.noConflict();
         //取得予定の数分
         for (var i = 0; i < constlist.length; i++) {
           var record = constlist[i];
+          var setFields = {};
           // プラン分をまずセット
           for (var pTbl = 0; pTbl < record['プランリスト']['value'].length; pTbl++) {
             var planList = record['プランリスト'].value[pTbl].value;
             // 利用期間内のプランのみ
             if (planList['プラン利用開始日']['value'] <= staDay
               && (!planList['プラン利用終了日']['value'] || planList['プラン利用終了日']['value'] >= finDay)) {
-                var setFields = {
-                  '種別': planList['プラン種別']['value'],
-                  'プラン・オプション': planList['プラン']['value'],
-                  '単価': planList['プラン料金']['value'],
-                  '数量': 1
-                };
-                tbl.push({
-                  'value' : getRowObject(resp, setFields)
-                });
+                // バーチャルプランのみ半年請求
+                if (planList['プラン種別']['value'] === "バーチャル") {
+                  if (moment(staDay).month() == 3 || moment(staDay).month() == 9) {
+                    // 初回請求かどうか
+                    var useTime = moment(staDay).diff(moment(planList['プラン利用開始日']['value']), 'months');
+                    if (useTime < 6) {
+                      setFields = {
+                        '種別': planList['プラン種別']['value'],
+                        'プラン・オプション': planList['プラン']['value'],
+                        '単価': planList['プラン料金']['value'] * useTime,
+                        '数量': 1
+                      };
+                    } else {
+                      setFields = {
+                        '種別': planList['プラン種別']['value'],
+                        'プラン・オプション': planList['プラン']['value'],
+                        '単価': planList['プラン料金']['value'] * 6,
+                        '数量': 1
+                      };
+                    }
+                    tbl.push({
+                      'value' : getRowObject(resp, setFields)
+                    });
+                  }
+                } else {
+                  setFields = {
+                    '種別': planList['プラン種別']['value'],
+                    'プラン・オプション': planList['プラン']['value'],
+                    '単価': planList['プラン料金']['value'],
+                    '数量': 1
+                  };
+                  tbl.push({
+                    'value' : getRowObject(resp, setFields)
+                  });
+                }
             }
             // 入会金・保証金処理
             var check = planList['請求済']['value'];

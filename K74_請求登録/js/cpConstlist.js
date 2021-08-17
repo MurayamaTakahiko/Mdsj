@@ -164,6 +164,7 @@ jQuery.noConflict();
         for (var i = 0; i < constlist.length; i++) {
           var record = constlist[i];
           var setFields = {};
+          var virtualFlg = false;
           // プラン分をまずセット
           for (var pTbl = 0; pTbl < record['プランリスト']['value'].length; pTbl++) {
             var planList = record['プランリスト'].value[pTbl].value;
@@ -172,6 +173,7 @@ jQuery.noConflict();
               && (!planList['プラン利用終了日']['value'] || planList['プラン利用終了日']['value'] >= finDay)) {
                 // バーチャルプランのみ半年請求
                 if (planList['プラン種別']['value'] === "バーチャル") {
+                  virtualFlg = true;
                   if (moment(staDay).month() == 4 || moment(staDay).month() == 10) {
                     // 初回請求かどうか
                     var useTime = moment(staDay).diff(moment(planList['プラン利用開始日']['value']), 'months');
@@ -242,43 +244,101 @@ jQuery.noConflict();
             // 利用期間内のオプションのみ
             if (tableList['オプション利用開始日']['value'] <= staDay
               && (!tableList['オプション利用終了日']['value'] || tableList['オプション利用終了日']['value'] >= finDay)) {
-                setFields = {
-                  '種別': 'オプション',
-                  'プラン・オプション': tableList['オプション']['value'],
-                  '単価': tableList['オプション単価']['value'],
-                  '数量': tableList['オプション契約数']['value']
-                };
-                tbl.push({
-                  'value': getRowObject(resp, setFields)
-                });
-              // 通話料請求
-              if (tableList['契約番号']['value']) {
-                if (moment(staDay).month() % 2 == 0) {
-                  var tellNo = tableList['契約番号'].value;
-                  var query = '契約電話番号 = "' + tellNo + '" and 請求対象月 >= "' + staTelDay + '" and 請求対象月 <= "' + finTelDay + '"';
-                  var paramTell = {
-                      'app': APP_TELLBILL,
-                      'query': query
-                  };
-                  kintone.api(kintone.api.url('/k/v1/records', true), 'GET', paramTell).then(function(respT) {
-                    var records = respT.records;
-                    var tellBill = 0;
-                    for (var i = 0, l = records.length; i < l; i++) {
-                      var record = records[i];
-                      tellBill += Number(record['通話料'].value);
-                    }
-                    if (tellBill !== 0) {
+                // バーチャルプランのみ半年請求
+                if (virtualFlg) {
+                  if (moment(staDay).month() == 4 || moment(staDay).month() == 10) {
+                    // 初回請求かどうか
+                    var useTime = moment(staDay).diff(moment(tableList['オプション利用開始日']['value']), 'months');
+                    if (useTime < 7) {
                       setFields = {
                         '種別': 'オプション',
-                        'プラン・オプション': '通話料',
-                        '単価': tellBill,
-                        '数量': 1
+                        'プラン・オプション': tableList['オプション']['value'],
+                        '単価': tableList['オプション単価']['value'] * useTime,
+                        '数量': tableList['オプション契約数']['value']
                       };
-                      tbl.push({
-                        'value': getRowObject(resp, setFields)
-                      });
+                    } else {
+                      setFields = {
+                        '種別': 'オプション',
+                        'プラン・オプション': tableList['オプション']['value'],
+                        '単価': tableList['オプション単価']['value'] * 6,
+                        '数量': tableList['オプション契約数']['value']
+                      };
                     }
+                    tbl.push({
+                      'value' : getRowObject(resp, setFields)
+                    });
+                  }
+                } else {
+                  setFields = {
+                    '種別': 'オプション',
+                    'プラン・オプション': tableList['オプション']['value'],
+                    '単価': tableList['オプション単価']['value'],
+                    '数量': tableList['オプション契約数']['value']
+                  };
+                  tbl.push({
+                    'value': getRowObject(resp, setFields)
                   });
+                }
+              // 通話料請求
+              if (tableList['契約番号']['value']) {
+                // バーチャルプランのみ半年請求
+                if (virtualFlg) {
+                  if (moment(staDay).month() == 4 || moment(staDay).month() == 10) {
+                    var tellNo = tableList['契約番号'].value;
+                    staTelDay = moment().add('month', -6).startOf('month').format("YYYY-MM-DD");
+                    var query = '契約電話番号 = "' + tellNo + '" and 請求対象月 >= "' + staTelDay + '" and 請求対象月 <= "' + finTelDay + '"';
+                    var paramTell = {
+                        'app': APP_TELLBILL,
+                        'query': query
+                    };
+                    kintone.api(kintone.api.url('/k/v1/records', true), 'GET', paramTell).then(function(respT) {
+                      var records = respT.records;
+                      var tellBill = 0;
+                      for (var i = 0, l = records.length; i < l; i++) {
+                        var record = records[i];
+                        tellBill += Number(record['通話料'].value);
+                      }
+                      if (tellBill !== 0) {
+                        setFields = {
+                          '種別': 'オプション',
+                          'プラン・オプション': '通話料',
+                          '単価': tellBill,
+                          '数量': 1
+                        };
+                        tbl.push({
+                          'value': getRowObject(resp, setFields)
+                        });
+                      }
+                    });
+                  }
+                } else {
+                  if (moment(staDay).month() % 2 == 0) {
+                    var tellNo = tableList['契約番号'].value;
+                    var query = '契約電話番号 = "' + tellNo + '" and 請求対象月 >= "' + staTelDay + '" and 請求対象月 <= "' + finTelDay + '"';
+                    var paramTell = {
+                        'app': APP_TELLBILL,
+                        'query': query
+                    };
+                    kintone.api(kintone.api.url('/k/v1/records', true), 'GET', paramTell).then(function(respT) {
+                      var records = respT.records;
+                      var tellBill = 0;
+                      for (var i = 0, l = records.length; i < l; i++) {
+                        var record = records[i];
+                        tellBill += Number(record['通話料'].value);
+                      }
+                      if (tellBill !== 0) {
+                        setFields = {
+                          '種別': 'オプション',
+                          'プラン・オプション': '通話料',
+                          '単価': tellBill,
+                          '数量': 1
+                        };
+                        tbl.push({
+                          'value': getRowObject(resp, setFields)
+                        });
+                      }
+                    });
+                  }
                 }
               }
             }

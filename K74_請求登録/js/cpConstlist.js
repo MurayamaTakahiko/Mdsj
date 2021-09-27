@@ -174,14 +174,14 @@ jQuery.noConflict();
                 // バーチャルプランのみ半年請求
                 if (planList['プラン種別']['value'] === "バーチャル") {
                   virtualFlg = true;
-                  if (moment(staDay).month() == 4 || moment(staDay).month() == 10) {
+                  if (moment(staDay).month() == 3 || moment(staDay).month() == 9) {
                     // 初回請求かどうか
                     var useTime = moment(staDay).diff(moment(planList['プラン利用開始日']['value']), 'months');
                     if (useTime < 7) {
                       setFields = {
                         '種別': planList['プラン種別']['value'],
                         'プラン・オプション': planList['プラン']['value'],
-                        '単価': planList['プラン料金']['value'] * useTime,
+                        '単価': planList['プラン料金']['value'] * (useTime + 6),
                         '数量': 1
                       };
                     } else {
@@ -246,14 +246,14 @@ jQuery.noConflict();
               && (!tableList['オプション利用終了日']['value'] || tableList['オプション利用終了日']['value'] >= finDay)) {
                 // バーチャルプランのみ半年請求
                 if (virtualFlg) {
-                  if (moment(staDay).month() == 4 || moment(staDay).month() == 10) {
+                  if (moment(staDay).month() == 3 || moment(staDay).month() == 9) {
                     // 初回請求かどうか
                     var useTime = moment(staDay).diff(moment(tableList['オプション利用開始日']['value']), 'months');
                     if (useTime < 7) {
                       setFields = {
                         '種別': 'オプション',
                         'プラン・オプション': tableList['オプション']['value'],
-                        '単価': tableList['オプション単価']['value'] * useTime,
+                        '単価': tableList['オプション単価']['value'] * (useTime + 6),
                         '数量': tableList['オプション契約数']['value']
                       };
                     } else {
@@ -283,7 +283,7 @@ jQuery.noConflict();
               if (tableList['契約番号']['value']) {
                 // バーチャルプランのみ半年請求
                 if (virtualFlg) {
-                  if (moment(staDay).month() == 4 || moment(staDay).month() == 10) {
+                  if (moment(staDay).month() == 3 || moment(staDay).month() == 9) {
                     var tellNo = tableList['契約番号'].value;
                     staTelDay = moment().add('month', -6).startOf('month').format("YYYY-MM-DD");
                     var query = '契約電話番号 = "' + tellNo + '" and 請求対象月 >= "' + staTelDay + '" and 請求対象月 <= "' + finTelDay + '"';
@@ -340,7 +340,7 @@ jQuery.noConflict();
                     });
                   }
                 }
-              }
+              } 
             }
           }
         }

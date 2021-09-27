@@ -79,33 +79,153 @@ jQuery.noConflict();
       // その他売上請求アプリID
       var APP_OTHERBILL = 82;
       var paramList = [];
+      var virtualFlg = false;
       // 請求明細分をそれぞれ別レコードで
       for (var i = 0; i < record['請求明細']['value'].length; i++) {
         var billList = record['請求明細'].value[i].value;
-        var paramOne = {
-          "顧客番号": {
-            "value": billCstCd
-          },
-          "所属・会社名１": {
-            "value": billCD
-          },
-          "対象顧客": {
-            "value": billCstName
-          },
-          "請求対象月": {
-            "value": billDay
-          },
-          "種別": {
-            "value": "月額請求"
-          },
-          "項目": {
-            "value": billList['プラン・オプション']['value']
-          },
-          "金額": {
-            "value": billList['小計']['value']
+        // バーチャルプランのみ6ヶ月を月ごとに分割
+        if (billList['種別']['value'] === "バーチャル") {
+          virtualFlg = true;
+          for (var j = 0; j < 6; j++) {
+            var paramOne = {
+              "顧客番号": {
+                "value": billCstCd
+              },
+              "所属・会社名１": {
+                "value": billCD
+              },
+              "対象顧客": {
+                "value": billCstName
+              },
+              "請求対象月": {
+                "value": moment(billDay).add('month', j).endOf('month').format("YYYY-MM-DD")
+              },
+              "種別": {
+                "value": "月額請求"
+              },
+              "項目": {
+                "value": billList['プラン・オプション']['value']
+              },
+              "金額": {
+                "value": Math.round(billList['小計']['value'] / 6)
+              }
+            };
+            paramList.push(paramOne);
           }
-        };
-        paramList.push(paramOne);
+        } else if (billList['プラン・オプション']['value'] === "通話料") {
+          if (virtualFlg) {
+            for (var j = 0; j < 6; j++) {
+              var paramOne = {
+                "顧客番号": {
+                  "value": billCstCd
+                },
+                "所属・会社名１": {
+                  "value": billCD
+                },
+                "対象顧客": {
+                  "value": billCstName
+                },
+                "請求対象月": {
+                  "value": moment(billDay).add('month', j).endOf('month').format("YYYY-MM-DD")
+                },
+                "種別": {
+                  "value": "月額請求"
+                },
+                "項目": {
+                  "value": billList['プラン・オプション']['value']
+                },
+                "金額": {
+                  "value": Math.round(billList['小計']['value'] / 6)
+                }
+              };
+              paramList.push(paramOne);
+            }
+          } else {
+            for (var k = 0; k < 2; k++) {
+              var paramOne = {
+                "顧客番号": {
+                  "value": billCstCd
+                },
+                "所属・会社名１": {
+                  "value": billCD
+                },
+                "対象顧客": {
+                  "value": billCstName
+                },
+                "請求対象月": {
+                  "value": moment(billDay).add('month', k - 2).endOf('month').format("YYYY-MM-DD")
+                },
+                "種別": {
+                  "value": "月額請求"
+                },
+                "項目": {
+                  "value": billList['プラン・オプション']['value']
+                },
+                "金額": {
+                  "value": Math.round(billList['小計']['value'] / 2)
+                }
+              };
+              paramList.push(paramOne);
+            }
+          }
+        } else {
+          console.log(virtualFlg);
+          console.log(billList['種別']['value']);
+          if (virtualFlg && billList['種別']['value'] === "オプション") {
+            console.log("virOp");
+            for (var l = 0; l < 6; l++) {
+              var paramOne = {
+                "顧客番号": {
+                  "value": billCstCd
+                },
+                "所属・会社名１": {
+                  "value": billCD
+                },
+                "対象顧客": {
+                  "value": billCstName
+                },
+                "請求対象月": {
+                  "value": moment(billDay).add('month', l).endOf('month').format("YYYY-MM-DD")
+                },
+                "種別": {
+                  "value": "月額請求"
+                },
+                "項目": {
+                  "value": billList['プラン・オプション']['value']
+                },
+                "金額": {
+                  "value": Math.round(billList['小計']['value'] / 6)
+                }
+              };
+              paramList.push(paramOne);
+            }
+          } else {
+            var paramOne = {
+              "顧客番号": {
+                "value": billCstCd
+              },
+              "所属・会社名１": {
+                "value": billCD
+              },
+              "対象顧客": {
+                "value": billCstName
+              },
+              "請求対象月": {
+                "value": billDay
+              },
+              "種別": {
+                "value": "月額請求"
+              },
+              "項目": {
+                "value": billList['プラン・オプション']['value']
+              },
+              "金額": {
+                "value": billList['小計']['value']
+              }
+            };
+            paramList.push(paramOne);
+          }
+        }
         console.log(paramList);
       }
       var paramBulk = {

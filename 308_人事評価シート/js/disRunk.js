@@ -27,8 +27,8 @@
         kintone.app.record.setFieldShown('クレド５一次評価', false);
         kintone.app.record.setFieldShown('クレド５二次評価', false);
         kintone.app.record.setFieldShown('クレド５最終評価', false);
-        kintone.app.record.setFieldShown('クレド５中間面談コメント', false);
-        kintone.app.record.setFieldShown('クレド５評価コメント', false);
+        kintone.app.record.setFieldShown('クレド５自己評価コメント', false);
+        kintone.app.record.setFieldShown('クレド５一次評価コメント', false);
         // 能力評価
         kintone.app.record.setFieldShown('能力自己評価', true);
         kintone.app.record.setFieldShown('能力一次評価', true);
@@ -36,14 +36,14 @@
         kintone.app.record.setFieldShown('能力最終評価', true);
         kintone.app.record.setFieldShown('能力コメント', true);
         kintone.app.record.setFieldShown('能力加点', true);
-        kintone.app.record.setFieldShown('能力加点コメント', true);
+        // kintone.app.record.setFieldShown('能力加点コメント', true);
         kintone.app.record.setFieldShown('能力小計', true);
         // 行動評価
         kintone.app.record.setFieldShown('行動自己評価', true);
         kintone.app.record.setFieldShown('行動一次評価', true);
         kintone.app.record.setFieldShown('行動二次評価', true);
         kintone.app.record.setFieldShown('行動最終評価', true);
-        kintone.app.record.setFieldShown('行動コメント', true);
+        // kintone.app.record.setFieldShown('行動コメント', true);
         kintone.app.record.setFieldShown('目標管理シート', true);
         kintone.app.record.setFieldShown('行動小計', true);
         // 成果評価
@@ -93,8 +93,8 @@
         kintone.app.record.setFieldShown('クレド５一次評価', true);
         kintone.app.record.setFieldShown('クレド５二次評価', true);
         kintone.app.record.setFieldShown('クレド５最終評価', true);
-        kintone.app.record.setFieldShown('クレド５中間面談コメント', true);
-        kintone.app.record.setFieldShown('クレド５評価コメント', true);
+        kintone.app.record.setFieldShown('クレド５自己評価コメント', true);
+        kintone.app.record.setFieldShown('クレド５一次評価コメント', true);
         // 能力評価
         kintone.app.record.setFieldShown('能力自己評価', true);
         kintone.app.record.setFieldShown('能力一次評価', true);
@@ -102,14 +102,14 @@
         kintone.app.record.setFieldShown('能力最終評価', true);
         kintone.app.record.setFieldShown('能力コメント', true);
         kintone.app.record.setFieldShown('能力加点', true);
-        kintone.app.record.setFieldShown('能力加点コメント', true);
+        // kintone.app.record.setFieldShown('能力加点コメント', true);
         kintone.app.record.setFieldShown('能力小計', true);
         // 行動評価
         kintone.app.record.setFieldShown('行動自己評価', false);
         kintone.app.record.setFieldShown('行動一次評価', false);
         kintone.app.record.setFieldShown('行動二次評価', false);
         kintone.app.record.setFieldShown('行動最終評価', false);
-        kintone.app.record.setFieldShown('行動コメント', false);
+        // kintone.app.record.setFieldShown('行動コメント', false);
         kintone.app.record.setFieldShown('目標管理シート', false);
         kintone.app.record.setFieldShown('行動小計', false);
         // 成果評価
@@ -159,8 +159,8 @@
         kintone.app.record.setFieldShown('クレド５一次評価', true);
         kintone.app.record.setFieldShown('クレド５二次評価', true);
         kintone.app.record.setFieldShown('クレド５最終評価', true);
-        kintone.app.record.setFieldShown('クレド５中間面談コメント', true);
-        kintone.app.record.setFieldShown('クレド５評価コメント', true);
+        kintone.app.record.setFieldShown('クレド５自己評価コメント', true);
+        kintone.app.record.setFieldShown('クレド５一次評価コメント', true);
         // 能力評価
         kintone.app.record.setFieldShown('能力自己評価', false);
         kintone.app.record.setFieldShown('能力一次評価', false);
@@ -168,14 +168,14 @@
         kintone.app.record.setFieldShown('能力最終評価', false);
         kintone.app.record.setFieldShown('能力コメント', false);
         kintone.app.record.setFieldShown('能力加点', false);
-        kintone.app.record.setFieldShown('能力加点コメント', false);
+        // kintone.app.record.setFieldShown('能力加点コメント', false);
         kintone.app.record.setFieldShown('能力小計', false);
         // 行動評価
         kintone.app.record.setFieldShown('行動自己評価', false);
         kintone.app.record.setFieldShown('行動一次評価', false);
         kintone.app.record.setFieldShown('行動二次評価', false);
         kintone.app.record.setFieldShown('行動最終評価', false);
-        kintone.app.record.setFieldShown('行動コメント', false);
+        // kintone.app.record.setFieldShown('行動コメント', false);
         kintone.app.record.setFieldShown('目標管理シート', false);
         kintone.app.record.setFieldShown('行動小計', false);
         // 成果評価

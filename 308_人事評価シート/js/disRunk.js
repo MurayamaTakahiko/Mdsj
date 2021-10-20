@@ -37,6 +37,7 @@
         kintone.app.record.setFieldShown('能力コメント', true);
         kintone.app.record.setFieldShown('能力加点', true);
         // kintone.app.record.setFieldShown('能力加点コメント', true);
+        kintone.app.record.setFieldShown('職能要件書', true);
         kintone.app.record.setFieldShown('能力小計', true);
         // 行動評価
         kintone.app.record.setFieldShown('行動自己評価', true);
@@ -75,8 +76,8 @@
         kintone.app.record.setFieldShown('成果翌期目標', false);
         kintone.app.record.setFieldShown('成果評価者コメント', false);
         kintone.app.record.setFieldShown('当期実績年棒', false);
-        kintone.app.record.setFieldShown('来季希望年棒', false);
-        kintone.app.record.setFieldShown('来季決定年棒', false);
+        kintone.app.record.setFieldShown('来期希望年棒', false);
+        kintone.app.record.setFieldShown('来期決定年棒', false);
         // 総括
         kintone.app.record.setFieldShown('合計', true);
         kintone.app.record.setFieldShown('評価ランク', true);
@@ -103,6 +104,7 @@
         kintone.app.record.setFieldShown('能力コメント', true);
         kintone.app.record.setFieldShown('能力加点', true);
         // kintone.app.record.setFieldShown('能力加点コメント', true);
+        kintone.app.record.setFieldShown('職能要件書', true);
         kintone.app.record.setFieldShown('能力小計', true);
         // 行動評価
         kintone.app.record.setFieldShown('行動自己評価', false);
@@ -141,8 +143,8 @@
         kintone.app.record.setFieldShown('成果翌期目標', false);
         kintone.app.record.setFieldShown('成果評価者コメント', false);
         kintone.app.record.setFieldShown('当期実績年棒', false);
-        kintone.app.record.setFieldShown('来季希望年棒', false);
-        kintone.app.record.setFieldShown('来季決定年棒', false);
+        kintone.app.record.setFieldShown('来期希望年棒', false);
+        kintone.app.record.setFieldShown('来期決定年棒', false);
         // 総括
         kintone.app.record.setFieldShown('合計', true);
         kintone.app.record.setFieldShown('評価ランク', true);
@@ -169,6 +171,7 @@
         kintone.app.record.setFieldShown('能力コメント', false);
         kintone.app.record.setFieldShown('能力加点', false);
         // kintone.app.record.setFieldShown('能力加点コメント', false);
+        kintone.app.record.setFieldShown('職能要件書', false);
         kintone.app.record.setFieldShown('能力小計', false);
         // 行動評価
         kintone.app.record.setFieldShown('行動自己評価', false);
@@ -207,8 +210,8 @@
         kintone.app.record.setFieldShown('成果翌期目標', true);
         kintone.app.record.setFieldShown('成果評価者コメント', true);
         kintone.app.record.setFieldShown('当期実績年棒', true);
-        kintone.app.record.setFieldShown('来季希望年棒', true);
-        kintone.app.record.setFieldShown('来季決定年棒', true);
+        kintone.app.record.setFieldShown('来期希望年棒', true);
+        kintone.app.record.setFieldShown('来期決定年棒', true);
         // 総括
         kintone.app.record.setFieldShown('合計', false);
         kintone.app.record.setFieldShown('評価ランク', false);

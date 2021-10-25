@@ -39,8 +39,14 @@ jQuery.noConflict();
     var clientRecordId = event.recordId;
     var relatedAppId = kintone.app.getRelatedRecordsTargetAppId('顧客契約一覧');
     var billDay = record['請求日'].value;
-    var custCd = record['所属・会社名１'].value;
-    var query = '所属・会社名１ = "' + custCd + '"';
+    var custCd = record['所属・会社名１'].value;;
+    var custName = record['顧客名'].value;
+    var query;
+    if (record['所属・会社名１'].value) {
+      query = '所属・会社名１ = "' + custCd + '"';
+    } else {
+      query = '顧客名 = "' + custName + '"';
+    }
     var paramGet = {
         'app': relatedAppId,
         'query': query
@@ -48,8 +54,8 @@ jQuery.noConflict();
     // 入金管理アプリID
     var APP_CONSTLIST = 79;
     var billNum = record['請求番号'].value;
-    var billCD = record['所属・会社名１'].value;
-    var billCstName = record['顧客名'].value;
+    var billCD = custCd;
+    var billCstName = custName;
     var billCstCd = record['顧客番号'].value;
     var billDay = record['請求日'].value;
     var billPrice = record['請求総額'].value;
@@ -76,7 +82,7 @@ jQuery.noConflict();
           }
         }
       };
-      // その他売上請求アプリID
+      // 売上管理アプリID
       var APP_OTHERBILL = 82;
       var paramList = [];
       var virtualFlg = false;
@@ -88,26 +94,31 @@ jQuery.noConflict();
           virtualFlg = true;
           for (var j = 0; j < 6; j++) {
             var paramOne = {
-              "顧客番号": {
-                "value": billCstCd
-              },
-              "所属・会社名１": {
-                "value": billCD
-              },
               "対象顧客": {
                 "value": billCstName
               },
-              "請求対象月": {
-                "value": moment(billDay).add('month', j).endOf('month').format("YYYY-MM-DD")
+              "請求番号": {
+                "value": billNum
               },
               "種別": {
                 "value": "月額請求"
               },
-              "項目": {
-                "value": billList['プラン・オプション']['value']
-              },
-              "金額": {
-                "value": Math.round(billList['小計']['value'] / 6)
+              "売上明細": {
+                "value": [
+                  {
+                    "value": {
+                      "請求対象月": {
+                        "value": moment(billDay).add('month', j).endOf('month').format("YYYY-MM-DD")
+                      },
+                      "項目": {
+                        "value": billList['プラン・オプション']['value']
+                      },
+                      "金額": {
+                        "value": Math.round(billList['小計']['value'] / 6)
+                      }
+                    }
+                  }
+                ]
               }
             };
             paramList.push(paramOne);
@@ -116,26 +127,31 @@ jQuery.noConflict();
           if (virtualFlg) {
             for (var j = 0; j < 6; j++) {
               var paramOne = {
-                "顧客番号": {
-                  "value": billCstCd
-                },
-                "所属・会社名１": {
-                  "value": billCD
-                },
                 "対象顧客": {
                   "value": billCstName
                 },
-                "請求対象月": {
-                  "value": moment(billDay).add('month', j).endOf('month').format("YYYY-MM-DD")
+                "請求番号": {
+                  "value": billNum
                 },
                 "種別": {
                   "value": "月額請求"
                 },
-                "項目": {
-                  "value": billList['プラン・オプション']['value']
-                },
-                "金額": {
-                  "value": Math.round(billList['小計']['value'] / 6)
+                "売上明細": {
+                  "value": [
+                    {
+                      "value": {
+                        "請求対象月": {
+                          "value": moment(billDay).add('month', j).endOf('month').format("YYYY-MM-DD")
+                        },
+                        "項目": {
+                          "value": billList['プラン・オプション']['value']
+                        },
+                        "金額": {
+                          "value": Math.round(billList['小計']['value'] / 6)
+                        }
+                      }
+                    }
+                  ]
                 }
               };
               paramList.push(paramOne);
@@ -143,26 +159,31 @@ jQuery.noConflict();
           } else {
             for (var k = 0; k < 2; k++) {
               var paramOne = {
-                "顧客番号": {
-                  "value": billCstCd
-                },
-                "所属・会社名１": {
-                  "value": billCD
-                },
                 "対象顧客": {
                   "value": billCstName
                 },
-                "請求対象月": {
-                  "value": moment(billDay).add('month', k - 2).endOf('month').format("YYYY-MM-DD")
+                "請求番号": {
+                  "value": billNum
                 },
                 "種別": {
                   "value": "月額請求"
                 },
-                "項目": {
-                  "value": billList['プラン・オプション']['value']
-                },
-                "金額": {
-                  "value": Math.round(billList['小計']['value'] / 2)
+                "売上明細": {
+                  "value": [
+                    {
+                      "value": {
+                        "請求対象月": {
+                          "value": moment(billDay).add('month', k - 2).endOf('month').format("YYYY-MM-DD")
+                        },
+                        "項目": {
+                          "value": billList['プラン・オプション']['value']
+                        },
+                        "金額": {
+                          "value": Math.round(billList['小計']['value'] / 2)
+                        }
+                      }
+                    }
+                  ]
                 }
               };
               paramList.push(paramOne);
@@ -175,52 +196,62 @@ jQuery.noConflict();
             console.log("virOp");
             for (var l = 0; l < 6; l++) {
               var paramOne = {
-                "顧客番号": {
-                  "value": billCstCd
-                },
-                "所属・会社名１": {
-                  "value": billCD
-                },
                 "対象顧客": {
                   "value": billCstName
                 },
-                "請求対象月": {
-                  "value": moment(billDay).add('month', l).endOf('month').format("YYYY-MM-DD")
+                "請求番号": {
+                  "value": billNum
                 },
                 "種別": {
                   "value": "月額請求"
                 },
-                "項目": {
-                  "value": billList['プラン・オプション']['value']
-                },
-                "金額": {
-                  "value": Math.round(billList['小計']['value'] / 6)
+                "売上明細": {
+                  "value": [
+                    {
+                      "value": {
+                        "請求対象月": {
+                          "value": moment(billDay).add('month', l).endOf('month').format("YYYY-MM-DD")
+                        },
+                        "項目": {
+                          "value": billList['プラン・オプション']['value']
+                        },
+                        "金額": {
+                          "value": Math.round(billList['小計']['value'] / 6)
+                        }
+                      }
+                    }
+                  ]
                 }
               };
               paramList.push(paramOne);
             }
           } else {
             var paramOne = {
-              "顧客番号": {
-                "value": billCstCd
-              },
-              "所属・会社名１": {
-                "value": billCD
-              },
               "対象顧客": {
                 "value": billCstName
               },
-              "請求対象月": {
-                "value": billDay
+              "請求番号": {
+                "value": billNum
               },
               "種別": {
                 "value": "月額請求"
               },
-              "項目": {
-                "value": billList['プラン・オプション']['value']
-              },
-              "金額": {
-                "value": billList['小計']['value']
+              "売上明細": {
+                "value": [
+                  {
+                    "value": {
+                      "請求対象月": {
+                        "value": billDay
+                      },
+                      "項目": {
+                        "value": billList['プラン・オプション']['value']
+                      },
+                      "金額": {
+                        "value": billList['小計']['value']
+                      }
+                    }
+                  }
+                ]
               }
             };
             paramList.push(paramOne);

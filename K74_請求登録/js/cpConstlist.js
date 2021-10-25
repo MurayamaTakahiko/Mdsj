@@ -104,6 +104,7 @@ jQuery.noConflict();
     $('.emxas-alert').hide();
     objRecord = kintone.app.record.get();
     var record = objRecord['record'];
+    // 所属・会社名１がない場合は、顧客名をキーにする
     if (record['所属・会社名１'].value) {
       custCd = record['所属・会社名１'].value;
       var param = {
@@ -133,8 +134,37 @@ jQuery.noConflict();
           }
         }
       });
+    } else if (record['顧客名'].value) {
+      custCd = record['顧客名'].value;
+      var param = {
+        app: APP_CONSTLIST,
+        query: "顧客名 = \"" + custCd + "\" and " +
+          "オプション利用開始日 <= \"" + staDay + "\" and " +
+          "退会日 = \"" + billDay + "\" " +
+          "order by レコード番号 desc"
+      };
+      return kintoneUtility.rest.getAllRecordsByQuery(param).then(function(resp) {
+        console.log(resp);
+        var records = resp.records;
+        if (records.length === 0) {
+          //対象予定存在しないメッセージ
+          var msg = '契約プラン・オプション一覧が存在しません。';
+          $('.emxas-alert > p').text(msg);
+          $('.emxas-alert').show();
+        } else {
+          constlist = records;
+          //ポップアップ表示
+          $('.emxas-confirm').css('left', pos.left);
+          $('.emxas-confirm').css('top', pos.top);
+          if ($('.emxas-confirm').is(':visible')) {
+            $('.emxas-confirm').hide();
+          } else {
+            $('.emxas-confirm').show();
+          }
+        }
+      });
     } else {
-      var msg = '所属・会社名１を入力して下さい。';
+      var msg = '所属・会社名１または顧客名を入力して下さい。';
       $('.emxas-alert > p').text(msg);
       $('.emxas-alert').show();
     }
@@ -340,7 +370,7 @@ jQuery.noConflict();
                     });
                   }
                 }
-              } 
+              }
             }
           }
         }

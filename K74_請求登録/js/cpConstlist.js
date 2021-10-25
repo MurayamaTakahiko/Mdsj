@@ -29,11 +29,11 @@ jQuery.noConflict();
   //画面のレコード
   var objRecord;
   // プラン利用開始日・終了日
-  var staDay = moment().add('month', 1).endOf('month').format("YYYY-MM-DD");
-  var finDay = moment().add('month', 1).startOf('month').format("YYYY-MM-DD");
+  var staDay = moment().add(1, 'month').endOf('month').format("YYYY-MM-DD");
+  var finDay = moment().add(1, 'month').startOf('month').format("YYYY-MM-DD");
   // 通話明細開始日・終了日
-  var staTelDay = moment().add('month', -2).startOf('month').format("YYYY-MM-DD");
-  var finTelDay = moment().add('month', -1).endOf('month').format("YYYY-MM-DD");
+  var staTelDay = moment().add(-2, 'month').startOf('month').format("YYYY-MM-DD");
+  var finTelDay = moment().add(-1, 'month').endOf('month').format("YYYY-MM-DD");
   // ロケールを設定
   moment.locale('ja');
 
@@ -205,23 +205,23 @@ jQuery.noConflict();
                 if (planList['プラン種別']['value'] === "バーチャル") {
                   virtualFlg = true;
                   if (moment(staDay).month() == 3 || moment(staDay).month() == 9) {
-                    // 初回請求かどうか
-                    var useTime = moment(staDay).diff(moment(planList['プラン利用開始日']['value']), 'months');
-                    if (useTime < 7) {
-                      setFields = {
-                        '種別': planList['プラン種別']['value'],
-                        'プラン・オプション': planList['プラン']['value'],
-                        '単価': planList['プラン料金']['value'] * (useTime + 6),
-                        '数量': 1
-                      };
-                    } else {
+                    // 初回請求かどうかの判定は不要（初回は窓口請求）
+                    // var useTime = moment(staDay).diff(moment(planList['プラン利用開始日']['value']), 'months');
+                    // if (useTime < 7) {
+                    //   setFields = {
+                    //     '種別': planList['プラン種別']['value'],
+                    //     'プラン・オプション': planList['プラン']['value'],
+                    //     '単価': planList['プラン料金']['value'] * (useTime + 6),
+                    //     '数量': 1
+                    //   };
+                    // } else {
                       setFields = {
                         '種別': planList['プラン種別']['value'],
                         'プラン・オプション': planList['プラン']['value'],
                         '単価': planList['プラン料金']['value'] * 6,
                         '数量': 1
                       };
-                    }
+                    // }
                     tbl.push({
                       'value' : getRowObject(resp, setFields)
                     });
@@ -277,23 +277,23 @@ jQuery.noConflict();
                 // バーチャルプランのみ半年請求
                 if (virtualFlg) {
                   if (moment(staDay).month() == 3 || moment(staDay).month() == 9) {
-                    // 初回請求かどうか
-                    var useTime = moment(staDay).diff(moment(tableList['オプション利用開始日']['value']), 'months');
-                    if (useTime < 7) {
-                      setFields = {
-                        '種別': 'オプション',
-                        'プラン・オプション': tableList['オプション']['value'],
-                        '単価': tableList['オプション単価']['value'] * (useTime + 6),
-                        '数量': tableList['オプション契約数']['value']
-                      };
-                    } else {
+                    // 初回請求かどうかの判定は不要（初回は窓口請求）
+                    // var useTime = moment(staDay).diff(moment(tableList['オプション利用開始日']['value']), 'months');
+                    // if (useTime < 7) {
+                    //   setFields = {
+                    //     '種別': 'オプション',
+                    //     'プラン・オプション': tableList['オプション']['value'],
+                    //     '単価': tableList['オプション単価']['value'] * (useTime + 6),
+                    //     '数量': tableList['オプション契約数']['value']
+                    //   };
+                    // } else {
                       setFields = {
                         '種別': 'オプション',
                         'プラン・オプション': tableList['オプション']['value'],
                         '単価': tableList['オプション単価']['value'] * 6,
                         '数量': tableList['オプション契約数']['value']
                       };
-                    }
+                    // }
                     tbl.push({
                       'value' : getRowObject(resp, setFields)
                     });
@@ -315,7 +315,7 @@ jQuery.noConflict();
                 if (virtualFlg) {
                   if (moment(staDay).month() == 3 || moment(staDay).month() == 9) {
                     var tellNo = tableList['契約番号'].value;
-                    staTelDay = moment().add('month', -6).startOf('month').format("YYYY-MM-DD");
+                    staTelDay = moment().add(-6, 'month').startOf('month').format("YYYY-MM-DD");
                     var query = '契約電話番号 = "' + tellNo + '" and 請求対象月 >= "' + staTelDay + '" and 請求対象月 <= "' + finTelDay + '"';
                     var paramTell = {
                         'app': APP_TELLBILL,

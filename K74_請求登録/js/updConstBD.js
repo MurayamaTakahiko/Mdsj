@@ -108,7 +108,7 @@ jQuery.noConflict();
                   {
                     "value": {
                       "請求対象月": {
-                        "value": moment(billDay).add('month', j).endOf('month').format("YYYY-MM-DD")
+                        "value": moment(billDay).add(j, 'month').endOf('month').format("YYYY-MM-DD")
                       },
                       "項目": {
                         "value": billList['プラン・オプション']['value']
@@ -141,7 +141,7 @@ jQuery.noConflict();
                     {
                       "value": {
                         "請求対象月": {
-                          "value": moment(billDay).add('month', j).endOf('month').format("YYYY-MM-DD")
+                          "value": moment(billDay).add(j, 'month').endOf('month').format("YYYY-MM-DD")
                         },
                         "項目": {
                           "value": billList['プラン・オプション']['value']
@@ -173,7 +173,7 @@ jQuery.noConflict();
                     {
                       "value": {
                         "請求対象月": {
-                          "value": moment(billDay).add('month', k - 2).endOf('month').format("YYYY-MM-DD")
+                          "value": moment(billDay).add(k - 2, 'month').endOf('month').format("YYYY-MM-DD")
                         },
                         "項目": {
                           "value": billList['プラン・オプション']['value']
@@ -210,7 +210,7 @@ jQuery.noConflict();
                     {
                       "value": {
                         "請求対象月": {
-                          "value": moment(billDay).add('month', l).endOf('month').format("YYYY-MM-DD")
+                          "value": moment(billDay).add(l, 'month').endOf('month').format("YYYY-MM-DD")
                         },
                         "項目": {
                           "value": billList['プラン・オプション']['value']

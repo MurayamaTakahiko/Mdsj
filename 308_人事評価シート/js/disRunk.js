@@ -18,9 +18,10 @@
     var record = event.record;
     var runk = event.record.等級.value;
     var group = event.record.所属グループ.value;
-    var jList = ["J", "S-1"];
-    var sList = ["S-2", "Player", "Expert"];
-    var mList = ["M-1", "M-2", "Professional", "Legend"];
+    var jList = ["J", "CJ", "Player", "S-1", "CS-1"];
+    var sList = ["S-2"];
+    var eList = ["Expert"];
+    var mList = ["CS-2", "M-1", "M-2", "CM-1", "CM-2", "Professional", "Legend"];
     // 管理部は、クレド評価のみ
     console.log(group);
     if (group === "管理部") {
@@ -36,6 +37,7 @@
       kintone.app.record.setFieldShown('能力二次評価', false);
       kintone.app.record.setFieldShown('能力最終評価', false);
       kintone.app.record.setFieldShown('能力コメント', false);
+      kintone.app.record.setFieldShown('能力加点要素', false);
       kintone.app.record.setFieldShown('能力加点', false);
       // kintone.app.record.setFieldShown('能力加点コメント', false);
       kintone.app.record.setFieldShown('職能要件書', false);
@@ -52,6 +54,8 @@
       kintone.app.record.setFieldShown('成果基準', false);
       kintone.app.record.setFieldShown('成果実績', false);
       kintone.app.record.setFieldShown('成果加点要素', false);
+      kintone.app.record.setFieldShown('成果加点', false);
+      kintone.app.record.setFieldShown('成果小計', false);
       kintone.app.record.setFieldShown('成果最終評価', false);
       kintone.app.record.setFieldShown('成果個人前々期', false);
       kintone.app.record.setFieldShown('成果個人前期', false);
@@ -103,6 +107,7 @@
           kintone.app.record.setFieldShown('能力二次評価', true);
           kintone.app.record.setFieldShown('能力最終評価', true);
           kintone.app.record.setFieldShown('能力コメント', true);
+          kintone.app.record.setFieldShown('能力加点要素', true);
           kintone.app.record.setFieldShown('能力加点', true);
           // kintone.app.record.setFieldShown('能力加点コメント', true);
           kintone.app.record.setFieldShown('職能要件書', true);
@@ -119,6 +124,8 @@
           kintone.app.record.setFieldShown('成果基準', false);
           kintone.app.record.setFieldShown('成果実績', false);
           kintone.app.record.setFieldShown('成果加点要素', false);
+          kintone.app.record.setFieldShown('成果加点', false);
+          kintone.app.record.setFieldShown('成果小計', false);
           kintone.app.record.setFieldShown('成果最終評価', false);
           kintone.app.record.setFieldShown('成果個人前々期', false);
           kintone.app.record.setFieldShown('成果個人前期', false);
@@ -170,6 +177,7 @@
           kintone.app.record.setFieldShown('能力二次評価', true);
           kintone.app.record.setFieldShown('能力最終評価', true);
           kintone.app.record.setFieldShown('能力コメント', true);
+          kintone.app.record.setFieldShown('能力加点要素', true);
           kintone.app.record.setFieldShown('能力加点', true);
           // kintone.app.record.setFieldShown('能力加点コメント', true);
           kintone.app.record.setFieldShown('職能要件書', true);
@@ -186,6 +194,8 @@
           kintone.app.record.setFieldShown('成果基準', true);
           kintone.app.record.setFieldShown('成果実績', true);
           kintone.app.record.setFieldShown('成果加点要素', true);
+          kintone.app.record.setFieldShown('成果加点', true);
+          kintone.app.record.setFieldShown('成果小計', true);
           kintone.app.record.setFieldShown('成果最終評価', true);
           kintone.app.record.setFieldShown('成果個人前々期', false);
           kintone.app.record.setFieldShown('成果個人前期', false);
@@ -237,6 +247,7 @@
           kintone.app.record.setFieldShown('能力二次評価', false);
           kintone.app.record.setFieldShown('能力最終評価', false);
           kintone.app.record.setFieldShown('能力コメント', false);
+          kintone.app.record.setFieldShown('能力加点要素', false);
           kintone.app.record.setFieldShown('能力加点', false);
           // kintone.app.record.setFieldShown('能力加点コメント', false);
           kintone.app.record.setFieldShown('職能要件書', false);
@@ -253,6 +264,8 @@
           kintone.app.record.setFieldShown('成果基準', false);
           kintone.app.record.setFieldShown('成果実績', false);
           kintone.app.record.setFieldShown('成果加点要素', false);
+          kintone.app.record.setFieldShown('成果加点', false);
+          kintone.app.record.setFieldShown('成果小計', false);
           kintone.app.record.setFieldShown('成果最終評価', false);
           kintone.app.record.setFieldShown('成果個人前々期', true);
           kintone.app.record.setFieldShown('成果個人前期', true);

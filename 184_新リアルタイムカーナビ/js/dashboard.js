@@ -7,6 +7,7 @@ jQuery.noConflict();
   // ダッシュボード用初期設定アプリID
   var PROP_APPID = '';
   // 案件タイプ別リスト
+  // 案件タイプが増えるごとにメンテナンス必要
   var taxList = ['税務顧問', '確定申告等税務スポット', '税務セミナー', '税務会計ツール・フィー'];
   var mngList = ['経営コンサルティング', '経営セミナー', '経営ツール・フィー'];
   var maList = ['事業承継', 'Ｍ＆Ａ', '承継セミナー'];
@@ -204,12 +205,14 @@ jQuery.noConflict();
     });
   }
 
+  // カーナビ描画
   function createCompareGraph(min, max) {
     setLoading();
     var maxMonth, maxMonth2, minMonth, minMonth2, elevenMonthsBefore, tenMonthsBefore,
       nineMonthsBefore, eightMonthsBefore, sevenMonthsBefore, sixMonthsBefore, fiveMonthsBefore,
       fourMonthsBefore, threeMonthsBefore, twoMonthsBefore, oneMonthBefore, noMonthBefore;
     if (max) {
+      // 今年度
       maxMonth = '"' + moment(max).endOf("month").format('YYYY-MM-DD') + '"';
       maxMonth2 = '"' + moment(max).add(-12, "months").endOf("month").format('YYYY-MM-DD') + '"';
       elevenMonthsBefore = moment(max).add(-11, 'months').format("M月");
@@ -238,6 +241,7 @@ jQuery.noConflict();
         fetchRecords(PROP_APPID, 'order by 決算開始日 desc')
           .then(function(canvas1Rec2) {
 
+            // 今年度売上データ
             var data = [];
             data[elevenMonthsBefore] = 0;
             data[tenMonthsBefore] = 0;
@@ -252,6 +256,7 @@ jQuery.noConflict();
             data[oneMonthBefore] = 0;
             data[noMonthBefore] = 0;
 
+            // 今年度売上比率
             var rate = [];
             rate[elevenMonthsBefore] = 0;
             rate[tenMonthsBefore] = 0;
@@ -285,7 +290,7 @@ jQuery.noConflict();
                 }
               }
             }
-
+            // 今年度月別売上集計
             var eventuallyThisYearData = [data[elevenMonthsBefore], data[tenMonthsBefore], data[nineMonthsBefore],
               data[eightMonthsBefore], data[sevenMonthsBefore], data[sixMonthsBefore], data[fiveMonthsBefore],
               data[fourMonthsBefore], data[threeMonthsBefore], data[twoMonthsBefore], data[oneMonthBefore],
@@ -309,6 +314,7 @@ jQuery.noConflict();
                 fiscalStDay = canvas1Rec2[v].決算開始日.value;
               }
             }
+            // 今年度月別固定費集計
             var eventuallyThisYearFixCost = [data[elevenMonthsBefore], data[tenMonthsBefore], data[nineMonthsBefore],
               data[eightMonthsBefore], data[sevenMonthsBefore], data[sixMonthsBefore], data[fiveMonthsBefore],
               data[fourMonthsBefore], data[threeMonthsBefore], data[twoMonthsBefore], data[oneMonthBefore],
@@ -328,7 +334,7 @@ jQuery.noConflict();
             data[twoMonthsBefore] = (eventuallyThisYearData[9] * (100 - variCosts) / 100) - eventuallyThisYearFixCost[9];
             data[oneMonthBefore] = (eventuallyThisYearData[10] * (100 - variCosts) / 100) - eventuallyThisYearFixCost[10];
             data[noMonthBefore] = (eventuallyThisYearData[11] * (100 - variCosts) / 100) - eventuallyThisYearFixCost[11];
-
+            // 今年度月別粗利額
             var eventuallyThisYearIncome = [data[elevenMonthsBefore], data[tenMonthsBefore], data[nineMonthsBefore],
               data[eightMonthsBefore], data[sevenMonthsBefore], data[sixMonthsBefore], data[fiveMonthsBefore],
               data[fourMonthsBefore], data[threeMonthsBefore], data[twoMonthsBefore], data[oneMonthBefore],
@@ -595,6 +601,7 @@ jQuery.noConflict();
                 data = refreshData(data);
 
                 // モバイル向けグリッドデータ作成
+                // モバイル向けは開発ストップ
                 var mbTableData = [
                   [elevenMonthsBefore, eventuallyLastYearData[0], eventuallyPlanThisYearData[0], eventuallyThisYearData[0], eventuallyPlanRate[0], eventuallyLastYearRate[0]],
                   [tenMonthsBefore, eventuallyLastYearData[1], eventuallyPlanThisYearData[1], eventuallyThisYearData[1], eventuallyPlanRate[1], eventuallyLastYearRate[1]],
@@ -714,7 +721,7 @@ jQuery.noConflict();
                 var prodBGColor = [];
                 var userBGColor = [];
 
-                // 降順にソート
+                // 案件タイプ・ユーザーが毎回同じ順番で表示されるようにソート
                 prodLabels.sort(function(a, b) {
                   if (prodData[a] > prodData[b]) {
                     return -1;
@@ -1255,12 +1262,16 @@ jQuery.noConflict();
                 // 集計値を表示
                 var nwDate = moment();
                 var expMonth = nwDate.diff(min, 'months') - 1;
+                // 当月までの実績
                 var nowCal = commaSeparated(sumThisYearData[expMonth]);
+                // 本日時点の年間予測
                 var totalCal = commaSeparated(sumThisYearData[11]);
+                // 年間計画
                 var totalPlan = commaSeparated(sumPlanThisYearData[11]);
                 $("#nowCal").val(nowCal);
                 $("#totalCal").val(totalCal);
                 $("#totalPlan").val(totalPlan);
+                // 目標までの残り
                 var hardleCnt = commaSeparated(sumPlanThisYearData[11] - sumThisYearData[11]);
                 $("#totalHardle").val(hardleCnt);
                 var hardleRate = hardleCnt / sumPlanThisYearData[11];
@@ -1343,7 +1354,7 @@ jQuery.noConflict();
     var minMonthP2 = '"' + moment(minMonthP).add(-12, "months").startOf("month").format('YYYY-MM-DD') + '"';
     maxMonthP = '"' + moment(maxMonthP).format('YYYY-MM-DD') + '"';
     minMonthP = '"' + moment(minMonthP).format('YYYY-MM-DD') + '"';
-
+    // 案件タイプ増えるごとにメンテナンス必要
     if (sprd === "税務顧問") {
       sprd = '税務顧問", "確定申告等税務スポット", "税務セミナー", "税務会計ツール・フィー';
     } else if (sprd === "経営コンサルティング") {

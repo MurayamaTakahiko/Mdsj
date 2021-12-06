@@ -105,7 +105,7 @@ jQuery.noConflict();
     // 過去計上日データは登録不可
     var crow = event.changes.row;
     var sellDate = crow.value['売上月']['value'];
-    if (moment(sellDate).isBefore(moment().add(-5, 'days'), 'day')) {
+    if (moment(sellDate).isBefore(moment().add(-1, 'days'), 'day')) {
       crow.value['売上月']['value'] = "";
       event.error = "過去日での売上計上はできません。";
     }
@@ -129,7 +129,7 @@ jQuery.noConflict();
       }
       var sellDate = row.value['売上月']['value'];
       event.error = "";
-      if (moment(sellDate).isBefore(moment().add(-5, 'days'), 'day')) {
+      if (moment(sellDate).isBefore(moment().add(-1, 'days'), 'day')) {
         row.value['売上月']['value'] = "";
         event.error = "過去日での売上計上はできません。";
       }
@@ -164,7 +164,7 @@ jQuery.noConflict();
       }
       var sellDate = row.value['売上月']['value'];
       event.error = "";
-      if (moment(sellDate).isBefore(moment().add(-5, 'days'), 'day')) {
+      if (moment(sellDate).isBefore(moment().add(-1, 'days'), 'day')) {
         row.value['売上月']['value'] = "";
         event.error = "過去日での売上計上はできません。";
       }

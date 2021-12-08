@@ -51,7 +51,6 @@
       hour   = Math.floor(Math.abs(fullSecond) / 3600);
       minute = Math.floor(Math.abs(fullSecond) % 3600 / 60);
       minute = paddingZero(minute);
-
       return ((fullSecond < 0) ? '-' : '') + hour + ':' + minute;
     }
   };
@@ -84,9 +83,10 @@
         sumWork = timeMath.sum(sumWork, resp.records[i].工数合計.value);
       }
       var sums = sumWork.split(':');
-      sumWork = sums[0] + '時間' + sums[1] + '分';
-      record.工事工数合計.value = sumWork;
-      // record['工事工数合計']['disabled'] = true;
+      sumWork = sums[0] + '.' + Math.floor(sums[1] / 60);
+      // sumWork = sums[0] + '時間' + sums[1] + '分';
+      record.案件工数合計.value = sumWork;
+      // record['案件工数合計']['disabled'] = true;
       if (chkComp === "未") {
         record['完工チェック'].value[0] = chkComp;
       }

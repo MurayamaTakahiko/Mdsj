@@ -37,18 +37,18 @@ jQuery.noConflict();
   kintone.events.on(['app.record.create.submit.success'], function(event) {
     var record = event.record;
     var clientRecordId = event.recordId;
-    var relatedAppId = kintone.app.getRelatedRecordsTargetAppId('工事依頼一覧');
+    var relatedAppId = kintone.app.getRelatedRecordsTargetAppId('案件一覧');
     var billDay = record['請求日'].value;
-    var custCd = record['得意先CD'].value;
-    var query = '得意先CD = "' + custCd + '" and 金額入力日 != "" and 請求日 = ""';
+    var custCd = record['得意先コード'].value;
+    var query = '得意先コード = "' + custCd + '" and 請求日 = ""';
     var paramGet = {
         'app': relatedAppId,
         'query': query
     };
     // 入金管理アプリID
-    var APP_CONSTLIST = 37;
+    var APP_CONSTLIST = 20;
     var billNum = record['請求番号'].value;
-    var billCD = record['得意先CD'].value;
+    var billCD = record['得意先コード'].value;
     var billCstName = record['得意先名'].value;
     var billDay = record['請求日'].value;
     var billPrice = record['請求総額'].value;
@@ -58,7 +58,7 @@ jQuery.noConflict();
           "請求番号": {
             "value": billNum
           },
-          "請求先CD": {
+          "請求先コード": {
             "value": billCD
           },
           "請求先名": {

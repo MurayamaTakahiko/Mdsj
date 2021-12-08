@@ -84,8 +84,8 @@ jQuery.noConflict();
 
   //「明細取得ボタン」クリックイベント
   $(document).on('click', '#emxas-button-schedule', function(ev) {
-    // 工事依頼アプリID
-    var APP_CONSTLIST = 31;
+    // 案件一覧アプリID
+    var APP_CONSTLIST = 17;
     var custCd;
     var finDay = "";
     var billDay = "";
@@ -98,21 +98,21 @@ jQuery.noConflict();
     $('.emxas-alert').hide();
     objRecord = kintone.app.record.get();
     var record = objRecord['record'];
-    if (record['得意先CD'].value) {
-      custCd = record['得意先CD'].value;
+    if (record['得意先コード'].value) {
+      custCd = record['得意先コード'].value;
       var param = {
         app: APP_CONSTLIST,
-        query: "得意先CD = \"" + custCd + "\" and " +
-          "金額入力日 != \"" + finDay + "\" and " +
+        query: "得意先コード = \"" + custCd + "\" and " +
+          // "金額入力日 != \"" + finDay + "\" and " +
           "請求日 = \"" + billDay + "\" " +
-          "order by 工事番号 desc"
+          "order by 案件番号 desc"
       };
       return kintoneUtility.rest.getAllRecordsByQuery(param).then(function(resp) {
         console.log(resp);
         var records = resp.records;
         if (records.length === 0) {
           //対象予定存在しないメッセージ
-          var msg = '工事依頼一覧が存在しません。';
+          var msg = '案件一覧が存在しません。';
           $('.emxas-alert > p').text(msg);
           $('.emxas-alert').show();
         } else {
@@ -128,7 +128,7 @@ jQuery.noConflict();
         }
       });
     } else {
-      var msg = '得意先CDを入力して下さい。';
+      var msg = '得意先コードを入力して下さい。';
       $('.emxas-alert > p').text(msg);
       $('.emxas-alert').show();
     }
@@ -141,9 +141,10 @@ jQuery.noConflict();
     for (var iTbl = 0; iTbl < objRecord['record']['請求明細']['value'].length; iTbl++) {
       //空行はつめる
       if (!(objRecord['record']['請求明細']['value'][iTbl]['value']['現場名']['value'] ||
-          objRecord['record']['請求明細']['value'][iTbl]['value']['工事名']['value'] ||
+          objRecord['record']['請求明細']['value'][iTbl]['value']['作業内容・使用資材']['value'] ||
           objRecord['record']['請求明細']['value'][iTbl]['value']['数量']['value'] ||
           objRecord['record']['請求明細']['value'][iTbl]['value']['単位']['value'] ||
+          objRecord['record']['請求明細']['value'][iTbl]['value']['摘要']['value'] ||
           objRecord['record']['請求明細']['value'][iTbl]['value']['単価']['value'] ||
           objRecord['record']['請求明細']['value'][iTbl]['value']['金額']['value'])) {
         continue;
@@ -163,7 +164,7 @@ jQuery.noConflict();
             var tableList = record['工事内容詳細'].value[j].value;
             var setFields = {
               '現場名': record['現場名']['value'],
-              '工事名': tableList['工事名']['value'],
+              '作業内容・使用資材': tableList['作業内容・使用資材']['value'],
               '数量': tableList['数量']['value'],
               '単位': tableList['単位']['value'],
               '単価': tableList['単価']['value'],

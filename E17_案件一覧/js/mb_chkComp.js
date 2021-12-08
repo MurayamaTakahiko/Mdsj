@@ -90,11 +90,11 @@
       if (chkComp === "未") {
         record['完工チェック'].value[0] = chkComp;
       }
-      record['完工チェック']['disabled'] = true;
-      record['請求日']['disabled'] = true;
-      record['請求番号']['disabled'] = true;
       kintone.mobile.app.record.set(event);
     });
+    record['完工チェック']['disabled'] = true;
+    record['請求日']['disabled'] = true;
+    record['請求番号']['disabled'] = true;
 
     return event;
   });

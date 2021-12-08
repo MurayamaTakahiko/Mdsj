@@ -58,9 +58,9 @@
 
   kintone.events.on(events, function(event) {
     var record = event.record;
-    var clientRecordId = event.record.工事番号.value;
+    var clientRecordId = event.record.案件番号.value;
     var relatedAppId = kintone.app.getRelatedRecordsTargetAppId('業務日報一覧');
-    var query = '工事番号 = "' + clientRecordId + '"';
+    var query = '案件番号 = "' + clientRecordId + '"';
     var outputFields = ['完工区分', '工数合計'];
     var appUrl = kintone.api.url('/k/v1/records');
 

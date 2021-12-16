@@ -90,4 +90,35 @@ jQuery.noConflict();
       });
     });
   });
+  //登録時に郵送前連絡、その他にチェックがある場合、アラート表示
+  var events = [
+    'app.record.create.submit',
+    'app.record.edit.submit'
+  ];
+  kintone.events.on(events, function(event) {
+    var record = event.record;
+    var billRecordId = event.record.請求番号.value;
+    var relatedAppId = kintone.app.getRelatedRecordsTargetAppId('工事依頼一覧');
+    //var query = '請求番号 = "' + billRecordId + '"';
+    var query='';
+    var appUrl = kintone.api.url('/k/v1/records');
+    var params = {
+        'app': relatedAppId,
+        'query': query
+    };
+    var result=false;
+    kintone.api(appUrl, 'GET', params, function(resp) {
+      for (var i = 0; i < resp.records.length; i++) {
+        if (resp.records[i].郵送前連絡.value[0] == '郵送前連絡' || resp.records[i].その他.value[0] == 'その他') {
+          result=true;
+          break;
+        }
+      }
+      if (result == true) {
+        alert('請求書送付時の注意事項あり');
+      }
+    });
+  });
+
+
 })(jQuery);

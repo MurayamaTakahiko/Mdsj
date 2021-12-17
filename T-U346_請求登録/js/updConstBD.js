@@ -109,7 +109,7 @@ jQuery.noConflict();
     var result=false;
     kintone.api(appUrl, 'GET', params, function(resp) {
       for (var i = 0; i < resp.records.length; i++) {
-        if (resp.records[i].郵送前連絡.value[0] == '郵送前連絡' || resp.records[i].その他.value[0] == 'その他') {
+        if (resp.records[i].請求時注意事項.value.length != 0) {
           result=true;
           break;
         }

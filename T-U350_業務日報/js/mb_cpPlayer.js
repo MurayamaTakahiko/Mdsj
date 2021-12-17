@@ -34,7 +34,7 @@
     };
     return kintone.api(appUrl, 'GET', params).then(function(resp) {
       var user=kintone.getLoginUser();
-      if (resp.records.length < 1  && user.code !='a' && user.code !='b') {
+      if (resp.records.length < 1  && user.code != 'uematsu-100' ) {
         event.error = '既に請求済みの工事依頼は使用できません。';
       } else {
         var res = confirm("本当にこの内容を反映させますか");

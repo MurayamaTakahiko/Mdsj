@@ -33,6 +33,77 @@ jQuery.noConflict();
     return putRecords;
   }
 
+  //登録実行前に郵送前連絡、その他にチェックがある場合、アラート表示
+  var events = [
+    'app.record.create.submit',
+    'app.record.edit.submit'
+  ];
+  kintone.events.on(events, function(event) {
+    var record = event.record;
+    // var billRecordId = event.record.請求番号.value;
+    var relatedAppId = kintone.app.getRelatedRecordsTargetAppId('工事依頼一覧');
+    var custCd = record['得意先CD'].value;
+    var query = '得意先CD = "' + custCd + '" and 金額入力日 != "" and 請求日 = ""';
+    // var query = '請求番号 = "' + billRecordId + '"';
+    //var query='';
+    var appUrl = kintone.api.url('/k/v1/records');
+    var params = {
+        'app': relatedAppId,
+        'query': query
+    };
+    var result=false;
+    kintone.api(appUrl, 'GET', params, function(resp) {
+      for (var i = 0; i < resp.records.length; i++) {
+        if (resp.records[i].請求時注意事項.value.length != 0) {
+          result=true;
+          break;
+        }
+      }
+      if (result == true) {
+        // alert('請求書送付時の注意事項あり');
+        var res = confirm("請求書送付時の注意事項あり");
+        if (res === false) {
+          event.error = 'キャンセルしました';
+          window.location.href = window.location.origin + window.location.pathname + "#record=" + event.record.$id.value; // 画面遷移
+        }
+      }
+    });
+  });
+
+  //更新実行前に郵送前連絡、その他にチェックがある場合、アラート表示
+  var events = [
+    'app.record.edit.submit.success'
+  ];
+  kintone.events.on(events, function(event) {
+    var record = event.record;
+    var billRecordId = event.record.請求番号.value;
+    var relatedAppId = kintone.app.getRelatedRecordsTargetAppId('工事依頼一覧');
+    var query = '請求番号 = "' + billRecordId + '"';
+    //var query='';
+    var appUrl = kintone.api.url('/k/v1/records');
+    var params = {
+        'app': relatedAppId,
+        'query': query
+    };
+    var result=false;
+    kintone.api(appUrl, 'GET', params, function(resp) {
+      for (var i = 0; i < resp.records.length; i++) {
+        if (resp.records[i].請求時注意事項.value.length != 0) {
+          result=true;
+          break;
+        }
+      }
+      if (result == true) {
+        // alert('請求書送付時の注意事項あり');
+        var res = confirm("請求書送付時の注意事項あり");
+        if (res === false) {
+          event.error = 'キャンセルしました';
+          window.location.href = window.location.origin + window.location.pathname + "#record=" + event.record.$id.value; // 画面遷移
+        }
+      }
+    });
+  });
+
   // 新規保存成功後イベント
   kintone.events.on(['app.record.create.submit.success'], function(event) {
     var record = event.record;
@@ -88,35 +159,6 @@ jQuery.noConflict();
           console.log(resp);
         });
       });
-    });
-  });
-  //登録時に郵送前連絡、その他にチェックがある場合、アラート表示
-  var events = [
-    'app.record.create.submit.success',
-    'app.record.edit.submit.success'
-  ];
-  kintone.events.on(events, function(event) {
-    var record = event.record;
-    var billRecordId = event.record.請求番号.value;
-    var relatedAppId = kintone.app.getRelatedRecordsTargetAppId('工事依頼一覧');
-    var query = '請求番号 = "' + billRecordId + '"';
-    //var query='';
-    var appUrl = kintone.api.url('/k/v1/records');
-    var params = {
-        'app': relatedAppId,
-        'query': query
-    };
-    var result=false;
-    kintone.api(appUrl, 'GET', params, function(resp) {
-      for (var i = 0; i < resp.records.length; i++) {
-        if (resp.records[i].請求時注意事項.value.length != 0) {
-          result=true;
-          break;
-        }
-      }
-      if (result == true) {
-        alert('請求書送付時の注意事項あり');
-      }
     });
   });
 })(jQuery);

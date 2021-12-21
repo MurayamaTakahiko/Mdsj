@@ -162,12 +162,13 @@ jQuery.noConflict();
           var record = constlist[i];
           for (var j = 0; j < record['工事内容詳細'].value.length; j++) {
             var tableList = record['工事内容詳細'].value[j].value;
+            var unit = tableList['見積単価']['value'] == 0 ? tableList['標準単価']['value'] : tableList['見積単価']['value'];
             var setFields = {
               '現場名': record['現場名']['value'],
               '作業内容・使用資材': tableList['作業内容・使用資材']['value'],
               '数量': tableList['数量']['value'],
               '単位': tableList['単位']['value'],
-              '単価': tableList['単価']['value'],
+              '単価': unit,
               '金額': tableList['金額']['value']
             }
             console.log(setFields);

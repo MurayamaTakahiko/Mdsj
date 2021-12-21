@@ -35,7 +35,7 @@ jQuery.noConflict();
 
   //登録実行前に郵送前連絡、その他にチェックがある場合、アラート表示
   var events = [
-    'app.record.create.submit.success'
+    'app.record.create.submit'
   ];
   kintone.events.on(events, function(event) {
     var record = event.record;
@@ -71,7 +71,7 @@ jQuery.noConflict();
 
   //更新実行前に郵送前連絡、その他にチェックがある場合、アラート表示
   var events = [
-    'app.record.edit.submit.success'
+    'app.record.edit.submit'
   ];
   kintone.events.on(events, function(event) {
     var record = event.record;

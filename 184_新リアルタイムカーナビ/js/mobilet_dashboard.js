@@ -995,7 +995,7 @@
                 //var expMonth = nwDate.diff(min, 'months') - 1;
                 var expMonth = nwDate.diff(minU, 'months') ;
                 if(expMonth>11){
-                  expmonth=11;
+                  expMonth=11;
                 }
                 var nowCal = commaSeparated(sumThisYearData[expMonth]);
                 var totalCal = commaSeparated(sumThisYearData[11]);

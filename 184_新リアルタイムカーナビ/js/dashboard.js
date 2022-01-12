@@ -1264,7 +1264,7 @@ jQuery.noConflict();
                 //var expMonth = nwDate.diff(min, 'months') - 1;
                 var expMonth = nwDate.diff(min, 'months');
                 if(expMonth>11){
-                  expmonth=11;
+                  expMonth=11;
                 }
                 // 当月までの実績
                 var nowCal = commaSeparated(sumThisYearData[expMonth]);
@@ -1799,7 +1799,7 @@ jQuery.noConflict();
             //var expMonth = nwDate.diff(minP, 'months') - 1;
             var expMonth = nwDate.diff(minP, 'months') ;
             if(expMonth>11){
-              expmonth=11;
+              expMonth=11;
             }
             var nowCal = commaSeparated(sumProdThisYearData[expMonth]);
             var totalCal = commaSeparated(sumProdThisYearData[11]);
@@ -2289,7 +2289,7 @@ jQuery.noConflict();
             //var expMonth = nwDate.diff(minU, 'months') - 1;
             var expMonth = nwDate.diff(minU, 'months') ;
             if(expMonth>11){
-              expmonth=11;
+              expMonth=11;
             }
             var nowCal = commaSeparated(sumUserThisYearData[expMonth]);
             var totalCal = commaSeparated(sumUserThisYearData[11]);

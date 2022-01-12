@@ -992,7 +992,11 @@
                 $("#calen").val(maxcalst);
                 // 集計値を表示
                 var nwDate = moment();
-                var expMonth = nwDate.diff(min, 'months') - 1;
+                //var expMonth = nwDate.diff(min, 'months') - 1;
+                var expMonth = nwDate.diff(minU, 'months') ;
+                if(expMonth>11){
+                  expmonth=11;
+                }
                 var nowCal = commaSeparated(sumThisYearData[expMonth]);
                 var totalCal = commaSeparated(sumThisYearData[11]);
                 var totalPlan = commaSeparated(sumPlanThisYearData[11]);

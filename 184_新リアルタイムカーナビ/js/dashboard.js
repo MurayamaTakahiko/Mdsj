@@ -1261,7 +1261,8 @@ jQuery.noConflict();
                 Chart.defaults.global.defaultFontSize = 10.5;
                 // 集計値を表示
                 var nwDate = moment();
-                var expMonth = nwDate.diff(min, 'months') - 1;
+                //var expMonth = nwDate.diff(min, 'months') - 1;
+                var expMonth = nwDate.diff(min, 'months');
                 // 当月までの実績
                 var nowCal = commaSeparated(sumThisYearData[expMonth]);
                 // 本日時点の年間予測
@@ -1792,7 +1793,8 @@ jQuery.noConflict();
             });
             // 集計値を表示
             var nwDate = moment();
-            var expMonth = nwDate.diff(minP, 'months') - 1;
+            //var expMonth = nwDate.diff(minP, 'months') - 1;
+            var expMonth = nwDate.diff(minP, 'months') ;
             var nowCal = commaSeparated(sumProdThisYearData[expMonth]);
             var totalCal = commaSeparated(sumProdThisYearData[11]);
             var totalPlan = commaSeparated(sumProdPlanThisYearData[11]);
@@ -2278,7 +2280,8 @@ jQuery.noConflict();
             });
             // 集計値を表示
             var nwDate = moment();
-            var expMonth = nwDate.diff(minU, 'months') - 1;
+            //var expMonth = nwDate.diff(minU, 'months') - 1;
+            var expMonth = nwDate.diff(minU, 'months') ;
             var nowCal = commaSeparated(sumUserThisYearData[expMonth]);
             var totalCal = commaSeparated(sumUserThisYearData[11]);
             var totalPlan = commaSeparated(sumUserPlanThisYearData[11]);

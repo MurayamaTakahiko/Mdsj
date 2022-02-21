@@ -48,6 +48,7 @@
           var header;
           var table=[];
           var tableone;
+          var id=rec[i]['レコード番号'].value;
           var insbody={"app":APP_SALES_ID,
                   "record":{
                       "種別":{
@@ -67,7 +68,8 @@
 
           for(let j = 0 ; j<subrec.length ; j++){
             //自動計上項目が入力されているかつ、集金額1円以上
-            if(subrec[j]['value']['自動計上項目'].value != null && subrec[j]['value']['自動計上項目'].value !='' && subrec[j]['value']['集金額税込・自動計算'].value >= 1 ){
+            if(subrec[j]['value']['支払区分'].value =='支払済' && subrec[j]['value']['自動計上項目'].value != null && subrec[j]['value']['自動計上項目'].value !='' &&
+              subrec[j]['value']['集金額税込・自動計算'].value >= 1 ){
               insbody.record.売上明細.value.push({
                               "value":{
                                 "請求対象月":{
@@ -88,17 +90,31 @@
                 if (insbody.record.売上明細.value.length>0){
                   //登録
                   kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', insbody, function(resp) {
+                    var updbody={
+                      "app":APP_ID,
+                      "id":id,
+                      "record":{
+                        "売上登録済み":{
+                          "value":"済"
+                        }
+                      }
+                    };
+                    kintone.api(kintone.api.url('/k/v1/record.json', true), 'PUT', updbody, function(resp) {
+                      // success
                       console.log(resp);
                     }, function(error) {
                       // error
-                      console.log(error);
+                      alert("エラーが発生しました。")
+                      return ;
+                    });
+                      console.log(resp);
+                    }, function(error) {
+                      alert("エラーが発生しました。")
                       return ;
                     });
                   }
               }
-      }
-
-
+            }
         // success
         alert( '登録しました。');
       }, function(error) {

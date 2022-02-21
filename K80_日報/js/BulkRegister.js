@@ -48,23 +48,30 @@
           var header;
           var table=[];
           var tableone;
+          var insbody={"app":APP_SALES_ID,
+                  "record":{
+                      "種別":{
+                        "value":"system（月額請求）"
+                      },
+                      "対象顧客":{
+                        "value":rec[i]['メンバーの場合選択'].value
+                      },
+                      "備考":{
+                        "value":rec[i]['ビジターの場合選択'].value
+                      },
+                      "売上明細":{
+                        "value":[]
+                      }
+                    }
+                  };
+
           for(let j = 0 ; j<subrec.length ; j++){
             //自動計上項目が入力されているかつ、集金額1円以上
-            if(subrec[j]['value']['自動計上項目'].value !='' && subrec[j]['value']['集金額税込・自動計算'].value >= 1 ){
-              var insbody={"app":APP_SALES_ID,
-                      "record":{
-                          "種別":{
-                            "value":"system（月額請求）"
-                          },
-                          "対象顧客":{
-                            "value":rec[i]['メンバーの場合選択'].value
-                          },
-                          "売上明細":{
-                            "value":[
-                              {
+            if(subrec[j]['value']['自動計上項目'].value != null && subrec[j]['value']['自動計上項目'].value !='' && subrec[j]['value']['集金額税込・自動計算'].value >= 1 ){
+              insbody.record.売上明細.value.push({
                               "value":{
                                 "請求対象月":{
-                                  "value":"2022-02-17"
+                                  "value":moment(rec[i]['日時'].value).format('YYYY-MM-DD')
                                 },
                                 "項目":{
                                   "value":subrec[j]['value']['商品名'].value
@@ -76,11 +83,9 @@
                                   "value":subrec[j]['value']['支払種別'].value
                                 }
                               }
-                            }
-                            ]
-                          }
-                        }
-                      };
+                            });
+                }
+                if (insbody.record.売上明細.value.length>0){
                   //登録
                   kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', insbody, function(resp) {
                       console.log(resp);
@@ -89,8 +94,8 @@
                       console.log(error);
                       return ;
                     });
-                }
-            }
+                  }
+              }
       }
 
 

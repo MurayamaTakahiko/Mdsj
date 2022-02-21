@@ -87,33 +87,34 @@
                               }
                             });
                 }
-                if (insbody.record.売上明細.value.length>0){
-                  //登録
-                  kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', insbody, function(resp) {
-                    var updbody={
-                      "app":APP_ID,
-                      "id":id,
-                      "record":{
-                        "売上登録済み":{
-                          "value":"済"
-                        }
-                      }
-                    };
-                    kintone.api(kintone.api.url('/k/v1/record.json', true), 'PUT', updbody, function(resp) {
-                      // success
-                      console.log(resp);
-                    }, function(error) {
-                      // error
-                      alert("エラーが発生しました。")
-                      return ;
-                    });
-                      console.log(resp);
-                    }, function(error) {
-                      alert("エラーが発生しました。")
-                      return ;
-                    });
+            }
+            if (insbody.record.売上明細.value.length>0){
+              //登録
+              kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', insbody, function(resp) {
+                var updbody={
+                  "app":APP_ID,
+                  "id":id,
+                  "record":{
+                    "売上登録済み":{
+                      "value":"済"
+                    }
                   }
+                };
+                kintone.api(kintone.api.url('/k/v1/record.json', true), 'PUT', updbody, function(resp) {
+                  // success
+                  console.log(resp);
+                }, function(error) {
+                  // error
+                  alert("エラーが発生しました。")
+                  return ;
+                });
+                  console.log(resp);
+                }, function(error) {
+                  alert("エラーが発生しました。")
+                  return ;
+                });
               }
+
             }
         // success
         alert( '登録しました。');

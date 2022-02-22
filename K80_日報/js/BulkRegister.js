@@ -3,15 +3,17 @@
     "use strict";
     // moment.locale('ja');
     kintone.events.on('app.record.index.show', function(event) {
-        if (document.getElementById('bulk_button') !== null) {
-            return;
-        }
+        if (event.viewName === "月末一括登録(カレンダー表示)") {
+          if (document.getElementById('bulk_button') !== null) {
+              return;
+          }
 
-        var myIndexButton = document.createElement('button');
-        myIndexButton.id = 'bulk_button';
-        myIndexButton.innerText = '一括登録';
+          var myIndexButton = document.createElement('button');
+          myIndexButton.id = 'bulk_button';
+          myIndexButton.innerText = '一括登録';
 
-        kintone.app.getHeaderMenuSpaceElement().appendChild(myIndexButton);
+          kintone.app.getHeaderMenuSpaceElement().appendChild(myIndexButton);
+      }
     });
 
     //一括登録ボタン処理
@@ -35,7 +37,7 @@
       var maxDt=moment(dt).endOf('month').format();
       var body = {
         'app': kintone.app.getId(),
-        'query': '日時 >= "' + minDt +  '" and 日時 <="' + maxDt  + '" and 売上登録済み = ""  order by 日時 '
+        'query': '日時 >= "' + minDt +  '" and 日時 <="' + maxDt  + '" and 日報種別 in ("ビジター利用日報","メンバー対応日報") and 売上登録済み = ""  order by 日時 '
       };
       //指定年月の日報を取得
       kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', body, function(resp) {

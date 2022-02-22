@@ -17,4 +17,5 @@
     kintone.app.record.setFieldShown('請求済', false);
     return event;
   });
+
 })();

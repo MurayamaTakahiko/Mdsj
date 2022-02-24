@@ -23,8 +23,8 @@
           return;
       }
       //アプリID
-      var APP_ID = 409;   //日報
-      var APP_SALES_ID = 410;
+      var APP_ID = 445;   //日報
+      var APP_SALES_ID = 446;
       //アプリID本番用
       //var APP_ID = 83;
       //var APP_SALES_ID = 82;
@@ -32,15 +32,16 @@
       //カレンダーの年月を取得
       var dts=$('input[id^="selectDate"]');
       var dt=dts[0].value;
+      var proc='';
       //var dt=document.getElementById('selectDate-:9m-text').value;
       var minDt=moment(dt).startOf('month').format();
       var maxDt=moment(dt).endOf('month').format();
       var body = {
         'app': kintone.app.getId(),
-        'query': '日時 >= "' + minDt +  '" and 日時 <="' + maxDt  + '" and 日報種別 in ("ビジター利用日報","メンバー対応日報") and 売上登録済み = ""  order by 日時 '
+        'query': '日時 >= "' + minDt +  '" and 日時 <="' + maxDt  + '" and ドロップダウン in ("ビジター利用日報","メンバー対応日報") and 売上登録済み = ""  order by 日時 '
       };
       //指定年月の日報を取得
-      kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', body, function(resp) {
+      proc= kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', body).then(function(resp) {
         // success
         console.log(resp);
         var rec=resp.records;
@@ -59,7 +60,7 @@
                       "対象顧客":{
                         "value":rec[i]['メンバーの場合選択'].value
                       },
-                      "備考":{
+                      "対象ビジター":{
                         "value":rec[i]['ビジターの場合選択'].value
                       },
                       "売上明細":{
@@ -92,39 +93,44 @@
             }
             if (insbody.record.売上明細.value.length>0){
               //登録
-              kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', insbody, function(resp) {
+              return kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', insbody).then(function(resp) {
                 var updbody={
                   "app":APP_ID,
                   "id":id,
                   "record":{
                     "売上登録済み":{
                       "value":"済"
+                      }
                     }
-                  }
-                };
-                kintone.api(kintone.api.url('/k/v1/record.json', true), 'PUT', updbody, function(resp) {
-                  // success
-                  console.log(resp);
-                }, function(error) {
+                  };
+                return kintone.api(kintone.api.url('/k/v1/record.json', true), 'PUT', updbody, function(resp) {
+                }, function(err) {
                   // error
-                  alert("エラーが発生しました。")
-                  return ;
+                  console.log(err);
+                  throw err;
                 });
-                  console.log(resp);
-                }, function(error) {
-                  alert("エラーが発生しました。")
-                  return ;
-                });
+              }).catch(function(err) {
+                // error
+                console.log(err);
+                throw err;
+              });
               }
 
             }
-        // success
-        alert( '登録しました。');
-      }, function(error) {
+      }).catch(function(err) {
         // error
-        console.log(error);
-
+        console.log(err);
+        throw err;
       });
+      //処理結果
+      proc.then(
+        function(result) {
+          alert('登録しました。');
+        },
+        function(error) {
+          alert(error.message);
+        }
+      );
 
     });
 })(jQuery);

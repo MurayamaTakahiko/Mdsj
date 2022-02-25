@@ -92,7 +92,8 @@ jQuery.noConflict();
   //「明細取得ボタン」クリックイベント
   $(document).on('click', '#emxas-button-schedule', function(ev) {
     // 契約顧客アプリID
-    var APP_CONSTLIST = 80;
+    //var APP_CONSTLIST = 80;
+    var APP_CONSTLIST = 447;
     var custCd;
     var billDay = "";
     //ポップアップ表示箇所取得
@@ -268,7 +269,8 @@ jQuery.noConflict();
           }
           // オプション明細をセット
           // 通話料明細アプリID
-          var APP_TELLBILL = 81;
+          //var APP_TELLBILL = 81;
+          var APP_TELLBILL = 461;
           for (var j = 0; j < record['オプション利用'].value.length; j++) {
             var tableList = record['オプション利用'].value[j].value;
             // 利用期間内のオプションのみ
@@ -398,5 +400,58 @@ jQuery.noConflict();
     if (!$(ev.target).closest('.emxas-confirm').length) {
       $('.emxas-confirm').hide();
     }
+  });
+
+
+  var showEvents2 = [
+    "app.record.create.show",
+    "app.record.edit.show",
+    "app.record.detail.show"
+  ];
+  //入力不可
+  kintone.events.on(showEvents2, function(e) {
+  e.record.自動登録日.disabled = true;
+    return e;
+  });
+  //商品リスト表示
+  kintone.events.on(showEvents2, function(e) {
+
+    //var APP_ITEM = 17;
+    var APP_ITEM = 458;
+    var spc = kintone.app.record.getSpaceElement('itemlist');
+    var body = {
+      'app': APP_ITEM,
+      'query': ' order by レコード番号 '
+    };
+    //指定年月の日報データを取得
+    return kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', body).then(function(resp) {
+        var rec=resp.records;
+
+        var list = '' +
+        '<details> <summary>▼商品リスト表示（クリックで展開）</summary>' +
+          '<div style="margin-left:15px">' +
+          '<table class="subtable-gaia reference-subtable-gaia">' +
+          '<th class="subtable-label-gaia subtable-label-single_select-gaia" style="width:300px">' +
+          '   <span class="subtable-label-inner-gaia" style="min-width: 165px;">種別</span></th>' +
+          '<th class="subtable-label-gaia subtable-label-single_select-gaia" style="width:300px">' +
+          '   <span class="subtable-label-inner-gaia" style="min-width: 165px;">商品名</span></th>' +
+          '<tr>';
+         // var list = '' +
+         // '<details> <summary>▼商品リスト表示（クリックで展開）</summary>' +
+         // '<ul>' ;
+          for(let i = 0 ; i<rec.length ; i++){
+             list = list + '<td>' + rec[i]['商品種別'].value + '</td><td>' + rec[i]['文字列__1行__1'].value + '</td>' + '<tr>';
+            //list = list + '<li>' + rec[i]['文字列__1行__1'].value + '</li>';
+            }
+          list=list+ '</table></div></details>';
+          //list =list + '</ul></details>' ;
+          $(spc).html(list);
+    }).catch(function(resp) {
+      // error
+      console.log(resp);
+      throw resp;
+    });
+
+    return e;
   });
 })(jQuery);

@@ -46,7 +46,8 @@
     //自動計上対象に"対象"含む
     var body = {
       'app': kintone.app.getId(),
-      'query': 'チェックボックス in  ("請求代表") and 入会日_0 <="' + prevenddt  + '" and 自動計上対象 in ("対象") order by レコード番号 '
+      'query': 'チェックボックス in  ("請求代表") and 入会日_0 <="' + prevenddt  + '" and 自動計上対象 in ("対象") and ' +
+               '(前回請求日 = "" or 前回請求日 <= "' + prevenddt + '" ) order by レコード番号 '
     };
     //指定年月の日報データを取得
     const resp = await kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', body);

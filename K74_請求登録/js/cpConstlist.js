@@ -240,32 +240,32 @@ jQuery.noConflict();
                 }
             }
             // 入会金・保証金処理
-            var check = planList['請求済']['value'];
-            if (check.indexOf("済") < 0) {
-              var entryPrice = Number(planList['入会金']['value'].replace(/,/g, "").replace(/円/g, ""));
-              if (entryPrice > 0) {
-                setFields = {
-                  '種別': '入会金',
-                  'プラン・オプション': planList['プラン']['value'],
-                  '単価': entryPrice,
-                  '数量': 1
-                };
-                tbl.push({
-                  'value': getRowObject(resp, setFields)
-                });
-              }
-              if (planList['保証金']['value'] > 0) {
-                setFields = {
-                  '種別': '保証金',
-                  'プラン・オプション': planList['プラン']['value'],
-                  '単価': planList['保証金']['value'],
-                  '数量': 1
-                };
-                tbl.push({
-                  'value': getRowObject(resp, setFields)
-                });
-              }
-            }
+            // var check = planList['請求済']['value'];
+            // if (check.indexOf("済") < 0) {
+            //   var entryPrice = Number(planList['入会金']['value'].replace(/,/g, "").replace(/円/g, ""));
+            //   if (entryPrice > 0) {
+            //     setFields = {
+            //       '種別': '入会金',
+            //       'プラン・オプション': planList['プラン']['value'],
+            //       '単価': entryPrice,
+            //       '数量': 1
+            //     };
+            //     tbl.push({
+            //       'value': getRowObject(resp, setFields)
+            //     });
+            //   }
+            //   if (planList['保証金']['value'] > 0) {
+            //     setFields = {
+            //       '種別': '保証金',
+            //       'プラン・オプション': planList['プラン']['value'],
+            //       '単価': planList['保証金']['value'],
+            //       '数量': 1
+            //     };
+            //     tbl.push({
+            //       'value': getRowObject(resp, setFields)
+            //     });
+            //   }
+            // }
           }
           // オプション明細をセット
           // 通話料明細アプリID

@@ -394,7 +394,8 @@ jQuery.noConflict();
   }
   //担当者絞込み処理
   function changeUserList(usr) {
-    $.jgrid.gridUnload("#view");
+    //$.jgrid.gridUnload("#view");
+    $("#view").GridUnload();
     var appId = emxasConf.getConfig('APP_DAILY_REPORT'); //日報アプリID
     fetchRecords(appId, usr).then(function(records) {
       dispYojitsuCustomizeView(records);

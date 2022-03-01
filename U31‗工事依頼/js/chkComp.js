@@ -63,7 +63,7 @@
     var query = '工事番号 = "' + clientRecordId + '"';
     var outputFields = ['完工区分', '工数合計'];
     var appUrl = kintone.api.url('/k/v1/records');
-
+    var chkttl = false;
     var params = {
       'app': relatedAppId,
       'query': query,
@@ -75,13 +75,16 @@
       var sumWork = "00:00";
       for (var i = 0; i < resp.records.length; i++) {
         if (resp.records[i].完工区分.value === "完") {
+          chkttl=true;
           chkComp = "";
           record['完工チェック'].value = [];
           break;
         }
       }
-      for (var i = 0; i < resp.records.length; i++) {
-        sumWork = timeMath.sum(sumWork, resp.records[i].工数合計.value);
+      if (chkttl==true){
+        for (var i = 0; i < resp.records.length; i++) {
+          sumWork = timeMath.sum(sumWork, resp.records[i].工数合計.value);
+        }
       }
       var sums = sumWork.split(':');
       sumWork = sums[0] + '時間' + sums[1] + '分';

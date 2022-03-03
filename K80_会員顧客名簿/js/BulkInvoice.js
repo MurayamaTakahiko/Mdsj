@@ -46,7 +46,7 @@
     //自動計上対象に"対象"含む
     var body = {
       'app': kintone.app.getId(),
-      'query': 'チェックボックス in  ("請求代表") and 入会日_0 <="' + prevenddt  + '" and 自動計上対象 in ("対象") and ' +
+      'query': 'チェックボックス in  ("請求代表") and 入会日_0 <="' + prevenddt  + '" and  ' +
                '(前回請求日 = "" or 前回請求日 <= "' + prevenddt + '" ) order by レコード番号 '
     };
     //指定年月の日報データを取得
@@ -117,8 +117,9 @@
           //プランリスト
           var subrec=rec[i]['プランリスト'].value;
           for(let j = 0 ; j<subrec.length ; j++){
-            //利用終了日が処理日の当月以降
-            if(subrec[j]['value']['プラン利用終了日'].value >= tostartdt){
+            //利用終了日が処理日の当月以降かつ0円以外
+            if(subrec[j]['value']['プラン利用終了日'].value >= tostartdt &&
+                subrec[j]['value']['プラン料金'].value != "0" ){
               //請求明細用
               insbody.record.請求明細.value.push({
                               "value":{
@@ -155,8 +156,9 @@
           //オプション利用
           var subrec=rec[i]['オプション利用'].value;
           for(let j = 0 ; j<subrec.length ; j++){
-            //利用終了日が処理日の当月以降
-            if(subrec[j]['value']['オプション利用終了日'].value >= tostartdt){
+            //利用終了日が処理日の当月以降かつ0円以外
+            if(subrec[j]['value']['オプション利用終了日'].value >= tostartdt &&
+                subrec[j]['value']['オプション合計料金'].value != "0" ){
               insbody.record.請求明細.value.push({
                               "value":{
                                 "種別":{

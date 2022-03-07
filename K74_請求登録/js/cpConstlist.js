@@ -92,8 +92,8 @@ jQuery.noConflict();
   //「明細取得ボタン」クリックイベント
   $(document).on('click', '#emxas-button-schedule', function(ev) {
     // 契約顧客アプリID
-    //var APP_CONSTLIST = 80;
-    var APP_CONSTLIST = 447;
+    var APP_CONSTLIST = 80;
+    //var APP_CONSTLIST = 447;
     var custCd;
     var billDay = "";
     //ポップアップ表示箇所取得
@@ -416,8 +416,8 @@ jQuery.noConflict();
   //商品リスト表示
   kintone.events.on(showEvents2, function(e) {
 
-    //var APP_ITEM = 17;
-    var APP_ITEM = 458;
+    var APP_ITEM = 17;
+    //var APP_ITEM = 458;
     var spc = kintone.app.record.getSpaceElement('itemlist');
     var body = {
       'app': APP_ITEM,

@@ -269,8 +269,8 @@ jQuery.noConflict();
           }
           // オプション明細をセット
           // 通話料明細アプリID
-          //var APP_TELLBILL = 81;
-          var APP_TELLBILL = 461;
+          var APP_TELLBILL = 81;
+          //var APP_TELLBILL = 461;
           for (var j = 0; j < record['オプション利用'].value.length; j++) {
             var tableList = record['オプション利用'].value[j].value;
             // 利用期間内のオプションのみ

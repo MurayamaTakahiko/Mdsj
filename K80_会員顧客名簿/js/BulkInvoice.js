@@ -15,14 +15,14 @@
   $(document).on('click', '#bulk_button', async (ev) => {
     try {
     //本番
-    var APP_ID = 80;   //会員顧客名簿
-    var APP_INVOICE_ID = 74;//請求登録
-    var APP_CONSTLIST = 79;
-    var APP_SALES_ID = 82;
-    //var APP_ID = 447;   //会員顧客名簿
-    //var APP_INVOICE_ID = 449;   //請求登録
-    //var APP_CONSTLIST = 448;   //入金管理
-    //var APP_SALES_ID = 446;
+    //var APP_ID = 80;   //会員顧客名簿
+    //var APP_INVOICE_ID = 74;//請求登録
+    //var APP_CONSTLIST = 79;
+    //var APP_SALES_ID = 82;
+    var APP_ID = 447;   //会員顧客名簿
+    var APP_INVOICE_ID = 449;   //請求登録
+    var APP_CONSTLIST = 448;   //入金管理
+    var APP_SALES_ID = 446;
     var TAX=10;
     var proc='';
     var dt =document.getElementById('date') ;

@@ -96,6 +96,30 @@
                       "顧客名":{
                         "value":rec[i]['顧客名'].value
                       },
+                      "所属・会社名１":{
+                        "value":rec[i]['所属・会社名１'].value
+                      },
+                      "フリガナ":{
+                        "value":rec[i]['フリガナ'].value
+                      },
+                      "登録種別":{
+                        "value":rec[i]['法人・個人'].value
+                      },
+                      "顧客番号":{
+                        "value":rec[i]['顧客番号'].value
+                      },
+                      "請求書その他宛名フォーム":{
+                        "value":rec[i]['その他宛名'].value
+                      },
+                      "郵便番号":{
+                        "value":rec[i]['郵便番号'].value
+                      },
+                      "住所":{
+                        "value":rec[i]['住所'].value
+                      },
+                      "契約電話番号":{
+                        "value":rec[i]['携帯電話番号'].value
+                      },
                       "税率":{
                         "value":TAX
                       },
@@ -126,7 +150,7 @@
             //利用終了日が空白もしくは請求月の翌月初以降
             //0円以外
             if(subrec[j]['value']['プラン利用開始日'].value <= nextenddt &&
-               (subrec[j]['value']['プラン利用終了日'].value =='' || subrec[j]['value']['プラン利用終了日'].value >= nextstartdt) &&
+               (subrec[j]['value']['プラン利用終了日'].value == null || subrec[j]['value']['プラン利用終了日'].value >= nextstartdt) &&
                 subrec[j]['value']['プラン料金'].value != "0" ){
               //請求明細用
               insbody.record.請求明細.value.push({
@@ -168,7 +192,7 @@
             //利用終了日が空白もしくは請求月の翌月初以降
             //0円以外
             if(subrec[j]['value']['オプション利用開始日'].value <= nextenddt &&
-               (subrec[j]['value']['オプション利用終了日'].value =='' || subrec[j]['value']['オプション利用終了日'].value >= nextstartdt) &&
+               (subrec[j]['value']['オプション利用終了日'].value == null || subrec[j]['value']['オプション利用終了日'].value >= nextstartdt) &&
                 subrec[j]['value']['オプション合計料金'].value != "0" ){
               insbody.record.請求明細.value.push({
                               "value":{

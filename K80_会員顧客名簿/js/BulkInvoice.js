@@ -37,16 +37,21 @@
     showSpinner(); // スピナー表示
     var errMsg="";
     var invoicedt =document.getElementById('date').value ;
+    //当月末
+    var enddt =moment(dt).endOf('month').format();
+    //翌月末
+    var nextenddt =moment(dt).add(1, 'months').endOf('month').format();
+    //翌月初
+    var nextstartdt =moment(dt).add(1, 'months').startOf('month').format();
     //前月末
     var prevenddt =moment(dt).add(-1, 'months').endOf('month').format();
-    var tostartdt =moment(dt).startOf('month').format();
-
     //利用・請求代表 に "請求代表"含む
-    //初回プラン利用開始日<=前月以前
+    //初回プラン利用開始日<=請求月の月末以前
     //自動計上対象に"対象"含む
+    //前回請求日が空白または請求月の前月以前
     var body = {
       'app': kintone.app.getId(),
-      'query': 'チェックボックス in  ("請求代表") and 入会日_0 <="' + prevenddt  + '" and  ' +
+      'query': 'チェックボックス in  ("請求代表") and 入会日_0 <="' + enddt  + '" and  ' +
                '(前回請求日 = "" or 前回請求日 <= "' + prevenddt + '" ) order by レコード番号 '
     };
     //指定年月の日報データを取得
@@ -117,8 +122,11 @@
           //プランリスト
           var subrec=rec[i]['プランリスト'].value;
           for(let j = 0 ; j<subrec.length ; j++){
-            //利用終了日が処理日の当月以降かつ0円以外
-            if(subrec[j]['value']['プラン利用終了日'].value >= tostartdt &&
+            //利用開始日が翌月末以前
+            //利用終了日が空白もしくは請求月の翌月初以降
+            //0円以外
+            if(subrec[j]['value']['プラン利用開始日'].value <= nextenddt &&
+               (subrec[j]['value']['プラン利用終了日'].value =='' || subrec[j]['value']['プラン利用終了日'].value >= nextstartdt) &&
                 subrec[j]['value']['プラン料金'].value != "0" ){
               //請求明細用
               insbody.record.請求明細.value.push({
@@ -156,8 +164,11 @@
           //オプション利用
           var subrec=rec[i]['オプション利用'].value;
           for(let j = 0 ; j<subrec.length ; j++){
-            //利用終了日が処理日の当月以降かつ0円以外
-            if(subrec[j]['value']['オプション利用終了日'].value >= tostartdt &&
+            //利用開始日が翌月末以前
+            //利用終了日が空白もしくは請求月の翌月初以降
+            //0円以外
+            if(subrec[j]['value']['オプション利用開始日'].value <= nextenddt &&
+               (subrec[j]['value']['オプション利用終了日'].value =='' || subrec[j]['value']['オプション利用終了日'].value >= nextstartdt) &&
                 subrec[j]['value']['オプション合計料金'].value != "0" ){
               insbody.record.請求明細.value.push({
                               "value":{

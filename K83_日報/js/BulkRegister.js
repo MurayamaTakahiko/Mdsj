@@ -25,11 +25,11 @@
       }
       showSpinner(); // スピナー表示
       //アプリID本番用
-      var APP_ID = 83;
-      var APP_SALES_ID = 82;
+      //var APP_ID = 83;
+      //var APP_SALES_ID = 82;
       //アプリID
-      //var APP_ID = 445;   //日報
-      //var APP_SALES_ID = 446;
+      var APP_ID = 445;   //日報
+      var APP_SALES_ID = 446;
 
 
       //カレンダーの年月を取得
@@ -74,15 +74,11 @@
                   };
 
           for(let j = 0 ; j<subrec.length ; j++){
-            //自動計上項目が入力されているかつ、集金額1円以上
-            if(subrec[j]['value']['支払区分'].value =='支払済' && subrec[j]['value']['自動計上項目'].value != null  &&
+            //支払済かつ自動計上するかつ、集金額1円以上
+            if(subrec[j]['value']['支払区分'].value =='支払済' && subrec[j]['value']['自動計上'].value == '自動計上する'  &&
               subrec[j]['value']['集金額税込・自動計算'].value >= 1 ){
               var item;
-              if(subrec[j]['value']['商品名'].value==null || subrec[j]['value']['商品名'].value==''){
-                item=subrec[j]['value']['自動計上項目'].value;
-              }else {
-                item=subrec[j]['value']['商品名'].value;
-              }
+              item=subrec[j]['value']['商品名'].value;
               insbody.record.売上明細.value.push({
                               "value":{
                                 "請求対象月":{

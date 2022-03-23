@@ -238,7 +238,7 @@ jQuery.noConflict();
     // 今月から一年前までのレコード取得
     fetchRecords(SALES_APPID, '契約期間開始 <= ' + maxMonth + ' and 契約期間終了 >= ' + minMonth + ' order by OMS顧客コード asc')
       .then(function(canvas1Rec) {
-        fetchRecords(PROP_APPID, 'order by 決算開始日 desc')
+        fetchRecords(PROP_APPID, '決算開始日 <= ' + maxMonth + ' and 決算開始日 >= ' + minMonth + ' order by 決算開始日 desc')
           .then(function(canvas1Rec2) {
 
             // 今年度売上データ
@@ -363,7 +363,7 @@ jQuery.noConflict();
             ];
             rate = refreshData(rate);
 
-            // 計画値データ
+            //計画値データ
             for (var m = 0; m < canvas1Rec.length; m++) {
               var month4;
               var tableRecords4 = canvas1Rec[m].売上管理表.value;
@@ -379,12 +379,34 @@ jQuery.noConflict();
                 }
               }
             }
+            // // 計画値データ
+            // for (var v = 0; v < canvas1Rec2.length; v++) {
+            //   var month3;
+            //   var tableRecords5 = canvas1Rec2[v].計画テーブル.value;
+            //   for (var w = 0; w < tableRecords5.length; w++) {
+            //     month3 = tableRecords5[w].value['月'].value + "月";
+            //     data[month3] += Number(tableRecords5[w].value['計画'].value);
+            //     data[month3] = Math.round(data[month3] * 100) / 100;
+            //   }
+            //
+            // }
             var eventuallyPlanThisYearData = [data[elevenMonthsBefore], data[tenMonthsBefore], data[nineMonthsBefore],
               data[eightMonthsBefore], data[sevenMonthsBefore], data[sixMonthsBefore], data[fiveMonthsBefore],
               data[fourMonthsBefore], data[threeMonthsBefore], data[twoMonthsBefore], data[oneMonthBefore],
               data[noMonthBefore]
             ];
             data = refreshData(data);
+            // 年間計画値データ
+            var ThisYearPlan=0;
+            for (var v = 0; v < canvas1Rec2.length; v++) {
+              var month3;
+              var tableRecords5 = canvas1Rec2[v].チームテーブル.value;
+              for (var w = 0; w < tableRecords5.length; w++) {
+                ThisYearPlan += Number(tableRecords5[w].value['チーム_金額'].value);
+                ThisYearPlan = Math.round(ThisYearPlan * 100) / 100;
+              }
+
+            }
             // 計画利益額データ
             data[elevenMonthsBefore] = (eventuallyPlanThisYearData[0] * (100 - variCosts) / 100) - eventuallyThisYearFixCost[0];
             data[tenMonthsBefore] = (eventuallyPlanThisYearData[1] * (100 - variCosts) / 100) - eventuallyThisYearFixCost[1];
@@ -1271,14 +1293,19 @@ jQuery.noConflict();
                 // 本日時点の年間予測
                 var totalCal = commaSeparated(sumThisYearData[11]);
                 // 年間計画
-                var totalPlan = commaSeparated(sumPlanThisYearData[11]);
+                //var totalPlan = commaSeparated(sumPlanThisYearData[11]);
+                var totalPlan = commaSeparated(ThisYearPlan);
+
+
                 $("#nowCal").val(nowCal);
                 $("#totalCal").val(totalCal);
                 $("#totalPlan").val(totalPlan);
                 // 目標までの残り
-                var hardleCnt = commaSeparated(sumPlanThisYearData[11] - sumThisYearData[11]);
+                //var hardleCnt = commaSeparated(sumPlanThisYearData[11] - sumThisYearData[11]);
+                var hardleCnt = commaSeparated(ThisYearPlan - sumThisYearData[11]);
                 $("#totalHardle").val(hardleCnt);
-                var hardleRate = hardleCnt / sumPlanThisYearData[11];
+                //var hardleRate = hardleCnt / sumPlanThisYearData[11];
+                var hardleRate = hardleCnt / ThisYearPlan;
                 // 応援メッセージ
                 var fightMsg;
                 if (hardleRate > 0.5) {

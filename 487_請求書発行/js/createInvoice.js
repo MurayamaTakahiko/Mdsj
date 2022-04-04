@@ -135,7 +135,7 @@
              )&&
              (subrec[j]['value']['売上月'].value >= fromdt && subrec[j]['value']['売上月'].value <= todt)
              &&
-             (subrec[j]['value']['請求チェック']['value'].indexOf('済み') > -1)
+             (subrec[j]['value']['請求チェック']['value'].indexOf('済') > -1)
            ){
                //請求明細作成
                no=no+1;
@@ -162,6 +162,33 @@
                         }
                       }
                     });
+              //交通費がある場合
+              if(subrec[j]['value']['交通費'].value != 0){
+                no=no+1;
+                subins.push({
+                       "value":{
+                         "明細日付":{
+                           "value":subrec[j]['value']['売上月'].value
+                         },
+                         "明細番号":{
+                           "value":no
+                         },
+                         "明細内容":{
+                           "value":"交通費"
+                         },
+                         "明細数量":{
+                           "value":1
+                         },
+                         "明細単価":{
+                           "value":Number(subrec[j]['value']['交通費'].value)
+                         },
+                         "明細金額":{
+                           "value":Number(subrec[j]['value']['交通費'].value)
+                         }
+                       }
+                     });
+              }
+
           }
 
         }

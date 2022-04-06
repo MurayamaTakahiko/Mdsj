@@ -120,6 +120,7 @@ jQuery.noConflict();
     var minPrdDate = "";
     var maxPrdDate = "";
     var record = event.record;
+
     record.売上管理表.value.forEach(function(row) {
       if (!minPrdDate || (row.value['売上月']['value'] < minPrdDate)) {
         minPrdDate = moment(row.value['売上月']['value']).format("YYYY-MM-DD");
@@ -154,7 +155,16 @@ jQuery.noConflict();
   kintone.events.on(dbeevents, function(event) {
     var minPrdDate = "";
     var maxPrdDate = "";
+
     var record = event.record;
+    var temp=record.仮受注.value;
+    var tempflg=0;
+    for(let i=0;i<temp.length;i++){
+      if(temp[i]=="仮受注"){
+        tempflg=1;
+        break;
+      }
+    }
     record.売上管理表.value.forEach(function(row) {
       if (!minPrdDate || (row.value['売上月']['value'] < minPrdDate)) {
         minPrdDate = moment(row.value['売上月']['value']).format("YYYY-MM-DD");
@@ -172,9 +182,58 @@ jQuery.noConflict();
       if (selectedUsers.length > 1) {
         event.error += "担当者は一人しか指定できません。";
       }
+
+      if(tempflg==1){
+        if(row.value['実績請求額']['value'] !=0){
+          event.error += "仮受注時は実績請求額は入力できません";
+        }
+      }
     });
     record['契約期間開始']['value'] = minPrdDate;
     record['契約期間終了']['value'] = maxPrdDate;
     return event;
+
+  });
+  // 仮受注チェック、実績請求額変更時も同様にチェック
+  var dbeevents = [
+    'app.record.edit.change.仮受注',
+    'app.record.edit.change.実績請求額',
+    'app.record.edit.change.受注申請番号',
+    'app.record.create.change.仮受注',
+    'app.record.create.change.実績請求額',
+    'app.record.create.change.受注申請番号'
+  ];
+  kintone.events.on(dbeevents, function(event) {
+    event.error = "";
+    var minPrdDate = "";
+    var maxPrdDate = "";
+    var record = event.record;
+    var temp=record.仮受注.value;
+    var tempflg=0;
+    for(let i=0;i<temp.length;i++){
+      if(temp[i]=="仮受注"){
+        tempflg=1;
+        break;
+      }
+    }
+    record.売上管理表.value.forEach(function(row) {
+      if(tempflg==1){
+        if(row.value['実績請求額']['value'] !=0){
+          event.error = "仮受注時は実績請求額は入力できません";
+          return event;
+        }
+      }
+    });
+    if(tempflg==1){
+      if(record.受注申請番号.value){
+        event.error = "仮受注時は受注申請番号は入力できません";
+      }
+    }else{
+      if(!record.受注申請番号.value){
+        event.error = "受注申請番号を入力してください。";
+      }
+    }
+    return event;
+
   });
 })(jQuery);

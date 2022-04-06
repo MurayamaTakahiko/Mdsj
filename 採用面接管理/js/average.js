@@ -60,7 +60,7 @@
 
 
       // 一次面接
-      var tableRows = rec[0]['採点表1'].value;
+      var tableRows = rec[0]['採点表_一次'].value;
       var tableRef = document.getElementById('tbody');
       len+=tableRows.length;
       tableRows.forEach(function(row) {
@@ -80,13 +80,13 @@
         cell6.style.cssText = "text-align:right;";
         cell7.style.cssText = "text-align:right;";
 
-        cell1.innerHTML=GetColHtml('一次面接者　' + row.value['面接者1']['value'][0].name,'left');
-        cell2.innerHTML=GetColHtml(row.value['コミュニケーション能力1'].value,'right');
-        cell3.innerHTML=GetColHtml(row.value['専門能力1'].value,'right');
-        cell4.innerHTML=GetColHtml(row.value['論理的思考力1'].value,'right');
-        cell5.innerHTML=GetColHtml(row.value['積極性1'].value,'right');
-        cell6.innerHTML=GetColHtml(row.value['共感力1'].value,'right');
-        cell7.innerHTML=GetColHtml(row.value['誠実性1'].value,'right');
+        cell1.innerHTML=GetColHtml('一次面接者　' + row.value['面接者_一次']['value'][0].name,'left');
+        cell2.innerHTML=GetColHtml(row.value['コミュニケーション能力_一次'].value,'right');
+        cell3.innerHTML=GetColHtml(row.value['専門能力_一次'].value,'right');
+        cell4.innerHTML=GetColHtml(row.value['論理的思考力_一次'].value,'right');
+        cell5.innerHTML=GetColHtml(row.value['積極性_一次'].value,'right');
+        cell6.innerHTML=GetColHtml(row.value['共感力_一次'].value,'right');
+        cell7.innerHTML=GetColHtml(row.value['誠実性_一次'].value,'right');
         // cell1.appendChild(document.createTextNode('一次面接者　' + row.value['面接者1']['value'][0].name));
         // cell2.appendChild(document.createTextNode(row.value['コミュニケーション能力1'].value));
         // cell3.appendChild(document.createTextNode(row.value['専門能力1'].value));
@@ -95,17 +95,17 @@
         // cell6.appendChild(document.createTextNode(row.value['共感力1'].value));
         // cell7.appendChild(document.createTextNode(row.value['誠実性1'].value));
 
-        avr2+=Number(row.value['コミュニケーション能力1'].value);
-        avr3+=Number(row.value['専門能力1'].value);
-        avr4+=Number(row.value['論理的思考力1'].value);
-        avr5+=Number(row.value['積極性1'].value);
-        avr6+=Number(row.value['共感力1'].value);
-        avr7+=Number(row.value['誠実性1'].value);
+        avr2+=Number(row.value['コミュニケーション能力_一次'].value);
+        avr3+=Number(row.value['専門能力_一次'].value);
+        avr4+=Number(row.value['論理的思考力_一次'].value);
+        avr5+=Number(row.value['積極性_一次'].value);
+        avr6+=Number(row.value['共感力_一次'].value);
+        avr7+=Number(row.value['誠実性_一次'].value);
 
       });
       //最終面接
       len+=tableRows.length;
-      tableRows = rec[0]['採点表_最終1'].value;
+      tableRows = rec[0]['採点表_最終'].value;
       tableRows.forEach(function(row) {
         var tableRow = tableRef.insertRow(-1);
         var cell1 = tableRow.insertCell(-1);
@@ -122,13 +122,13 @@
         cell5.style.cssText = "text-align:right;";
         cell6.style.cssText = "text-align:right;";
         cell7.style.cssText = "text-align:right;";
-        cell1.innerHTML=GetColHtml('最終面接者　' + row.value['面接者_最終1']['value'][0].name,'left');
-        cell2.innerHTML=GetColHtml(row.value['コミュニケーション能力_最終1'].value,'right');
-        cell3.innerHTML=GetColHtml(row.value['専門能力_最終1'].value,'right');
-        cell4.innerHTML=GetColHtml(row.value['論理的思考力_最終1'].value,'right');
-        cell5.innerHTML=GetColHtml(row.value['積極性_最終1'].value,'right');
-        cell6.innerHTML=GetColHtml(row.value['共感力_最終1'].value,'right');
-        cell7.innerHTML=GetColHtml(row.value['誠実性_最終1'].value,'right');
+        cell1.innerHTML=GetColHtml('最終面接者　' + row.value['面接者_最終']['value'][0].name,'left');
+        cell2.innerHTML=GetColHtml(row.value['コミュニケーション能力_最終'].value,'right');
+        cell3.innerHTML=GetColHtml(row.value['専門能力_最終'].value,'right');
+        cell4.innerHTML=GetColHtml(row.value['論理的思考力_最終'].value,'right');
+        cell5.innerHTML=GetColHtml(row.value['積極性_最終'].value,'right');
+        cell6.innerHTML=GetColHtml(row.value['共感力_最終'].value,'right');
+        cell7.innerHTML=GetColHtml(row.value['誠実性_最終'].value,'right');
 
         //cell1.appendChild(document.createTextNode('<div class="control-value-gaia " style="text-align: right;"><span class="control-value-content-gaia">' + '最終面接者　' + row.value['面接者_最終1']['value'][0].name +'</span></div>'));
         //cell2.appendChild(document.createTextNode(row.value['コミュニケーション能力_最終1'].value));
@@ -138,12 +138,12 @@
         //cell6.appendChild(document.createTextNode(row.value['共感力_最終1'].value));
         //cell7.appendChild(document.createTextNode(row.value['誠実性_最終1'].value));
 
-        avr2+=Number(row.value['コミュニケーション能力_最終1'].value);
-        avr3+=Number(row.value['専門能力_最終1'].value);
-        avr4+=Number(row.value['論理的思考力_最終1'].value);
-        avr5+=Number(row.value['積極性_最終1'].value);
-        avr6+=Number(row.value['共感力_最終1'].value);
-        avr7+=Number(row.value['誠実性_最終1'].value);
+        avr2+=Number(row.value['コミュニケーション能力_最終'].value);
+        avr3+=Number(row.value['専門能力_最終'].value);
+        avr4+=Number(row.value['論理的思考力_最終'].value);
+        avr5+=Number(row.value['積極性_最終'].value);
+        avr6+=Number(row.value['共感力_最終'].value);
+        avr7+=Number(row.value['誠実性_最終'].value);
 
       });
       //平均

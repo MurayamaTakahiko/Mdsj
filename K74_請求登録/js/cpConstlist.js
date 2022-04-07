@@ -86,6 +86,7 @@ jQuery.noConflict();
       message +
       '</div>';
     $(spc).html(srcGetConstlist);
+    $('.emxas-confirm').hide();
     return e;
   });
 
@@ -105,8 +106,39 @@ jQuery.noConflict();
     $('.emxas-alert').hide();
     objRecord = kintone.app.record.get();
     var record = objRecord['record'];
+
+    //取得ID
+    if (record['取得ID'].value) {
+      custCd = record['取得ID'].value;
+      var param = {
+        app: APP_CONSTLIST,
+        query: "レコード番号 = \"" + custCd + "\" and " +
+          "オプション利用開始日 <= \"" + staDay + "\" and " +
+          "退会日 = \"" + billDay + "\" " +
+          "order by レコード番号 desc"
+      };
+      return kintoneUtility.rest.getAllRecordsByQuery(param).then(function(resp) {
+        console.log(resp);
+        var records = resp.records;
+        if (records.length === 0) {
+          //対象予定存在しないメッセージ
+          var msg = '契約プラン・オプション一覧が存在しません。';
+          $('.emxas-alert > p').text(msg);
+          $('.emxas-alert').show();
+        } else {
+          constlist = records;
+          //ポップアップ表示
+          $('.emxas-confirm').css('left', pos.left);
+          $('.emxas-confirm').css('top', pos.top);
+          if ($('.emxas-confirm').is(':visible')) {
+            $('.emxas-confirm').hide();
+          } else {
+            $('.emxas-confirm').show();
+          }
+        }
+      });
     // 所属・会社名１がない場合は、顧客名をキーにする
-    if (record['所属・会社名１'].value) {
+  }else if (record['所属・会社名１'].value) {
       custCd = record['所属・会社名１'].value;
       var param = {
         app: APP_CONSTLIST,
@@ -172,7 +204,8 @@ jQuery.noConflict();
   });
 
   //明細取得ダイアログ「OK」のクリックイベント
-  $(document).on('click', '.emxas-button-dialog-ok', function(ev) {
+  $(document).on('click', '.emxas-button-dialog-ok', async (ev) => {
+  try {
     var tbl = [];
     //画面の請求明細サブテーブルに既存行がある場合、退避
     for (var iTbl = 0; iTbl < objRecord['record']['請求明細']['value'].length; iTbl++) {
@@ -190,7 +223,7 @@ jQuery.noConflict();
       });
     }
     // 「請求明細」サブテーブルを取得
-    getSubtable().then(function(resp) {
+    var resp=await getSubtable();
         //取得予定の数分
         for (var i = 0; i < constlist.length; i++) {
           var record = constlist[i];
@@ -323,12 +356,12 @@ jQuery.noConflict();
                         'app': APP_TELLBILL,
                         'query': query
                     };
-                    kintone.api(kintone.api.url('/k/v1/records', true), 'GET', paramTell).then(function(respT) {
-                      var records = respT.records;
+                    var respT =await kintone.api(kintone.api.url('/k/v1/records', true), 'GET', paramTell);
+                      var recordsT = respT.records;
                       var tellBill = 0;
-                      for (var i = 0, l = records.length; i < l; i++) {
-                        var record = records[i];
-                        tellBill += Number(record['通話料'].value);
+                      for (var k = 0, l = recordsT.length; k < l; k++) {
+                        var recordT = recordsT[k];
+                        tellBill += Number(recordT['通話料'].value);
                       }
                       if (tellBill !== 0) {
                         setFields = {
@@ -341,7 +374,6 @@ jQuery.noConflict();
                           'value': getRowObject(resp, setFields)
                         });
                       }
-                    });
                   }
                 } else {
                   if (moment(staDay).month() % 2 == 0) {
@@ -351,12 +383,12 @@ jQuery.noConflict();
                         'app': APP_TELLBILL,
                         'query': query
                     };
-                    kintone.api(kintone.api.url('/k/v1/records', true), 'GET', paramTell).then(function(respT) {
-                      var records = respT.records;
+                    var respT =await kintone.api(kintone.api.url('/k/v1/records', true), 'GET', paramTell)
+                      var recordsT = respT.records;
                       var tellBill = 0;
-                      for (var i = 0, l = records.length; i < l; i++) {
-                        var record = records[i];
-                        tellBill += Number(record['通話料'].value);
+                      for (var k = 0, l = recordsT.length; k < l; k++) {
+                        var recordT = recordsT[k];
+                        tellBill += Number(recordT['通話料'].value);
                       }
                       if (tellBill !== 0) {
                         setFields = {
@@ -369,22 +401,21 @@ jQuery.noConflict();
                           'value': getRowObject(resp, setFields)
                         });
                       }
-                    });
+
                   }
                 }
               }
             }
-          }
         }
+      }
         //画面[請求明細]サブテーブル]に反映
         objRecord['record']['請求明細']['value'] = tbl;
         kintone.app.record.set(objRecord);
         //ポップアップエリア隠す
         $('.emxas-confirm').hide();
-      })
-      .catch(function(error) {
+      }catch(e) {
         alert("フィールド情報の取得でエラーが発生しました。")
-      });
+      }
   });
   //スケジュール取得ダイアログ「キャンセル」のクリックイベント
   $(document).on('click', '.emxas-button-dialog-cancel', function(ev) {

@@ -48,11 +48,14 @@
     var nextstartdt =moment(invoicedt).add(1, 'months').startOf('month').format();
     //前月末
     var prevenddt =moment(invoicedt).add(-1, 'months').endOf('month').format();
+<<<<<<< HEAD
 
     //通話料６か月前
     var stateldt6=moment(invoicedt).add(-6, 'months').startOf('month').format();
     //通話料2か月前
     var stateldt2=moment(invoicedt).add(-2, 'months').startOf('month').format();
+=======
+>>>>>>> ae0a9a3f33c2556c01622ceb3db61130db38812c
     //利用・請求代表 に "請求代表"含む
     //初回プラン利用開始日<=請求月の月末以前
     //自動計上対象に"対象"含む
@@ -60,7 +63,7 @@
     var body = {
       'app': kintone.app.getId(),
       'query': 'チェックボックス in  ("請求代表") and 入会日_0 <="' + enddt  + '" and  ' +
-               '(前回請求日 = "" or 前回請求日 <= "' + prevenddt + '" ) order by レコード番号 '
+               '(前回請求日 = "" or 前回請求日 <= "' + prevenddt + '" ) and (退会日 = "" or 退会日 >= "' + nextstartdt + '")  order by レコード番号 '
     };
     //指定年月の日報データを取得
     const resp = await kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', body);

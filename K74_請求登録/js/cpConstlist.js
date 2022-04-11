@@ -29,11 +29,16 @@ jQuery.noConflict();
   //画面のレコード
   var objRecord;
   // プラン利用開始日・終了日
-  var staDay = moment().add(1, 'month').endOf('month').format("YYYY-MM-DD");
-  var finDay = moment().add(1, 'month').startOf('month').format("YYYY-MM-DD");
+  // var staDay = moment().add(1, 'month').endOf('month').format("YYYY-MM-DD");
+  // var finDay = moment().add(1, 'month').startOf('month').format("YYYY-MM-DD");
+  // // 通話明細開始日・終了日
+  // var staTelDay = moment().add(-2, 'month').startOf('month').format("YYYY-MM-DD");
+  // var finTelDay = moment().add(-1, 'month').endOf('month').format("YYYY-MM-DD");
+  var staDay ;
+  var finDay ;
   // 通話明細開始日・終了日
-  var staTelDay = moment().add(-2, 'month').startOf('month').format("YYYY-MM-DD");
-  var finTelDay = moment().add(-1, 'month').endOf('month').format("YYYY-MM-DD");
+  var staTelDay;
+  var finTelDay ;
   // ロケールを設定
   moment.locale('ja');
 
@@ -93,8 +98,26 @@ jQuery.noConflict();
   //「明細取得ボタン」クリックイベント
   $(document).on('click', '#emxas-button-schedule', function(ev) {
     // 契約顧客アプリID
-    var APP_CONSTLIST = 80;
-    //var APP_CONSTLIST = 447;
+    //var APP_CONSTLIST = 80;
+    var APP_CONSTLIST = 447;
+    objRecord = kintone.app.record.get();
+    var record = objRecord['record'];
+    var invoicedt=record['請求日'].value;
+
+    if(invoicedt===undefined){
+      alert("請求日を入力してください。");
+      return;
+    }
+
+     staDay = moment(invoicedt).add(1, 'month').endOf('month').format("YYYY-MM-DD");
+     finDay = moment(invoicedt).add(1, 'month').startOf('month').format("YYYY-MM-DD");
+    // 通話明細開始日・終了日
+     staTelDay = moment(invoicedt).add(-2, 'month').startOf('month').format("YYYY-MM-DD");
+     finTelDay = moment(invoicedt).add(-1, 'month').endOf('month').format("YYYY-MM-DD");
+
+
+
+
     var custCd;
     var billDay = "";
     //ポップアップ表示箇所取得
@@ -104,8 +127,7 @@ jQuery.noConflict();
     };
     //エラーメッセージ初期化
     $('.emxas-alert').hide();
-    objRecord = kintone.app.record.get();
-    var record = objRecord['record'];
+
 
     //取得ID
     if (record['取得ID'].value) {
@@ -302,8 +324,8 @@ jQuery.noConflict();
           }
           // オプション明細をセット
           // 通話料明細アプリID
-          var APP_TELLBILL = 81;
-          //var APP_TELLBILL = 461;
+          //var APP_TELLBILL = 81;
+          var APP_TELLBILL = 461;
           for (var j = 0; j < record['オプション利用'].value.length; j++) {
             var tableList = record['オプション利用'].value[j].value;
             // 利用期間内のオプションのみ
@@ -447,8 +469,8 @@ jQuery.noConflict();
   //商品リスト表示
   kintone.events.on(showEvents2, function(e) {
 
-    var APP_ITEM = 17;
-    //var APP_ITEM = 458;
+    //var APP_ITEM = 17;
+    var APP_ITEM = 458;
     var spc = kintone.app.record.getSpaceElement('itemlist');
     var body = {
       'app': APP_ITEM,

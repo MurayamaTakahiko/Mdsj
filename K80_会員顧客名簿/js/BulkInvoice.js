@@ -58,6 +58,10 @@
     var nextinvoicedt;
     //６か月後
     var enddt6=moment(invoicedt).add(6, 'months').endOf('month').format();
+    //オプション終了日
+    var optenddt=null;
+    //プラン終了日
+    var planenddt=null;
 
     var max=0;
     //利用・請求代表 に "請求代表"含む
@@ -220,6 +224,13 @@
                       }
 
                     }else if(moment(nextenddt).month()==3 || moment(nextenddt).month()==9){
+                      //プラン終了日が6か月以前の場合
+                      if(subrec[j]['value']['プラン利用終了日'].value != null && enddt6>=subrec[j]['value']['プラン利用終了日'].value){
+                        planenddt=moment(subrec[j]['value']['プラン利用終了日'].value).add(k, 'M').format();
+                        max=moment(planenddt).diff(nextstartdt,'months')+1;
+                      }else{
+                        max=6
+                      }
                       //請求明細用
                       insbody.record.請求明細.value.push({
                                       "value":{
@@ -230,14 +241,14 @@
                                           "value":subrec[j]['value']['プラン'].value
                                         },
                                         "単価":{
-                                          "value":subrec[j]['value']['プラン料金'].value * 6
+                                          "value":subrec[j]['value']['プラン料金'].value * max
                                         },
                                         "数量":{
                                           "value":"1"
                                         }
                                       }
                                     });
-                        for(let k=0;k<6;k++){
+                        for(let k=0;k<max;k++){
                           //売上明細用
                           insbody2.record.売上明細.value.push({
                                           "value":{
@@ -349,7 +360,24 @@
                         }
 
                      }else if(moment(nextenddt).month()==3 || moment(nextenddt).month()==9){
+                       //プラン終了日が6か月以前の場合
+                       if(
+                          (subrec[j]['value']['オプション利用終了日'].value != null &&
+                             enddt6>=subrec[j]['value']['オプション利用終了日'].value) || (planenddt != null && enddt6>=planenddt)
+                           ){
+                         optenddt=moment(subrec[j]['value']['オプション利用終了日'].value).add(k, 'M').format();
+                         //バーチャルプラン終了日と比較
+                         if(planenddt == null){
+                           max=moment(optenddt).diff(nextstartdt,'months')+1;
+                         }else if(optenddt<planenddt){
+                           max=moment(optenddt).diff(nextstartdt,'months')+1;
+                         }else{
+                           max=moment(planenddt).diff(nextstartdt,'months')+1;
+                         }
 
+                       }else{
+                         max=6
+                       }
                       insbody.record.請求明細.value.push({
                                       "value":{
                                         "種別":{
@@ -359,14 +387,14 @@
                                           "value":subrec[j]['value']['オプション'].value
                                         },
                                         "単価":{
-                                          "value":subrec[j]['value']['オプション単価'].value * 6
+                                          "value":subrec[j]['value']['オプション単価'].value * max
                                         },
                                         "数量":{
                                           "value":subrec[j]['value']['オプション契約数'].value
                                         }
                                       }
                                     });
-                      for(let k=0;k<6;k++){
+                      for(let k=0;k<max;k++){
                       //売上明細用
                       insbody2.record.売上明細.value.push({
                                       "value":{

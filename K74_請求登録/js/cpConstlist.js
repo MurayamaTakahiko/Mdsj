@@ -115,8 +115,12 @@ jQuery.noConflict();
      staTelDay = moment(invoicedt).add(-2, 'month').startOf('month').format("YYYY-MM-DD");
      finTelDay = moment(invoicedt).add(-1, 'month').endOf('month').format("YYYY-MM-DD");
 
-
-
+　   var nextinvoicedt;
+     var max;
+     //通話料６か月前
+     var stateldt6=moment(invoicedt).add(-6, 'months').startOf('month').format();
+     //通話料2か月前
+     var stateldt2=moment(invoicedt).add(-2, 'months').startOf('month').format();
 
     var custCd;
     var billDay = "";
@@ -260,7 +264,25 @@ jQuery.noConflict();
                 // バーチャルプランのみ半年請求
                 if (planList['プラン種別']['value'] === "バーチャル") {
                   virtualFlg = true;
-                  if (moment(staDay).month() == 3 || moment(staDay).month() == 9) {
+                  //プラン利用開始日が６か月以前で過去請求していない場合
+                  if(stateldt6<=planList['プラン利用開始日']['value'] && record['前回請求日'].value == null){
+                    //プラン利用開始から次回請求までの分を請求
+                    for(let k=0;k<6;k++){
+                      nextinvoicedt=moment(planList['プラン利用開始日'].value).add(k, 'M').format();
+                      if(moment(nextinvoicedt).month()==2 || moment(nextinvoicedt).month()==8){
+                        max=moment(nextinvoicedt).diff(planList['プラン利用開始日'].value,'months')+1;
+                        break;
+                      }
+                    }
+                    setFields = {
+                      '種別': planList['プラン種別']['value'],
+                      'プラン・オプション': planList['プラン']['value'],
+                      '単価': planList['プラン料金']['value'] * max,
+                      '数量': 1,
+                      '対象日_from':planList['ご利用開始日']['value'] ,
+                      '対象日_to':planList['ご利用終了日']['value'] 
+                    };
+                  }else if (moment(staDay).month() == 3 || moment(staDay).month() == 9) {
                     // 初回請求かどうかの判定は不要（初回は窓口請求）
                     // var useTime = moment(staDay).diff(moment(planList['プラン利用開始日']['value']), 'months');
                     // if (useTime < 7) {

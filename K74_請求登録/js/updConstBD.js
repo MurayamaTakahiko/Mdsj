@@ -42,6 +42,8 @@ jQuery.noConflict();
     var custCd = record['所属・会社名１'].value;;
     var custName = record['顧客名'].value;
     var query;
+    var nextenddt =moment(billDay).add(1, 'months').endOf('month').format();
+
     if (record['所属・会社名１'].value) {
       query = '所属・会社名１ = "' + custCd + '"';
     } else {
@@ -52,8 +54,8 @@ jQuery.noConflict();
         'query': query
     };
     // 入金管理アプリID
-    //var APP_CONSTLIST = 79;
-    var APP_CONSTLIST = 448;
+    var APP_CONSTLIST = 79;
+    //var APP_CONSTLIST = 448;
     var billNum = record['請求番号'].value;
     var billCD = custCd;
     var billCstName = custName;
@@ -84,183 +86,70 @@ jQuery.noConflict();
         }
       };
       // 売上管理アプリID
-      //var APP_OTHERBILL = 82;
-      var APP_OTHERBILL = 446;
+      var APP_OTHERBILL = 82;
+      //var APP_OTHERBILL = 446;
       var paramList = [];
       var virtualFlg = false;
-      // 請求明細分をそれぞれ別レコードで
+      //売上登録用
+      var insbody={
+                  "種別":{
+                    "value":"system（月額請求）"
+                  },
+                  "請求番号":{
+                    "value":billNum
+                  },
+                  "対象顧客":{
+                    "value":billCstName
+                  },
+                  "売上明細":{
+                    "value":[]
+                  }
+              };
+      // 請求明細分
       for (var i = 0; i < record['請求明細']['value'].length; i++) {
         var billList = record['請求明細'].value[i].value;
-        // バーチャルプランのみ6ヶ月を月ごとに分割
-        if (billList['種別']['value'] === "バーチャル") {
-          virtualFlg = true;
-          for (var j = 0; j < 6; j++) {
-            var paramOne = {
-              "対象顧客": {
-                "value": billCstName
-              },
-              "請求番号": {
-                "value": billNum
-              },
-              "種別": {
-                "value": "system（月額請求）"
-              },
-              "売上明細": {
-                "value": [
-                  {
-                    "value": {
-                      "請求対象月": {
-                        "value": moment(billDay).add(j, 'month').endOf('month').format("YYYY-MM-DD")
-                      },
-                      "項目": {
-                        "value": billList['プラン・オプション']['value']
-                      },
-                      "金額": {
-                        "value": Math.round(billList['小計']['value'] / 6)
-                      }
-                    }
-                  }
-                ]
-              }
-            };
-            paramList.push(paramOne);
-          }
-        } else if (billList['プラン・オプション']['value'] === "通話料") {
-          if (virtualFlg) {
-            for (var j = 0; j < 6; j++) {
-              var paramOne = {
-                "対象顧客": {
-                  "value": billCstName
-                },
-                "請求番号": {
-                  "value": billNum
-                },
-                "種別": {
-                  "value": "system（月額請求）"
-                },
-                "売上明細": {
-                  "value": [
-                    {
-                      "value": {
-                        "請求対象月": {
-                          "value": moment(billDay).add(j, 'month').endOf('month').format("YYYY-MM-DD")
-                        },
-                        "項目": {
-                          "value": billList['プラン・オプション']['value']
-                        },
-                        "金額": {
-                          "value": Math.round(billList['小計']['value'] / 6)
-                        }
-                      }
-                    }
-                  ]
-                }
-              };
-              paramList.push(paramOne);
-            }
-          } else {
-            for (var k = 0; k < 2; k++) {
-              var paramOne = {
-                "対象顧客": {
-                  "value": billCstName
-                },
-                "請求番号": {
-                  "value": billNum
-                },
-                "種別": {
-                  "value": "system（月額請求）"
-                },
-                "売上明細": {
-                  "value": [
-                    {
-                      "value": {
-                        "請求対象月": {
-                          "value": moment(billDay).add(k - 2, 'month').endOf('month').format("YYYY-MM-DD")
-                        },
-                        "項目": {
-                          "value": billList['プラン・オプション']['value']
-                        },
-                        "金額": {
-                          "value": Math.round(billList['小計']['value'] / 2)
-                        }
-                      }
-                    }
-                  ]
-                }
-              };
-              paramList.push(paramOne);
-            }
-          }
-        } else {
-          console.log(virtualFlg);
-          console.log(billList['種別']['value']);
-          if (virtualFlg && billList['種別']['value'] === "オプション") {
-            console.log("virOp");
-            for (var l = 0; l < 6; l++) {
-              var paramOne = {
-                "対象顧客": {
-                  "value": billCstName
-                },
-                "請求番号": {
-                  "value": billNum
-                },
-                "種別": {
-                  "value": "system（月額請求）"
-                },
-                "売上明細": {
-                  "value": [
-                    {
-                      "value": {
-                        "請求対象月": {
-                          "value": moment(billDay).add(l, 'month').endOf('month').format("YYYY-MM-DD")
-                        },
-                        "項目": {
-                          "value": billList['プラン・オプション']['value']
-                        },
-                        "金額": {
-                          "value": Math.round(billList['小計']['value'] / 6)
-                        }
-                      }
-                    }
-                  ]
-                }
-              };
-              paramList.push(paramOne);
-            }
-          } else {
-            var paramOne = {
-              "対象顧客": {
-                "value": billCstName
-              },
-              "請求番号": {
-                "value": billNum
-              },
-              "種別": {
-                "value": "system（月額請求）"
-              },
-              "売上明細": {
-                "value": [
-                  {
-                    "value": {
-                      "請求対象月": {
-                        "value": billDay
-                      },
-                      "項目": {
-                        "value": billList['プラン・オプション']['value']
-                      },
-                      "金額": {
-                        "value": billList['小計']['value']
-                      }
-                    }
-                  }
-                ]
-              }
-            };
-            paramList.push(paramOne);
-          }
+        var fromdt;
+        var todt;
+        if(billList['利用対象期間_from']['value']==null){
+          fromdt=moment(nextenddt).startOf('month').format();
+        }else{
+          fromdt=moment(billList['利用対象期間_from']['value']).startOf('month').format();
         }
+        if(billList['利用対象期間_to']['value']==null){
+          todt=moment(nextenddt).endOf('month').format();
+        }else{
+          todt=moment(billList['利用対象期間_to']['value']).endOf('month').format();
+        }
+        var max=moment(todt).diff(fromdt,'months')+1;
+
+        //金額
+        var subbill=0;
+        var subtotal=0;
+
+        for(var j=0;j<max;j++){
+          subbill=Math.round(parseInt(billList['小計']['value'])/max);
+          subtotal+=subbill;
+          if(j==(max-1)){
+            subbill+=parseInt(billList['小計']['value'])-subtotal;
+          }
+          //売上明細用
+          insbody.売上明細.value.push({
+                          "value":{
+                            "請求対象月":{
+                              "value":moment(fromdt).add(j, 'month').endOf('month').format("YYYY-MM-DD")
+                            },
+                            "項目":{
+                              "value":billList['プラン・オプション']['value']
+                            },
+                            "金額":{
+                              "value":subbill
+                            }
+                          }
+                        });
+                      }
+        }
+        paramList.push(insbody);
         console.log(paramList);
-      }
       var paramBulk = {
         'app': APP_OTHERBILL,
         'records': paramList

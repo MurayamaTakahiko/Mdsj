@@ -15,16 +15,16 @@
   $(document).on('click', '#bulk_button', async (ev) => {
     try {
     //本番
-    //var APP_ID = 80;   //会員顧客名簿
-    //var APP_INVOICE_ID = 74;//請求登録
-    //var APP_CONSTLIST = 79;
-    //var APP_SALES_ID = 82;
-    //var APP_CALL = 81;
-    var APP_ID = 447;   //会員顧客名簿
-    var APP_INVOICE_ID = 449;   //請求登録
-    var APP_CONSTLIST = 448;   //入金管理
-    var APP_SALES_ID = 446;
-    var APP_CALL = 461;
+    var APP_ID = 80;   //会員顧客名簿
+    var APP_INVOICE_ID = 74;//請求登録
+    var APP_CONSTLIST = 79;
+    var APP_SALES_ID = 82;
+    var APP_CALL = 81;
+    //var APP_ID = 447;   //会員顧客名簿
+    //var APP_INVOICE_ID = 449;   //請求登録
+    //var APP_CONSTLIST = 448;   //入金管理
+    //var APP_SALES_ID = 446;
+    //var APP_CALL = 461;
     var TAX=10;
     var proc='';
     var dt =document.getElementById('date') ;
@@ -154,6 +154,9 @@
                             "種別":{
                               "value":"system（月額請求）"
                             },
+                            "請求番号":{
+                              "value":newno
+                            },
                             "対象顧客":{
                               "value":rec[i]['顧客名'].value
                             },
@@ -202,6 +205,12 @@
                                        },
                                        "数量":{
                                          "value":"1"
+                                       },
+                                         "利用対象期間_from":{
+                                           "value":moment(nextinvoicedt).add(-(max-1), 'month').startOf('month').format("YYYY-MM-DD")
+                                       },
+                                         "利用対象期間_to":{
+                                           "value":moment(nextinvoicedt).endOf('month').format("YYYY-MM-DD")
                                        }
                                      }
                                    });
@@ -223,10 +232,11 @@
                         total+=Math.round(parseInt(parseInt(subrec[j]['value']['プラン料金'].value) * (1+parseInt(TAX)/100)));
                       }
 
-                    }else if(moment(nextenddt).month()==3 || moment(nextenddt).month()==9){
+                    }
+                    if(moment(nextenddt).month()==3 || moment(nextenddt).month()==9){
                       //プラン終了日が6か月以前の場合
                       if(subrec[j]['value']['プラン利用終了日'].value != null && enddt6>=subrec[j]['value']['プラン利用終了日'].value){
-                        planenddt=moment(subrec[j]['value']['プラン利用終了日'].value).add(k, 'M').format();
+                        planenddt=moment(subrec[j]['value']['プラン利用終了日'].value).endOf('month').format();
                         max=moment(planenddt).diff(nextstartdt,'months')+1;
                       }else{
                         max=6
@@ -245,10 +255,16 @@
                                         },
                                         "数量":{
                                           "value":"1"
+                                        },
+                                          "利用対象期間_from":{
+                                            "value":moment(invoicedt).add(1, 'month').startOf('month').format("YYYY-MM-DD")
+                                        },
+                                          "利用対象期間_to":{
+                                            "value":moment(invoicedt).add(max, 'month').endOf('month').format("YYYY-MM-DD")
                                         }
                                       }
                                     });
-                        for(let k=0;k<max;k++){
+                        for(let k=1;k<=max;k++){
                           //売上明細用
                           insbody2.record.売上明細.value.push({
                                           "value":{
@@ -265,7 +281,8 @@
                                         });
                         total+=Math.round(parseInt(parseInt(subrec[j]['value']['プラン料金'].value) * (1+parseInt(TAX)/100)));
                       }
-                  }else{
+                  }
+                }else{
                     //請求明細用
                     insbody.record.請求明細.value.push({
                                     "value":{
@@ -280,6 +297,12 @@
                                       },
                                       "数量":{
                                         "value":"1"
+                                      },
+                                        "利用対象期間_from":{
+                                          "value":moment(invoicedt).add(1, 'month').startOf('month').format("YYYY-MM-DD")
+                                      },
+                                        "利用対象期間_to":{
+                                          "value":moment(invoicedt).add(1, 'month').endOf('month').format("YYYY-MM-DD")
                                       }
                                     }
                                   });
@@ -288,7 +311,7 @@
                      insbody2.record.売上明細.value.push({
                                      "value":{
                                        "請求対象月":{
-                                         "value":moment(invoicedt).format('YYYY-MM-DD')
+                                         "value":moment(invoicedt).add(1, 'month').endOf('month').format("YYYY-MM-DD")
                                        },
                                        "項目":{
                                          "value":subrec[j]['value']['プラン'].value
@@ -301,7 +324,6 @@
                     total += Number(subrec[j]['value']['プラン料金'].value * (1+parseInt(TAX)/100));
                   }
               }
-            }
           }
           //オプション利用
           var subrec=rec[i]['オプション利用'].value;
@@ -338,6 +360,12 @@
                                          },
                                          "数量":{
                                            "value":subrec[j]['value']['オプション契約数'].value
+                                         },
+                                           "利用対象期間_from":{
+                                             "value":moment(nextinvoicedt).add(-(max-1), 'month').startOf('month').format("YYYY-MM-DD")
+                                         },
+                                           "利用対象期間_to":{
+                                             "value":moment(nextinvoicedt).endOf('month').format("YYYY-MM-DD")
                                          }
                                        }
                                      });
@@ -359,13 +387,14 @@
                           total+=Number(subrec[j]['value']['オプション単価'].value );
                         }
 
-                     }else if(moment(nextenddt).month()==3 || moment(nextenddt).month()==9){
+                     }
+                     if(moment(nextenddt).month()==3 || moment(nextenddt).month()==9){
                        //プラン終了日が6か月以前の場合
                        if(
                           (subrec[j]['value']['オプション利用終了日'].value != null &&
                              enddt6>=subrec[j]['value']['オプション利用終了日'].value) || (planenddt != null && enddt6>=planenddt)
                            ){
-                         optenddt=moment(subrec[j]['value']['オプション利用終了日'].value).add(k, 'M').format();
+                         optenddt=moment(subrec[j]['value']['オプション利用終了日'].value).endOf('month').format();
                          //バーチャルプラン終了日と比較
                          if(planenddt == null){
                            max=moment(optenddt).diff(nextstartdt,'months')+1;
@@ -391,10 +420,16 @@
                                         },
                                         "数量":{
                                           "value":subrec[j]['value']['オプション契約数'].value
+                                        },
+                                          "利用対象期間_from":{
+                                            "value":moment(invoicedt).add(1, 'month').startOf('month').format("YYYY-MM-DD")
+                                        },
+                                          "利用対象期間_to":{
+                                            "value":moment(invoicedt).add(max, 'month').endOf('month').format("YYYY-MM-DD")
                                         }
                                       }
                                     });
-                      for(let k=0;k<max;k++){
+                      for(let k=1;k<=max;k++){
                       //売上明細用
                       insbody2.record.売上明細.value.push({
                                       "value":{
@@ -411,7 +446,8 @@
                                     });
                                   }
                       total+=Number(subrec[j]['value']['オプション合計料金'].value );
-                  }else{
+                  }
+                }else{
                       //請求明細
                       insbody.record.請求明細.value.push({
                                       "value":{
@@ -426,6 +462,12 @@
                                         },
                                         "数量":{
                                           "value":subrec[j]['value']['オプション契約数'].value
+                                        },
+                                          "利用対象期間_from":{
+                                            "value":moment(invoicedt).add(1, 'month').startOf('month').format("YYYY-MM-DD")
+                                        },
+                                          "利用対象期間_to":{
+                                            "value":moment(invoicedt).add(1, 'month').endOf('month').format("YYYY-MM-DD")
                                         }
                                       }
                                     });
@@ -434,7 +476,7 @@
                       insbody2.record.売上明細.value.push({
                                       "value":{
                                         "請求対象月":{
-                                          "value":moment(invoicedt).format("YYYY-MM-DD")
+                                          "value":moment(invoicedt).add(1, 'month').endOf('month').format("YYYY-MM-DD")
                                         },
                                         "項目":{
                                           "value":subrec[j]['value']['オプション'].value
@@ -448,7 +490,6 @@
                     }
 
             }
-          }
           //通話料請求
           if(subrec[j]['value']['オプション利用開始日'].value <= nextenddt &&
              (subrec[j]['value']['オプション利用終了日'].value == null || subrec[j]['value']['オプション利用終了日'].value >= nextstartdt) &&
@@ -461,7 +502,7 @@
                       targetflg=true;
                   }
                 }else{
-                  if(moment(nextenddt).month() % 2 == 0){
+                  if(moment(invoicedt).month() % 2 == 0){
                       targetflg=true;
                   }
                 }
@@ -499,7 +540,7 @@
                       insbody.record.請求明細.value.push({
                                         "value":{
                                           "種別":{
-                                            "value":"月額請求"
+                                            "value":"オプション"
                                           },
                                           "プラン・オプション":{
                                             "value":'通話料'
@@ -509,6 +550,12 @@
                                           },
                                           "数量":{
                                             "value":1
+                                          },
+                                            "利用対象期間_from":{
+                                              "value":moment(invoicedt).add(-max, 'month').startOf('month').format("YYYY-MM-DD")
+                                          },
+                                            "利用対象期間_to":{
+                                              "value":moment(invoicedt).add(-1, 'month').endOf('month').format("YYYY-MM-DD")
                                           }
                                         }
                                       });
@@ -516,17 +563,17 @@
 
                        var subbill=0;
                        var subtotal=0;
-                       for( k=0;k<max;k++){
+                       for( k=1;k<=max;k++){
                          subbill=Math.round(parseInt(bill * (1+parseInt(TAX)/100))/max);
                          subtotal+=subbill;
-                         if(k==(max-1)){
+                         if(k==max){
                            subbill+=parseInt(bill * (1+parseInt(TAX)/100))-subtotal;
                          }
                          //売上明細用
                          insbody2.record.売上明細.value.push({
                                          "value":{
                                            "請求対象月":{
-                                             "value": moment(invoicedt).add(k, 'month').endOf('month').format("YYYY-MM-DD")
+                                             "value": moment(invoicedt).add(-k, 'month').endOf('month').format("YYYY-MM-DD")
                                            },
                                            "項目":{
                                              "value":'通話料'
@@ -540,9 +587,9 @@
 
                     }
                   }
-
+                }
             }
-        }
+
           if (insbody.record.請求明細.value.length>0){
             //請求登録
             await kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', insbody);

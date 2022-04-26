@@ -438,7 +438,7 @@ jQuery.noConflict();
                       }
                   }
                 } else {
-                  if (moment(invoicedt).month() % 2 == 0) {
+                  if (moment(invoicedt).month() % 2 != 0) {
                     var tellNo = tableList['契約番号'].value;
                     var query = '契約電話番号 = "' + tellNo + '" and 請求対象月 >= "' + staTelDay + '" and 請求対象月 <= "' + finTelDay + '"';
                     var paramTell = {

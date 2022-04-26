@@ -502,7 +502,7 @@
                       targetflg=true;
                   }
                 }else{
-                  if(moment(invoicedt).month() % 2 == 0){
+                  if(moment(invoicedt).month() % 2 != 0){
                       targetflg=true;
                   }
                 }

@@ -105,8 +105,8 @@ jQuery.noConflict();
   //「明細取得ボタン」クリックイベント
   $(document).on('click', '#emxas-button-schedule', function(ev) {
     // 契約顧客アプリID
-    var APP_CONSTLIST = 80;
-    //var APP_CONSTLIST = 447;
+    //var APP_CONSTLIST = 80;
+    var APP_CONSTLIST = 447;
     objRecord = kintone.app.record.get();
     var record = objRecord['record'];
     invoicedt=record['請求日'].value;
@@ -329,8 +329,8 @@ jQuery.noConflict();
 
           // オプション明細をセット
           // 通話料明細アプリID
-          var APP_TELLBILL = 81;
-          //var APP_TELLBILL = 461;
+          //var APP_TELLBILL = 81;
+          var APP_TELLBILL = 461;
           for (var j = 0; j < record['オプション利用'].value.length; j++) {
             var tableList = record['オプション利用'].value[j].value;
             // 利用期間内のオプションのみ
@@ -411,7 +411,7 @@ jQuery.noConflict();
                   if (moment(staDay).month() == 3 || moment(staDay).month() == 9) {
                     var tellNo = tableList['契約番号'].value;
                     staTelDay = moment().add(-6, 'month').startOf('month').format("YYYY-MM-DD");
-                    var query = '契約電話番号 = "' + tellNo + '" and 請求対象月 >= "' + staTelDay + '" and 請求対象月 <= "' + finTelDay + '"';
+                    var query = '契約電話番号 = "' + tellNo + '" and 請求対象月 >= "' + staTelDay + '" and 請求対象月 <= "' + finTelDay + '" order by 請求対象月';
                     var paramTell = {
                         'app': APP_TELLBILL,
                         'query': query
@@ -419,18 +419,43 @@ jQuery.noConflict();
                     var respT =await kintone.api(kintone.api.url('/k/v1/records', true), 'GET', paramTell);
                       var recordsT = respT.records;
                       var tellBill = 0;
+                      var ymd;
+                      var ymd2;
+                      var mm;
+                      var mm2;
                       for (var k = 0, l = recordsT.length; k < l; k++) {
                         var recordT = recordsT[k];
+                        ymd=recordT['請求対象月'].value;
+                        mm=moment(ymd).month()+1;
+                        if(mm != mm2 ){
+                          if(tellBill !=0){
+                            //請求明細
+                            setFields = {
+                                          "種別":"オプション",
+                                          "プラン・オプション":'通話料（' + mm2 + '月分）',
+                                          "単価":tellBill,
+                                          "数量":1,
+                                          "利用対象期間_from":moment(ymd2).startOf('month').format("YYYY-MM-DD"),
+                                          "利用対象期間_to":moment(ymd2).endOf('month').format("YYYY-MM-DD")
+                                        };
+                                        tbl.push({
+                                          'value': getRowObject(resp, setFields)
+                                        });
+                             tellBill=0;
+                           }
+                           ymd2=recordT['請求対象月'].value;
+                           mm2=moment(ymd2).month()+1;
+                        }
                         tellBill += Number(recordT['通話料'].value);
                       }
                       if (tellBill !== 0) {
                         setFields = {
                           '種別': 'オプション',
-                          'プラン・オプション': '通話料',
+                          'プラン・オプション': '通話料（' + mm2 + '月分）',
                           '単価': tellBill,
                           '数量': 1,
-                          '利用対象期間_from':moment(invoicedt).add(-6, 'month').startOf('month').format("YYYY-MM-DD"),
-                          '利用対象期間_to':moment(invoicedt).add(-1, 'month').endOf('month').format("YYYY-MM-DD")
+                          '利用対象期間_from':moment(ymd2).startOf('month').format("YYYY-MM-DD"),
+                          '利用対象期間_to':moment(ymd2).endOf('month').format("YYYY-MM-DD")
                         };
                         tbl.push({
                           'value': getRowObject(resp, setFields)
@@ -440,7 +465,7 @@ jQuery.noConflict();
                 } else {
                   if (moment(invoicedt).month() % 2 != 0) {
                     var tellNo = tableList['契約番号'].value;
-                    var query = '契約電話番号 = "' + tellNo + '" and 請求対象月 >= "' + staTelDay + '" and 請求対象月 <= "' + finTelDay + '"';
+                    var query = '契約電話番号 = "' + tellNo + '" and 請求対象月 >= "' + staTelDay + '" and 請求対象月 <= "' + finTelDay + '" order by 請求対象月';
                     var paramTell = {
                         'app': APP_TELLBILL,
                         'query': query
@@ -448,18 +473,43 @@ jQuery.noConflict();
                     var respT =await kintone.api(kintone.api.url('/k/v1/records', true), 'GET', paramTell)
                       var recordsT = respT.records;
                       var tellBill = 0;
+                      var ymd;
+                      var ymd2;
+                      var mm;
+                      var mm2;
                       for (var k = 0, l = recordsT.length; k < l; k++) {
                         var recordT = recordsT[k];
+                        ymd=recordT['請求対象月'].value;
+                        mm=moment(ymd).month()+1;
+                        if(mm != mm2 ){
+                          if(tellBill !=0){
+                            //請求明細
+                            setFields = {
+                                          "種別":"オプション",
+                                          "プラン・オプション":'通話料（' + mm2 + '月分）',
+                                          "単価":tellBill,
+                                          "数量":1,
+                                          "利用対象期間_from":moment(ymd2).startOf('month').format("YYYY-MM-DD"),
+                                          "利用対象期間_to":moment(ymd2).endOf('month').format("YYYY-MM-DD")
+                                        };
+                                        tbl.push({
+                                          'value': getRowObject(resp, setFields)
+                                        });
+                             tellBill=0;
+                           }
+                           ymd2=recordT['請求対象月'].value;
+                           mm2=moment(ymd2).month()+1;
+                        }
                         tellBill += Number(recordT['通話料'].value);
                       }
                       if (tellBill !== 0) {
                         setFields = {
                           '種別': 'オプション',
-                          'プラン・オプション': '通話料',
+                          'プラン・オプション': '通話料（' + mm2 + '月分）',
                           '単価': tellBill,
                           '数量': 1,
-                          '利用対象期間_from':moment(invoicedt).add(-2, 'month').startOf('month').format("YYYY-MM-DD"),
-                          '利用対象期間_to':moment(invoicedt).add(-1, 'month').endOf('month').format("YYYY-MM-DD")
+                          '利用対象期間_from':moment(ymd2).startOf('month').format("YYYY-MM-DD"),
+                          '利用対象期間_to':moment(ymd2).endOf('month').format("YYYY-MM-DD")
                         };
                         tbl.push({
                           'value': getRowObject(resp, setFields)
@@ -510,8 +560,8 @@ jQuery.noConflict();
   //商品リスト表示
   kintone.events.on(showEvents2, function(e) {
 
-    var APP_ITEM = 17;
-    //var APP_ITEM = 458;
+    //var APP_ITEM = 17;
+    var APP_ITEM = 458;
     var spc = kintone.app.record.getSpaceElement('itemlist');
     var body = {
       'app': APP_ITEM,

@@ -25,11 +25,11 @@
       }
       showSpinner(); // スピナー表示
       //アプリID本番用
-      var APP_ID = 83;
-      var APP_SALES_ID = 82;
+      //var APP_ID = 83;
+      //var APP_SALES_ID = 82;
       //アプリID
-      //var APP_ID = 445;   //日報
-      //var APP_SALES_ID = 446;
+      var APP_ID = 445;   //日報
+      var APP_SALES_ID = 446;
 
 
       //カレンダーの年月を取得

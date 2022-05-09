@@ -15,16 +15,16 @@
   $(document).on('click', '#bulk_button', async (ev) => {
     try {
     //本番
-    var APP_ID = 80;   //会員顧客名簿
-    var APP_INVOICE_ID = 74;//請求登録
-    var APP_CONSTLIST = 79;
-    var APP_SALES_ID = 82;
-    var APP_CALL = 81;
-    //var APP_ID = 447;   //会員顧客名簿
-    //var APP_INVOICE_ID = 449;   //請求登録
-    //var APP_CONSTLIST = 448;   //入金管理
-    //var APP_SALES_ID = 446;
-    //var APP_CALL = 461;
+    //var APP_ID = 80;   //会員顧客名簿
+    //var APP_INVOICE_ID = 74;//請求登録
+    //var APP_CONSTLIST = 79;
+    //var APP_SALES_ID = 82;
+    //var APP_CALL = 81;
+    var APP_ID = 447;   //会員顧客名簿
+    var APP_INVOICE_ID = 449;   //請求登録
+    var APP_CONSTLIST = 448;   //入金管理
+    var APP_SALES_ID = 446;
+    var APP_CALL = 461;
     var TAX=10;
     var proc='';
     var dt =document.getElementById('date') ;
@@ -522,18 +522,68 @@
 
                   var body = {
                     'app': APP_CALL,
-                    'query': '契約電話番号 = "' + tellNo + '" and 請求対象月 >= "' + stateldt + '" and 請求対象月 <= "' + prevenddt + '"'
+                    'query': '契約電話番号 = "' + tellNo + '" and 請求対象月 >= "' + stateldt + '" and 請求対象月 <= "' + prevenddt + '" order by 請求対象月'
                   };
                   //データ取得
                   const resp3= await  kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', body);
                   var rec3=resp3.records;
                   var k;
+                  var ymd;
+                  var ymd2;
+                  var mm;
+                  var mm2;
                   var bill=0;
                   for ( k = 0 ; k < rec3.length ; k++){
                       var subrec3 = rec3[k];
+                      ymd=subrec3['請求対象月'].value;
+                      mm=moment(ymd).month()+1;
+                      if(mm != mm2 ){
+                        if(bill !=0){
+                          //請求明細
+                          insbody.record.請求明細.value.push({
+                                            "value":{
+                                              "種別":{
+                                                "value":"オプション"
+                                              },
+                                              "プラン・オプション":{
+                                                "value":'通話料（' + mm2 + '月分）'
+                                              },
+                                              "単価":{
+                                                "value":bill
+                                              },
+                                              "数量":{
+                                                "value":1
+                                              },
+                                                "利用対象期間_from":{
+                                                  "value":moment(ymd2).startOf('month').format("YYYY-MM-DD")
+                                              },
+                                                "利用対象期間_to":{
+                                                  "value":moment(ymd2).endOf('month').format("YYYY-MM-DD")
+                                              }
+                                            }
+                                          });
+                            //売上明細用
+                            insbody2.record.売上明細.value.push({
+                                            "value":{
+                                              "請求対象月":{
+                                                "value": moment(invoicedt).add(1, 'month').endOf('month').format("YYYY-MM-DD")
+                                              },
+                                              "項目":{
+                                                "value":'通話料（' + mm2 + '月分）'
+                                              },
+                                              "金額":{
+                                                "value":parseInt(parseInt(bill) * (1+parseInt(TAX)/100))
+                                              }
+                                            }
+                                          });
+                           total += Number(parseInt(parseInt(bill) * (1+parseInt(TAX)/100)));
+                           bill=0;
+                         }
+                         ymd2=subrec3['請求対象月'].value;
+                         mm2=moment(ymd2).month()+1;
+                      }
                       bill += Number(subrec3['通話料'].value);
                   }
-
                   //0円以上
                   if(bill !=0){
                       //請求明細
@@ -543,7 +593,7 @@
                                             "value":"オプション"
                                           },
                                           "プラン・オプション":{
-                                            "value":'通話料'
+                                            "value":'通話料（' + mm2 + '月分）'
                                           },
                                           "単価":{
                                             "value":bill
@@ -552,38 +602,29 @@
                                             "value":1
                                           },
                                             "利用対象期間_from":{
-                                              "value":moment(invoicedt).add(-max, 'month').startOf('month').format("YYYY-MM-DD")
+                                              "value":moment(ymd2).startOf('month').format("YYYY-MM-DD")
                                           },
                                             "利用対象期間_to":{
-                                              "value":moment(invoicedt).add(-1, 'month').endOf('month').format("YYYY-MM-DD")
+                                              "value":moment(ymd2).endOf('month').format("YYYY-MM-DD")
                                           }
                                         }
                                       });
-                       total += Number(bill);
+                        //売上明細用
+                        insbody2.record.売上明細.value.push({
+                                        "value":{
+                                          "請求対象月":{
+                                            "value": moment(invoicedt).add(1, 'month').endOf('month').format("YYYY-MM-DD")
+                                          },
+                                          "項目":{
+                                            "value":'通話料（' + mm2 + '月分）'
+                                          },
+                                          "金額":{
+                                            "value":parseInt(parseInt(bill) * (1+parseInt(TAX)/100))
+                                          }
+                                        }
+                                      });
+                       total += parseInt(parseInt(bill) * (1+parseInt(TAX)/100));
 
-                       var subbill=0;
-                       var subtotal=0;
-                       for( k=1;k<=max;k++){
-                         subbill=Math.round(parseInt(bill * (1+parseInt(TAX)/100))/max);
-                         subtotal+=subbill;
-                         if(k==max){
-                           subbill+=parseInt(bill * (1+parseInt(TAX)/100))-subtotal;
-                         }
-                         //売上明細用
-                         insbody2.record.売上明細.value.push({
-                                         "value":{
-                                           "請求対象月":{
-                                             "value": moment(invoicedt).add(-k, 'month').endOf('month').format("YYYY-MM-DD")
-                                           },
-                                           "項目":{
-                                             "value":'通話料'
-                                           },
-                                           "金額":{
-                                             "value":subbill
-                                           }
-                                         }
-                                       });
-                        }
 
                     }
                   }

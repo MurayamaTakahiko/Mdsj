@@ -54,8 +54,8 @@ jQuery.noConflict();
         'query': query
     };
     // 入金管理アプリID
-    var APP_CONSTLIST = 79;
-    //var APP_CONSTLIST = 448;
+    //var APP_CONSTLIST = 79;
+    var APP_CONSTLIST = 448;
     var billNum = record['請求番号'].value;
     var billCD = custCd;
     var billCstName = custName;
@@ -86,8 +86,8 @@ jQuery.noConflict();
         }
       };
       // 売上管理アプリID
-      var APP_OTHERBILL = 82;
-      //var APP_OTHERBILL = 446;
+      //var APP_OTHERBILL = 82;
+      var APP_OTHERBILL = 446;
       var paramList = [];
       var virtualFlg = false;
       //売上登録用
@@ -125,29 +125,47 @@ jQuery.noConflict();
         //金額
         var subbill=0;
         var subtotal=0;
-
-        for(var j=0;j<max;j++){
-          subbill=Math.round(parseInt(billList['小計']['value'])/max);
-          subtotal+=subbill;
-          if(j==(max-1)){
-            subbill+=parseInt(billList['小計']['value'])-subtotal;
-          }
+        if(billList['プラン・オプション']['value'].substr(0,3)=="通話料"){
           //売上明細用
           insbody.売上明細.value.push({
                           "value":{
                             "請求対象月":{
-                              "value":moment(fromdt).add(j, 'month').endOf('month').format("YYYY-MM-DD")
+                              "value":moment(nextenddt).endOf('month').format("YYYY-MM-DD")
                             },
                             "項目":{
                               "value":billList['プラン・オプション']['value']
                             },
                             "金額":{
-                              "value":subbill
+                              "value":billList['小計']['value']
                             }
                           }
                         });
-                      }
+        }else{
+          for(var j=0;j<max;j++){
+            subbill=Math.round(parseInt(billList['小計']['value'])/max);
+            subtotal+=subbill;
+            if(j==(max-1)){
+              subbill+=parseInt(billList['小計']['value'])-subtotal;
+            }
+            //売上明細用
+            insbody.売上明細.value.push({
+                            "value":{
+                              "請求対象月":{
+                                "value":moment(fromdt).add(j, 'month').endOf('month').format("YYYY-MM-DD")
+                              },
+                              "項目":{
+                                "value":billList['プラン・オプション']['value']
+                              },
+                              "金額":{
+                                "value":subbill
+                              }
+                            }
+                          });
+                        }
         }
+
+
+      }
         paramList.push(insbody);
         console.log(paramList);
       var paramBulk = {

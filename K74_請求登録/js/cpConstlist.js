@@ -102,6 +102,14 @@ jQuery.noConflict();
     return e;
   });
 
+  //取得ID変更時
+  kintone.e
+  vents.on('app.record.edit.change.取得ID取得ID変更時',function(){
+  //処理
+  
+  });
+
+
   //「明細取得ボタン」クリックイベント
   $(document).on('click', '#emxas-button-schedule', function(ev) {
     // 契約顧客アプリID

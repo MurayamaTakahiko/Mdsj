@@ -103,13 +103,63 @@ jQuery.noConflict();
   });
 
   //取得ID変更時
-  kintone.e
-  vents.on('app.record.edit.change.取得ID取得ID変更時',function(){
+  var showEvents3=[
+    'app.record.edit.change.取得ID',
+    'app.record.create.change.取得ID'
+  ];
+  kintone.events.on(showEvents3,  function(event) {
+    staDay = moment().format("YYYY-MM-DD");
+    var billDay = "";
   //処理
-  
+  var APP_CONSTLIST = 447;
+  var record=event.record;
+  var custCd = record.取得ID.value;
+  var param = {
+    app: APP_CONSTLIST,
+    query: "レコード番号 = \"" + custCd + "\" and " +
+      "オプション利用開始日 <= \"" + staDay + "\" and " +
+      "退会日 = \"" + billDay + "\" " +
+      "order by レコード番号 desc"
+  };
+    //return kintoneUtility.rest.getAllRecordsByQuery(param).then(function(resp) {
+    kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', param, function(resp) {
+      var setFields = {};
+      var tbl = [];
+      var j=0;
+        var records = resp.records;
+        if (records.length != 0) {
+          for(var i=0;i<records.length;i++){
+            for (var pTbl = 0; pTbl < records[i]['オプション利用']['value'].length; pTbl++) {
+              var planList = records[i]['オプション利用'].value[pTbl].value;
+                if(planList['契約番号'].value != ''){
+                  tbl.push({
+                        value:{
+                          "契約電話番号": {
+                            type:"SINGLE_LINE_TEXT",
+                            value: planList['契約番号'].value
+                          }
+                        }
+                      });
+
+                }
+            }
+          }
+        }else{
+          tbl.push({
+                value:{
+                  "契約電話番号": {
+                    type:"SINGLE_LINE_TEXT",
+                    value: undefined
+                  }
+                }
+              });
+
+        }
+        record.テーブル.value=tbl;
+        //resetRowNo(record);
+        kintone.app.record.set({record: record});
+      });
   });
-
-
   //「明細取得ボタン」クリックイベント
   $(document).on('click', '#emxas-button-schedule', function(ev) {
     // 契約顧客アプリID

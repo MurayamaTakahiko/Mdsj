@@ -143,8 +143,14 @@
                       "税率":{
                         "value":TAX
                       },
+                      "取得ID":{
+                        "value":rec[i]['レコード番号'].value
+                      },
                       "請求明細":{
                         "value":[]
+                     },
+                     "テーブル":{
+                       "value":[]
                     }
                   }
                 };
@@ -494,7 +500,13 @@
           if(subrec[j]['value']['オプション利用開始日'].value <= nextenddt &&
              (subrec[j]['value']['オプション利用終了日'].value == null || subrec[j]['value']['オプション利用終了日'].value >= nextstartdt) &&
               subrec[j]['value']['契約番号'].value != "" ){
-
+                insbody.record.テーブル.value.push({
+                                "value":{
+                                  "契約電話番号":{
+                                    "value":subrec[j]['value']['契約番号'].value
+                                  }
+                                }
+                              });
                 var targetflg=false;
                 //作成対象
                 if(virtualflg){

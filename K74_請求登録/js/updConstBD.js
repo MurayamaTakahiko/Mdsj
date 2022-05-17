@@ -54,8 +54,8 @@ jQuery.noConflict();
         'query': query
     };
     // 入金管理アプリID
-    //var APP_CONSTLIST = 79;
-    var APP_CONSTLIST = 448;
+    var APP_CONSTLIST = 79;
+    //var APP_CONSTLIST = 448;
     var billNum = record['請求番号'].value;
     var billCD = custCd;
     var billCstName = custName;
@@ -86,8 +86,8 @@ jQuery.noConflict();
         }
       };
       // 売上管理アプリID
-      //var APP_OTHERBILL = 82;
-      var APP_OTHERBILL = 446;
+      var APP_OTHERBILL = 82;
+      //var APP_OTHERBILL = 446;
       var paramList = [];
       var virtualFlg = false;
       //売上登録用

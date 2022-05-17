@@ -15,18 +15,19 @@
   $(document).on('click', '#bulk_button', async (ev) => {
     try {
     //本番
-    //var APP_ID = 80;   //会員顧客名簿
-    //var APP_INVOICE_ID = 74;//請求登録
-    //var APP_CONSTLIST = 79;
-    //var APP_SALES_ID = 82;
-    //var APP_CALL = 81;
-    var APP_ID = 447;   //会員顧客名簿
-    var APP_INVOICE_ID = 449;   //請求登録
-    var APP_CONSTLIST = 448;   //入金管理
-    var APP_SALES_ID = 446;
-    var APP_CALL = 461;
+    var APP_ID = 80;   //会員顧客名簿
+    var APP_INVOICE_ID = 74;//請求登録
+    var APP_CONSTLIST = 79;
+    var APP_SALES_ID = 82;
+    var APP_CALL = 81;
+    //var APP_ID = 447;   //会員顧客名簿
+    //var APP_INVOICE_ID = 449;   //請求登録
+    //var APP_CONSTLIST = 448;   //入金管理
+    //var APP_SALES_ID = 446;
+    //var APP_CALL = 461;
     var TAX=10;
     var proc='';
+    var count=0;
     var dt =document.getElementById('date') ;
     if(isDate(dt.value,"-")==false){
       alert('請求日が正しくありません。');
@@ -71,14 +72,18 @@
     var body = {
       'app': kintone.app.getId(),
       'query': 'チェックボックス in  ("請求代表") and 入会日_0 <="' + enddt  + '" and  ' +
-               '(前回請求日 = "" or 前回請求日 <= "' + prevenddt + '" ) and (退会日 = "" or 退会日 >= "' + nextstartdt + '")  order by レコード番号 '
+               '(前回請求日 = "" or 前回請求日 <= "' + prevenddt + '" ) and (退会日 = "" or 退会日 >= "' + nextstartdt + '")  order by レコード番号 limit 500'
     };
-    //指定年月の日報データを取得
+    //指定年月のデータを取得
     const resp = await kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', body);
       var rec=resp.records;
       var i,j;
       for ( i = 0 ; i < rec.length ; i++){
         total=0;
+        //100件で終了
+        if(count>=100){
+          break;
+        }
         //新規採番
         var mindt=moment(invoicedt).startOf('month').format();
         var maxdt=moment(invoicedt).endOf('month').format();
@@ -644,6 +649,8 @@
             }
 
           if (insbody.record.請求明細.value.length>0){
+            //カウントアップ
+            count+=1;
             //請求登録
             await kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', insbody);
               //売上登録

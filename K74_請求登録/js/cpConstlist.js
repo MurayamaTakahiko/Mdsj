@@ -299,6 +299,7 @@ jQuery.noConflict();
   $(document).on('click', '.emxas-button-dialog-ok', async (ev) => {
   try {
     var tbl = [];
+    var nextinvoicedt;
     //画面の請求明細サブテーブルに既存行がある場合、退避
     for (var iTbl = 0; iTbl < objRecord['record']['請求明細']['value'].length; iTbl++) {
       //空行はつめる
@@ -348,6 +349,9 @@ jQuery.noConflict();
                       '利用対象期間_from':moment(nextinvoicedt).add(-(max-1), 'month').endOf('month').format("YYYY-MM-DD"),
                       '利用対象期間_to':moment(nextinvoicedt).endOf('month').format("YYYY-MM-DD")
                     };
+                    tbl.push({
+                      'value' : getRowObject(resp, setFields)
+                    });
                   }
                   if (moment(staDay).month() == 3 || moment(staDay).month() == 9) {
                     //プラン終了日が6か月以前の場合
@@ -414,6 +418,9 @@ jQuery.noConflict();
                       '利用対象期間_from':moment(nextinvoicedt).add(-(max-1), 'month').endOf('month').format("YYYY-MM-DD"),
                       '利用対象期間_to':moment(nextinvoicedt).endOf('month').format("YYYY-MM-DD")
                     };
+                    tbl.push({
+                      'value' : getRowObject(resp, setFields)
+                    });
                   }
 
                   if (moment(staDay).month() == 3 || moment(staDay).month() == 9) {

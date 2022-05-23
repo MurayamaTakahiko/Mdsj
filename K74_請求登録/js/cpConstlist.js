@@ -111,8 +111,8 @@ jQuery.noConflict();
     staDay = moment().format("YYYY-MM-DD");
     var billDay = "";
   //処理
-  var APP_CONSTLIST = 80;
-  //var APP_CONSTLIST = 447;
+  //var APP_CONSTLIST = 80;
+  var APP_CONSTLIST = 447;
   var record=event.record;
   var custCd = record.取得ID.value;
   var param = {
@@ -164,8 +164,8 @@ jQuery.noConflict();
   //「明細取得ボタン」クリックイベント
   $(document).on('click', '#emxas-button-schedule', function(ev) {
     // 契約顧客アプリID
-    var APP_CONSTLIST = 80;
-    //var APP_CONSTLIST = 447;
+    //var APP_CONSTLIST = 80;
+    var APP_CONSTLIST = 447;
     objRecord = kintone.app.record.get();
     var record = objRecord['record'];
     invoicedt=record['請求日'].value;
@@ -392,8 +392,8 @@ jQuery.noConflict();
 
           // オプション明細をセット
           // 通話料明細アプリID
-          var APP_TELLBILL = 81;
-          //ar APP_TELLBILL = 461;
+          //var APP_TELLBILL = 81;
+          var APP_TELLBILL = 461;
           for (var j = 0; j < record['オプション利用'].value.length; j++) {
             var tableList = record['オプション利用'].value[j].value;
             // 利用期間内のオプションのみ
@@ -626,8 +626,8 @@ jQuery.noConflict();
   //商品リスト表示
   kintone.events.on(showEvents2, function(e) {
 
-    var APP_ITEM = 17;
-    //var APP_ITEM = 458;
+    //var APP_ITEM = 17;
+    var APP_ITEM = 458;
     var spc = kintone.app.record.getSpaceElement('itemlist');
     var body = {
       'app': APP_ITEM,

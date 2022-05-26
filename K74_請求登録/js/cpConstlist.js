@@ -29,11 +29,6 @@ jQuery.noConflict();
   //画面のレコード
   var objRecord;
   // プラン利用開始日・終了日
-  // var staDay = moment().add(1, 'month').endOf('month').format("YYYY-MM-DD");
-  // var finDay = moment().add(1, 'month').startOf('month').format("YYYY-MM-DD");
-  // // 通話明細開始日・終了日
-  // var staTelDay = moment().add(-2, 'month').startOf('month').format("YYYY-MM-DD");
-  // var finTelDay = moment().add(-1, 'month').endOf('month').format("YYYY-MM-DD");
   var staDay ;
   var finDay ;
   var stateldt6;
@@ -46,6 +41,8 @@ jQuery.noConflict();
   var max;
   var invoicedt;
   var optenddt;
+  var virtualdt;
+  var firstdt;
   // ロケールを設定
   moment.locale('ja');
 
@@ -111,8 +108,8 @@ jQuery.noConflict();
     staDay = moment().format("YYYY-MM-DD");
     var billDay = "";
   //処理
-  //var APP_CONSTLIST = 80;
-  var APP_CONSTLIST = 447;
+  var APP_CONSTLIST = 80;
+  //var APP_CONSTLIST = 447;
   var record=event.record;
   var custCd = record.取得ID.value;
   var param = {
@@ -164,8 +161,8 @@ jQuery.noConflict();
   //「明細取得ボタン」クリックイベント
   $(document).on('click', '#emxas-button-schedule', function(ev) {
     // 契約顧客アプリID
-    //var APP_CONSTLIST = 80;
-    var APP_CONSTLIST = 447;
+    var APP_CONSTLIST = 80;
+    //var APP_CONSTLIST = 447;
     objRecord = kintone.app.record.get();
     var record = objRecord['record'];
     invoicedt=record['請求日'].value;
@@ -205,7 +202,7 @@ jQuery.noConflict();
       var param = {
         app: APP_CONSTLIST,
         query: "レコード番号 = \"" + custCd + "\" and " +
-          "オプション利用開始日 <= \"" + staDay + "\" and " +
+  //        "オプション利用開始日 <= \"" + staDay + "\" and " +
           "退会日 = \"" + billDay + "\" " +
           "order by レコード番号 desc"
       };
@@ -235,7 +232,7 @@ jQuery.noConflict();
       var param = {
         app: APP_CONSTLIST,
         query: "所属・会社名１ = \"" + custCd + "\" and " +
-          "オプション利用開始日 <= \"" + staDay + "\" and " +
+    //      "オプション利用開始日 <= \"" + staDay + "\" and " +
           "退会日 = \"" + billDay + "\" " +
           "order by レコード番号 desc"
       };
@@ -264,7 +261,7 @@ jQuery.noConflict();
       var param = {
         app: APP_CONSTLIST,
         query: "顧客名 = \"" + custCd + "\" and " +
-          "オプション利用開始日 <= \"" + staDay + "\" and " +
+  //        "オプション利用開始日 <= \"" + staDay + "\" and " +
           "退会日 = \"" + billDay + "\" " +
           "order by レコード番号 desc"
       };
@@ -322,6 +319,7 @@ jQuery.noConflict();
           var record = constlist[i];
           var setFields = {};
           var virtualFlg = false;
+          var firstFlg=false;
           // プラン分をまずセット
           for (var pTbl = 0; pTbl < record['プランリスト']['value'].length; pTbl++) {
             var planList = record['プランリスト'].value[pTbl].value;
@@ -331,69 +329,116 @@ jQuery.noConflict();
                 // バーチャルプランのみ半年請求
                 if (planList['プラン種別']['value'] === "バーチャル") {
                   virtualFlg = true;
-                  //プラン利用開始日が６か月以前で過去請求していない場合
-                  if(stateldt6<=planList['プラン利用開始日']['value'] && record['前回請求日'].value == null){
-                    //プラン利用開始から次回請求までの分を請求
-                    for(let k=0;k<6;k++){
-                      nextinvoicedt=moment(planList['プラン利用開始日'].value).add(k, 'M').format();
-                      if(moment(nextinvoicedt).month()==2 || moment(nextinvoicedt).month()==8){
-                        max=moment(nextinvoicedt).diff(planList['プラン利用開始日'].value,'months')+1;
+                  virtualdt=planList['プラン利用開始日']['value'];
+                  //初回請求（入会日の月＝請求日かつ前回請求日なし）
+                  if(moment(record['入会日'].value).format('YYYYMM') == moment(invoicedt).format('YYYYMM') && record['前回請求日'].value == null){
+                    firstFlg=true;
+                    //請求日の年、月
+                    var year=moment(invoicedt).get('year');
+                    var month=moment(invoicedt).get('month');
+                    //請求日の月が4～9月の場合、その年の９月まで、
+                    //請求日の月が10～翌3月の場合、翌年の3月まで、
+                    switch(month)
+                    {
+                      case 3:
+                      case 4:
+                      case 5:
+                      case 6:
+                      case 7:
+                        nextinvoicedt=moment({year:year,month:8}).startOf('month').format("YYYY-MM-DD");
                         break;
-                      }
+                      case 8:
+                      case 9:
+                      case 10:
+                      case 11:
+                        nextinvoicedt=moment({year:year+1,month:2}).startOf('month').format("YYYY-MM-DD");
+                        break;
+                      case 0:
+                      case 1:
+                        nextinvoicedt=moment({year:year,month:2}).startOf('month').format("YYYY-MM-DD");
+                      case 2:
+                        nextinvoicedt=moment({year:year,month:8}).startOf('month').format("YYYY-MM-DD");
+                        break;
                     }
-                    setFields = {
-                      '種別': planList['プラン種別']['value'],
-                      'プラン・オプション': planList['プラン']['value'],
-                      '単価': planList['プラン料金']['value'] * max,
-                      '数量': 1,
-                      '利用対象期間_from':moment(nextinvoicedt).add(-(max-1), 'month').endOf('month').format("YYYY-MM-DD"),
-                      '利用対象期間_to':moment(nextinvoicedt).endOf('month').format("YYYY-MM-DD")
-                    };
-                    tbl.push({
-                      'value' : getRowObject(resp, setFields)
-                    });
-                  }
-                  if (moment(staDay).month() == 3 || moment(staDay).month() == 9) {
-                    //プラン終了日が6か月以前の場合
-                    if(planList['プラン利用終了日'].value != null && enddt6>=planList['プラン利用終了日'].value){
-                      planenddt=moment(planList['プラン利用終了日'].value).endOf('month').format();
-                      max=moment(planenddt).diff(finDay,'months')+1;
-                    }else{
-                      max=6
+                    if(nextinvoicedt>=moment(planList['プラン利用終了日'].value).startOf('month').format("YYYY-MM-DD")){
+                      nextinvoicedt=moment(planList['プラン利用終了日'].value).startOf('month').format("YYYY-MM-DD");
                     }
+                    //プラン利用開始から次回請求までの分を請求
+                    max=moment(nextinvoicedt).diff(moment(planList['プラン利用開始日'].value).startOf('month').format("YYYY-MM-DD"),'months');
+                    if(max>=0){
                       setFields = {
                         '種別': planList['プラン種別']['value'],
                         'プラン・オプション': planList['プラン']['value'],
-                        '単価': planList['プラン料金']['value'] * max,
+                        '単価': planList['プラン料金']['value'] * (max+1),
                         '数量': 1,
-                        '利用対象期間_from':moment(staDay).startOf('month').format("YYYY-MM-DD"),
-                        '利用対象期間_to':moment(staDay).add(max-1, 'month').endOf('month').format("YYYY-MM-DD")
+                        '利用対象期間_from':moment(planList['プラン利用開始日']['value']).startOf('month').format("YYYY-MM-DD"),
+                        '利用対象期間_to':moment(nextinvoicedt).endOf('month').format("YYYY-MM-DD")
                       };
-                    // }
-                    tbl.push({
-                      'value' : getRowObject(resp, setFields)
-                    });
+                      tbl.push({
+                        'value' : getRowObject(resp, setFields)
+                      });
+                    }
+                  }else if (moment(staDay).month() == 3 || moment(staDay).month() == 9){
+                      //プラン終了日が6か月以前の場合
+                      if(planList['プラン利用終了日'].value != null && enddt6>=planList['プラン利用終了日'].value){
+                        planenddt=moment(planList['プラン利用終了日'].value).endOf('month').format();
+                        max=moment(planenddt).diff(finDay,'months')+1;
+                      }else{
+                        max=6
+                      }
+                        setFields = {
+                          '種別': planList['プラン種別']['value'],
+                          'プラン・オプション': planList['プラン']['value'],
+                          '単価': planList['プラン料金']['value'] * max,
+                          '数量': 1,
+                          '利用対象期間_from':moment(staDay).startOf('month').format("YYYY-MM-DD"),
+                          '利用対象期間_to':moment(staDay).add(max-1, 'month').endOf('month').format("YYYY-MM-DD")
+                        };
+                      // }
+                      tbl.push({
+                        'value' : getRowObject(resp, setFields)
+                      });
                   }
                 } else {
-                  setFields = {
-                    '種別': planList['プラン種別']['value'],
-                    'プラン・オプション': planList['プラン']['value'],
-                    '単価': planList['プラン料金']['value'],
-                    '数量': 1,
-                    '利用対象期間_from':moment(staDay).startOf('month').format("YYYY-MM-DD"),
-                    '利用対象期間_to':moment(staDay).endOf('month').format("YYYY-MM-DD")
-                  };
-                  tbl.push({
-                    'value' : getRowObject(resp, setFields)
-                  });
+                  //初回請求（入会日の月＝請求日かつ前回請求日なし）
+                  if(moment(record['入会日'].value).format('YYYYMM') == moment(invoicedt).format('YYYYMM') && record['前回請求日'].value == null){
+                     firstFlg=true;
+                      nextinvoicedt=finDay;
+                      //プラン利用開始から次回請求までの分を請求
+                      max=moment(nextinvoicedt).diff(moment(planList['プラン利用開始日'].value).startOf('month').format("YYYY-MM-DD"),'months');
+                      if(max>=0){
+                        setFields = {
+                          '種別': planList['プラン種別']['value'],
+                          'プラン・オプション': planList['プラン']['value'],
+                          '単価': planList['プラン料金']['value'] * (max+1),
+                          '数量': 1,
+                          '利用対象期間_from':moment(planList['プラン利用開始日']['value']).startOf('month').format("YYYY-MM-DD"),
+                          '利用対象期間_to':moment(nextinvoicedt).endOf('month').format("YYYY-MM-DD")
+                        };
+                        tbl.push({
+                          'value' : getRowObject(resp, setFields)
+                        });
+                      }
+                    }else{
+                      setFields = {
+                        '種別': planList['プラン種別']['value'],
+                        'プラン・オプション': planList['プラン']['value'],
+                        '単価': planList['プラン料金']['value'],
+                        '数量': 1,
+                        '利用対象期間_from':moment(staDay).startOf('month').format("YYYY-MM-DD"),
+                        '利用対象期間_to':moment(staDay).endOf('month').format("YYYY-MM-DD")
+                      };
+                      tbl.push({
+                        'value' : getRowObject(resp, setFields)
+                      });
                 }
             }
           }
-
+        }
           // オプション明細をセット
           // 通話料明細アプリID
-          //var APP_TELLBILL = 81;
-          var APP_TELLBILL = 461;
+          var APP_TELLBILL = 81;
+          //var APP_TELLBILL = 461;
           for (var j = 0; j < record['オプション利用'].value.length; j++) {
             var tableList = record['オプション利用'].value[j].value;
             // 利用期間内のオプションのみ
@@ -401,29 +446,61 @@ jQuery.noConflict();
               && (!tableList['オプション利用終了日']['value'] || tableList['オプション利用終了日']['value'] >= finDay) && tableList['オプション合計料金'].value != "0") {
                 // バーチャルプランのみ半年請求
                 if (virtualFlg) {
-                  if(stateldt6<=tableList['オプション利用開始日']['value'] && record['前回請求日'].value == null){
-                    //プラン利用開始から次回請求までの分を請求
-                    for(let k=0;k<6;k++){
-                      nextinvoicedt=moment(tableList['オプション利用開始日'].value).add(k, 'M').format();
-                      if(moment(nextinvoicedt).month()==2 || moment(nextinvoicedt).month()==8){
-                        max=moment(nextinvoicedt).diff(tableList['オプション利用開始日'].value,'months')+1;
+                  //初回請求（入会日の月＝請求日かつ前回請求日なし）
+                  if(moment(record['入会日'].value).format('YYYYMM') == moment(invoicedt).format('YYYYMM') && record['前回請求日'].value == null){
+                    firstFlg=true;
+                    //請求日の年、月
+                    var year=moment(invoicedt).get('year');
+                    var month=moment(invoicedt).get('month');
+                    //請求日の月が4～9月の場合、その年の９月まで、
+                    //請求日の月が10～翌3月の場合、翌年の3月まで、
+                    switch(month)
+                    {
+                      case 3:
+                      case 4:
+                      case 5:
+                      case 6:
+                      case 7:
+                        nextinvoicedt=moment({year:year,month:8}).startOf('month').format("YYYY-MM-DD");
                         break;
-                      }
+                      case 8:
+                      case 9:
+                      case 10:
+                      case 11:
+                        nextinvoicedt=moment({year:year+1,month:2}).startOf('month').format("YYYY-MM-DD");
+                        break;
+                      case 0:
+                      case 1:
+                        nextinvoicedt=moment({year:year,month:2}).startOf('month').format("YYYY-MM-DD");
+                      case 2:
+                        nextinvoicedt=moment({year:year,month:8}).startOf('month').format("YYYY-MM-DD");
+                        break;
                     }
-                    setFields = {
-                      '種別': 'オプション',
-                      'プラン・オプション': tableList['オプション']['value'],
-                      '単価': tableList['オプション単価']['value'] * max,
-                      '数量': 1,
-                      '利用対象期間_from':moment(nextinvoicedt).add(-(max-1), 'month').endOf('month').format("YYYY-MM-DD"),
-                      '利用対象期間_to':moment(nextinvoicedt).endOf('month').format("YYYY-MM-DD")
-                    };
-                    tbl.push({
-                      'value' : getRowObject(resp, setFields)
-                    });
-                  }
 
-                  if (moment(staDay).month() == 3 || moment(staDay).month() == 9) {
+                    if(moment(nextinvoicedt).startOf('month').format("YYYY-MM-DD")>=moment(tableList['オプション利用終了日'].value).startOf('month').format("YYYY-MM-DD")){
+                      nextinvoicedt=moment(tableList['オプション利用終了日'].value).startOf('month').format("YYYY-MM-DD");
+                    }
+                    firstdt=moment(tableList['オプション利用開始日']['value']).startOf('month').format("YYYY-MM-DD");
+                    if(virtualdt>=moment(tableList['オプション利用開始日']['value']).startOf('month').format("YYYY-MM-DD")){
+                      firstdt= virtualdt;
+                    }
+                    //オプション利用開始から次回請求までの分を請求
+                    max=moment(nextinvoicedt).diff(moment(firstdt).startOf('month').format("YYYY-MM-DD"),'months');
+                    if(max>=0){
+                      setFields = {
+                        '種別': 'オプション',
+                        'プラン・オプション': tableList['オプション']['value'],
+                        '単価': tableList['オプション単価']['value'] * (max+1),
+                        '数量': 1,
+                        '利用対象期間_from':moment(firstdt).startOf('month').format("YYYY-MM-DD"),
+                        '利用対象期間_to':moment(nextinvoicedt).endOf('month').format("YYYY-MM-DD")
+                      };
+                      tbl.push({
+                        'value' : getRowObject(resp, setFields)
+                      });
+                    }
+
+                  }else if (moment(staDay).month() == 3 || moment(staDay).month() == 9) {
                     //プラン終了日が6か月以前の場合
                     if(
                        (tableList['オプション利用終了日'].value != null &&
@@ -456,22 +533,43 @@ jQuery.noConflict();
                     });
                   }
                 } else {
-                  setFields = {
-                    '種別': 'オプション',
-                    'プラン・オプション': tableList['オプション']['value'],
-                    '単価': tableList['オプション単価']['value'],
-                    '数量': tableList['オプション契約数']['value'],
-                    '利用対象期間_from':moment(staDay).startOf('month').format("YYYY-MM-DD"),
-                    '利用対象期間_to':moment(staDay).endOf('month').format("YYYY-MM-DD")
-                  };
-                  tbl.push({
-                    'value': getRowObject(resp, setFields)
-                  });
-                }
+                  //初回請求（入会日の月＝請求日かつ前回請求日なし）
+                  if(moment(record['入会日'].value).format('YYYYMM') == moment(invoicedt).format('YYYYMM') && record['前回請求日'].value == null){
+                    firstFlg=true;
+                     nextinvoicedt=finDay;
+                     //プラン利用開始から次回請求までの分を請求
+                     max=moment(nextinvoicedt).diff(planList['プラン利用開始日'].value,'months');
+                     if(max>=0){
+                       setFields = {
+                         '種別': planList['プラン種別']['value'],
+                         'プラン・オプション': planList['プラン']['value'],
+                         '単価': planList['プラン料金']['value'],
+                         '数量': 1,
+                         '利用対象期間_from':moment(planList['プラン利用開始日']['value']).startOf('month').format("YYYY-MM-DD"),
+                         '利用対象期間_to':moment(nextinvoicedt).endOf('month').format("YYYY-MM-DD")
+                       };
+                       tbl.push({
+                         'value' : getRowObject(resp, setFields)
+                       });
+                     }
+                   }else{
+                     setFields = {
+                       '種別': 'オプション',
+                       'プラン・オプション':tableList['オプション']['value'],
+                       '単価': tableList['オプション単価']['value'],
+                       '数量': tableList['オプション契約数']['value'],
+                       '利用対象期間_from':moment(staDay).startOf('month').format("YYYY-MM-DD"),
+                       '利用対象期間_to':moment(staDay).endOf('month').format("YYYY-MM-DD")
+                     };
+                     tbl.push({
+                       'value' : getRowObject(resp, setFields)
+                     });
+               }
               }
               // 通話料請求
               if (tableList['オプション利用開始日']['value'] <= staDay
-                && (!tableList['オプション利用終了日']['value'] || tableList['オプション利用終了日']['value'] >= finDay) && tableList['契約番号']['value'] != "") {
+                && (!tableList['オプション利用終了日']['value'] || tableList['オプション利用終了日']['value'] >= finDay) && tableList['契約番号']['value'] != ""
+                && firstFlg==false) {
                 // バーチャルプランのみ半年請求
                 if (virtualFlg) {
                   if (moment(staDay).month() == 3 || moment(staDay).month() == 9) {
@@ -587,6 +685,7 @@ jQuery.noConflict();
             }
         }
       }
+    }
         //画面[請求明細]サブテーブル]に反映
         objRecord['record']['請求明細']['value'] = tbl;
         kintone.app.record.set(objRecord);
@@ -626,8 +725,8 @@ jQuery.noConflict();
   //商品リスト表示
   kintone.events.on(showEvents2, function(e) {
 
-    //var APP_ITEM = 17;
-    var APP_ITEM = 458;
+    var APP_ITEM = 17;
+    //var APP_ITEM = 458;
     var spc = kintone.app.record.getSpaceElement('itemlist');
     var body = {
       'app': APP_ITEM,

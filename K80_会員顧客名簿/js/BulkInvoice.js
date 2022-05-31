@@ -42,23 +42,23 @@
     var total=0;
     var invoicedt =document.getElementById('date').value ;
     //当月末
-    var enddt =moment(invoicedt).endOf('month').format();
+    var enddt =moment(invoicedt).endOf('month').format("YYYY-MM-DD");
     //翌月末
-    var nextenddt =moment(invoicedt).add(1, 'months').endOf('month').format();
+    var nextenddt =moment(invoicedt).add(1, 'months').endOf('month').format("YYYY-MM-DD");
     //翌月初
-    var nextstartdt =moment(invoicedt).add(1, 'months').startOf('month').format();
+    var nextstartdt =moment(invoicedt).add(1, 'months').startOf('month').format("YYYY-MM-DD");
     //前月末
-    var prevenddt =moment(invoicedt).add(-1, 'months').endOf('month').format();
+    var prevenddt =moment(invoicedt).add(-1, 'months').endOf('month').format("YYYY-MM-DD");
 
     var stateldt;
     //通話料６か月前
-    var stateldt6=moment(invoicedt).add(-6, 'months').startOf('month').format();
+    var stateldt6=moment(invoicedt).add(-6, 'months').startOf('month').format("YYYY-MM-DD");
     //通話料2か月前
-    var stateldt2=moment(invoicedt).add(-2, 'months').startOf('month').format();
+    var stateldt2=moment(invoicedt).add(-2, 'months').startOf('month').format("YYYY-MM-DD");
 
     var nextinvoicedt;
     //６か月後
-    var enddt6=moment(invoicedt).add(6, 'months').endOf('month').format();
+    var enddt6=moment(invoicedt).add(6, 'months').endOf('month').format("YYYY-MM-DD");
     //オプション終了日
     var optenddt=null;
     //プラン終了日
@@ -72,8 +72,8 @@
     //前回請求日が空白または請求月の前月以前
     var body = {
       'app': kintone.app.getId(),
-      'query': 'チェックボックス in  ("請求代表") and 入会日_0 <="' + enddt  + '" and  入会日 <= "' + prevenddt + '" ' +
-               '(前回請求日 = "" or 前回請求日 <= "' + prevenddt + '" ) and (退会日 = "" or 退会日 >= "' + nextstartdt + '")  order by レコード番号 limit 500'
+       'query': 'チェックボックス in  ("請求代表") and 入会日_0 <="' + enddt  + '" and  入会日 <= "' + prevenddt + '" and ' +
+                '(前回請求日 != "" and 前回請求日 <= "' + prevenddt + '" ) and (退会日 = "" or 退会日 >= "' + nextstartdt + '")  order by レコード番号 limit 500'
     };
     //指定年月のデータを取得
     const resp = await kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', body);
@@ -87,12 +87,12 @@
         }
 
         //新規採番
-        var mindt=moment(invoicedt).startOf('month').format();
-        var maxdt=moment(invoicedt).endOf('month').format();
-        var yymm=moment(invoicedt).format('YYYYMM');
+        var mindt=moment().startOf('month').format();
+        var maxdt=moment().endOf('month').format();
+        var yymm=moment().format('YYYYMM');
         var body = {
           'app': APP_INVOICE_ID,
-          'query': '請求番号 != "" and 請求日 >= "' + mindt +'" and 請求日 <= "' + maxdt + '" order by 請求番号 desc '
+          'query': '請求番号 != "" and 作成日時 >= "' + mindt +'" and 作成日時 <= "' + maxdt + '" order by 請求番号 desc '
         };
         //データ取得
         const resp2 = await  kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', body);

@@ -85,7 +85,8 @@
         if(count>=100){
           break;
         }
-
+        var firstplandt=rec[i]['入会日_0'].value;
+        var previnvoicedt=rec[i]['前回請求日'].value;
         //新規採番
         var mindt=moment().startOf('month').format();
         var maxdt=moment().endOf('month').format();
@@ -183,19 +184,16 @@
           var subrec=rec[i]['プランリスト'].value;
           var virtualflg=false;
           for(let j = 0 ; j<subrec.length ; j++){
-            //利用開始日が翌月末以前
-            //利用終了日が空白もしくは請求月の翌月初以降
             //0円以外
-            if(subrec[j]['value']['プラン利用開始日'].value <= nextenddt &&
-               (subrec[j]['value']['プラン利用終了日'].value == null || subrec[j]['value']['プラン利用終了日'].value >= nextstartdt) &&
-                subrec[j]['value']['プラン料金'].value != "0" ){
+            if(subrec[j]['value']['プラン料金'].value != "0" ){
                   //バーチャルかどうか
                   if(subrec[j]['value']['プラン種別'].value==="バーチャル"){
                     virtualflg=true;
-                    if(moment(nextenddt).month()==3 || moment(nextenddt).month()==9){
+                    //3月もくは９月の場合で、初回プラン利用開始日の月≦今回請求日の月
+                    if((moment(invoicedt).month()==2 || moment(invoicedt).month()==8) && (moment(firstplandt).format('YYYYMM')<=moment(invoicedt).format('YYYYMM')) && previnvoicedt != null){
                       //プラン終了日が6か月以前の場合
                       if(subrec[j]['value']['プラン利用終了日'].value != null && enddt6>=subrec[j]['value']['プラン利用終了日'].value){
-                        planenddt=moment(subrec[j]['value']['プラン利用終了日'].value).endOf('month').format();
+                        planenddt=moment(subrec[j]['value']['プラン利用終了日'].value).startOf('month').format("YYYY-MM-DD");
                         max=moment(planenddt).diff(nextstartdt,'months')+1;
                       }else{
                         max=6
@@ -210,10 +208,10 @@
                                           "value":subrec[j]['value']['プラン'].value
                                         },
                                         "単価":{
-                                          "value":subrec[j]['value']['プラン料金'].value * max
+                                          "value":subrec[j]['value']['プラン料金'].value
                                         },
                                         "数量":{
-                                          "value":"1"
+                                          "value": 1 * max
                                         },
                                           "利用対象期間_from":{
                                             "value":moment(invoicedt).add(1, 'month').startOf('month').format("YYYY-MM-DD")
@@ -242,6 +240,8 @@
                       }
                   }
                 }else{
+                  if(moment(nextenddt).format('YYYYMM') >= moment(subrec[j]['value']['プラン利用開始日'].value).format('YYYYMM') &&
+                      (moment(nextenddt).format('YYYYMM') <= moment(subrec[j]['value']['プラン利用終了日'].value).format('YYYYMM')|| subrec[j]['value']['プラン利用終了日'].value == null)){
                     //請求明細用
                     insbody.record.請求明細.value.push({
                                     "value":{
@@ -282,19 +282,17 @@
                                    });
                     total += Number(subrec[j]['value']['プラン料金'].value * (1+parseInt(TAX)/100));
                   }
+                  }
               }
           }
           //オプション利用
           var subrec=rec[i]['オプション利用'].value;
           for(let j = 0 ; j<subrec.length ; j++){
-            //利用開始日が翌月末以前
-            //利用終了日が空白もしくは請求月の翌月初以降
             //0円以外
-            if(subrec[j]['value']['オプション利用開始日'].value <= nextenddt &&
-               (subrec[j]['value']['オプション利用終了日'].value == null || subrec[j]['value']['オプション利用終了日'].value >= nextstartdt) &&
-                subrec[j]['value']['オプション合計料金'].value != "0" ){
+            if(subrec[j]['value']['オプション合計料金'].value != "0" ){
                   if(virtualflg){
-                     if(moment(nextenddt).month()==3 || moment(nextenddt).month()==9){
+                    //3月もくは９月の場合で、初回プラン利用開始日の月≦今回請求日の月
+                     if((moment(invoicedt).month()==2 || moment(invoicedt).month()==8) && (moment(firstplandt).format('YYYYMM')<=moment(invoicedt).format('YYYYMM')) && previnvoicedt != null){
                        //プラン終了日が6か月以前の場合
                        if(
                           (subrec[j]['value']['オプション利用終了日'].value != null &&
@@ -322,10 +320,10 @@
                                           "value":subrec[j]['value']['オプション'].value
                                         },
                                         "単価":{
-                                          "value":subrec[j]['value']['オプション単価'].value * max
+                                          "value":subrec[j]['value']['オプション単価'].value
                                         },
                                         "数量":{
-                                          "value":subrec[j]['value']['オプション契約数'].value
+                                          "value":subrec[j]['value']['オプション契約数'].value * max
                                         },
                                           "利用対象期間_from":{
                                             "value":moment(invoicedt).add(1, 'month').startOf('month').format("YYYY-MM-DD")
@@ -354,6 +352,8 @@
                       total+=Number(subrec[j]['value']['オプション合計料金'].value );
                   }
                 }else{
+                  if(moment(nextenddt).format('YYYYMM') >= moment(subrec[j]['value']['オプション利用開始日'].value).format('YYYYMM') &&
+                      (moment(nextenddt).format('YYYYMM') <= moment(subrec[j]['value']['オプション利用終了日'].value).format('YYYYMM')|| subrec[j]['value']['オプション利用終了日'].value == null)){
                       //請求明細
                       insbody.record.請求明細.value.push({
                                       "value":{
@@ -394,12 +394,10 @@
                                     });
                       total+=Number(subrec[j]['value']['オプション合計料金'].value );
                     }
-
+                }
             }
           //通話料請求
-          if(subrec[j]['value']['オプション利用開始日'].value <= nextenddt &&
-             (subrec[j]['value']['オプション利用終了日'].value == null || subrec[j]['value']['オプション利用終了日'].value >= nextstartdt) &&
-              subrec[j]['value']['契約番号'].value != "" ){
+          if(subrec[j]['value']['契約番号'].value != "" ){
                 insbody.record.テーブル.value.push({
                                 "value":{
                                   "契約電話番号":{
@@ -410,7 +408,7 @@
                 var targetflg=false;
                 //作成対象
                 if(virtualflg){
-                  if(moment(nextenddt).month() == 3 || moment(nextenddt).month() == 9){
+                  if((moment(invoicedt).month() == 2 || moment(invoicedt).month() == 8) && (moment(firstplandt).format('YYYYMM')<=moment(invoicedt).format('YYYYMM')) && previnvoicedt != null){
                       targetflg=true;
                   }
                 }else{
@@ -426,11 +424,17 @@
                   //バーチャルは6か月、以外は2か月
                   if (virtualflg) {
                       stateldt=stateldt6;
-                      max=6;
+                      //オプション利用開始日>６か月前の場合
+                      if(moment(subrec[j]['value']['オプション利用開始日'].value).format('YYYYMM')>moment(stateldt).format('YYYYMM')){
+                        stateldt=moment(subrec[j]['value']['オプション利用開始日'].value).startOf('month').format("YYYY-MM-DD");
+                        }
                   }else{
                     stateldt=stateldt2;
-                     max=2;
+                    if(moment(subrec[j]['value']['オプション利用開始日'].value).format('YYYYMM')>moment(stateldt).format('YYYYMM')){
+                      stateldt=moment(subrec[j]['value']['オプション利用開始日'].value).startOf('month').format("YYYY-MM-DD");
+                      }
                   }
+                  max=moment(moment(prevenddt).startOf('month').format("YYYY-MM-DD")).diff(moment(stateldt).startOf('month').format("YYYY-MM-DD"),'months')+1;
 
                   var body = {
                     'app': APP_CALL,

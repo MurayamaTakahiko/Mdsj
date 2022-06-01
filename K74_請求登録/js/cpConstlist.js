@@ -491,6 +491,8 @@ jQuery.noConflict();
                             }
                       }
                     }else{
+                      if(moment(staDay).format('YYYYMM') >= moment(planList['プラン利用開始日'].value).format('YYYYMM') &&
+                          (moment(staDay).format('YYYYMM') <= moment(planList['プラン利用終了日'].value).format('YYYYMM')|| planList['プラン利用終了日'].value == null)){
                       setFields = {
                         '種別': planList['プラン種別']['value'],
                         'プラン・オプション': planList['プラン']['value'],
@@ -502,6 +504,7 @@ jQuery.noConflict();
                       tbl.push({
                         'value' : getRowObject(resp, setFields)
                       });
+                    }
                 }
             }
           }
@@ -676,6 +679,8 @@ jQuery.noConflict();
                                }
                              }
                      }else{
+                       if(moment(staDay).format('YYYYMM') >= moment(tableList['オプション利用開始日'].value).format('YYYYMM') &&
+                           (moment(staDay).format('YYYYMM') <= moment(tableList['オプション利用終了日'].value).format('YYYYMM')|| tableList['オプション利用終了日'].value == null)){
                        setFields = {
                          '種別': 'オプション',
                          'プラン・オプション':tableList['オプション']['value'],
@@ -687,6 +692,7 @@ jQuery.noConflict();
                        tbl.push({
                          'value' : getRowObject(resp, setFields)
                        });
+                     }
                  }
               }
               // 通話料請求

@@ -198,29 +198,31 @@
                       }else{
                         max=6
                       }
-                      //請求明細用
-                      insbody.record.請求明細.value.push({
-                                      "value":{
-                                        "種別":{
-                                          "value":subrec[j]['value']['プラン種別'].value
-                                        },
-                                        "プラン・オプション":{
-                                          "value":subrec[j]['value']['プラン'].value
-                                        },
-                                        "単価":{
-                                          "value":subrec[j]['value']['プラン料金'].value
-                                        },
-                                        "数量":{
-                                          "value": 1 * max
-                                        },
-                                          "利用対象期間_from":{
-                                            "value":moment(invoicedt).add(1, 'month').startOf('month').format("YYYY-MM-DD")
-                                        },
-                                          "利用対象期間_to":{
-                                            "value":moment(invoicedt).add(max, 'month').endOf('month').format("YYYY-MM-DD")
+                      for(let k=0;k<max;k++){
+                        //請求明細用
+                        insbody.record.請求明細.value.push({
+                                        "value":{
+                                          "種別":{
+                                            "value":subrec[j]['value']['プラン種別'].value
+                                          },
+                                          "プラン・オプション":{
+                                            "value":subrec[j]['value']['プラン'].value +'（' + (moment(invoicedt).add(k+1, 'month').month()+1) + '月分）',
+                                          },
+                                          "単価":{
+                                            "value":subrec[j]['value']['プラン料金'].value
+                                          },
+                                          "数量":{
+                                            "value": 1
+                                          },
+                                            "利用対象期間_from":{
+                                              "value":moment(invoicedt).add(k+1, 'month').startOf('month').format("YYYY-MM-DD")
+                                          },
+                                            "利用対象期間_to":{
+                                              "value":moment(invoicedt).add(k+1, 'month').endOf('month').format("YYYY-MM-DD")
+                                          }
                                         }
-                                      }
-                                    });
+                                      });
+                        }
                         for(let k=1;k<=max;k++){
                           //売上明細用
                           insbody2.record.売上明細.value.push({
@@ -249,7 +251,7 @@
                                         "value":subrec[j]['value']['プラン種別'].value
                                       },
                                       "プラン・オプション":{
-                                        "value":subrec[j]['value']['プラン'].value
+                                        "value":subrec[j]['value']['プラン'].value +'（' + (moment(invoicedt).add(1, 'month').month()+1) + '月分）',
                                       },
                                       "単価":{
                                         "value":subrec[j]['value']['プラン料金'].value
@@ -311,28 +313,30 @@
                        }else{
                          max=6
                        }
-                      insbody.record.請求明細.value.push({
+                       for(let k=0;k<max;k++){
+                         insbody.record.請求明細.value.push({
                                       "value":{
                                         "種別":{
                                           "value":"オプション"
                                         },
                                         "プラン・オプション":{
-                                          "value":subrec[j]['value']['オプション'].value
+                                          "value":subrec[j]['value']['オプション'].value +'（' + (moment(invoicedt).add(k+1, 'month').month()+1) + '月分）',
                                         },
                                         "単価":{
                                           "value":subrec[j]['value']['オプション単価'].value
                                         },
                                         "数量":{
-                                          "value":subrec[j]['value']['オプション契約数'].value * max
+                                          "value":subrec[j]['value']['オプション契約数'].value
                                         },
                                           "利用対象期間_from":{
-                                            "value":moment(invoicedt).add(1, 'month').startOf('month').format("YYYY-MM-DD")
+                                            "value":moment(invoicedt).add(k+1, 'month').startOf('month').format("YYYY-MM-DD")
                                         },
                                           "利用対象期間_to":{
-                                            "value":moment(invoicedt).add(max, 'month').endOf('month').format("YYYY-MM-DD")
+                                            "value":moment(invoicedt).add(k+1, 'month').endOf('month').format("YYYY-MM-DD")
                                         }
                                       }
                                     });
+                          }
                       for(let k=1;k<=max;k++){
                       //売上明細用
                       insbody2.record.売上明細.value.push({
@@ -361,7 +365,7 @@
                                           "value":"オプション"
                                         },
                                         "プラン・オプション":{
-                                          "value":subrec[j]['value']['オプション'].value
+                                          "value":subrec[j]['value']['オプション'].value +'（' + (moment(invoicedt).add(1, 'month').month()+1) + '月分）',
                                         },
                                         "単価":{
                                           "value":subrec[j]['value']['オプション単価'].value

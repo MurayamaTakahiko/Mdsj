@@ -340,11 +340,11 @@ jQuery.noConflict();
             if(planList['プラン料金'].value != "0"){
                 // バーチャルプランのみ半年請求
                 if (planList['プラン種別']['value'] === "バーチャル") {
-                  virtualFlg = true;
+                  //virtualFlg = true;
                   virtualdt=planList['プラン利用開始日']['value'];
                   //初回請求（入会日の月＝請求日かつ前回請求日なし）
                   if(moment(record['入会日'].value).format('YYYYMM') == moment(invoicedt).format('YYYYMM') && record['前回請求日'].value == null){
-                    firstFlg=true;
+                    //firstFlg=true;
                     //請求日の年、月
                     var year=moment(virtualdt).get('year');
                     var month=moment(virtualdt).get('month');
@@ -380,7 +380,8 @@ jQuery.noConflict();
                     max=moment(nextinvoicedt).diff(moment(planList['プラン利用開始日'].value).startOf('month').format("YYYY-MM-DD"),'months');
 
                     if(max>=0){
-                      for(let j=0;j<max;j++){
+                      virtualFlg=true;
+                      for(let j=0;j<=max;j++){
                         setFields = {
                           '種別': planList['プラン種別']['value'],
                           'プラン・オプション': planList['プラン']['value']+'（' + (moment(planList['プラン利用開始日']['value']).add(j, 'month').month()+1) + '月分）',
@@ -403,6 +404,7 @@ jQuery.noConflict();
                         max=6
                       }
                       for(let j=0;j<max;j++){
+                        virtualFlg=true;
                           setFields = {
                             '種別': planList['プラン種別']['value'],
                             'プラン・オプション': planList['プラン']['value']+'（' + (moment(staDay).add(j, 'month').month()+1) + '月分）',
@@ -547,7 +549,7 @@ jQuery.noConflict();
                     //オプション利用開始から次回請求までの分を請求
                     max=moment(nextinvoicedt).diff(moment(firstdt).startOf('month').format("YYYY-MM-DD"),'months');
                     if(max>=0){
-                      for(let j=0;j<max;j++){
+                      for(let j=0;j<=max;j++){
                         setFields = {
                           '種別': 'オプション',
                           'プラン・オプション': tableList['オプション']['value']+'（'+ (moment(firstdt).add(j, 'month').month()+1) + '月分）',

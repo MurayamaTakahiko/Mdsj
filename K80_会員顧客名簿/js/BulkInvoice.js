@@ -188,9 +188,13 @@
             if(subrec[j]['value']['プラン料金'].value != "0" ){
                   //バーチャルかどうか
                   if(subrec[j]['value']['プラン種別'].value==="バーチャル"){
-                    virtualflg=true;
-                    //3月もくは９月の場合で、初回プラン利用開始日の月≦今回請求日の月
-                    if((moment(invoicedt).month()==2 || moment(invoicedt).month()==8) && (moment(firstplandt).format('YYYYMM')<=moment(invoicedt).format('YYYYMM')) && previnvoicedt != null){
+                    if(moment(subrec[j]['value']['プラン利用開始日'].value).format("YYYYMM")<=moment(nextstartdt).format('YYYYMM') &&
+                       moment(subrec[j]['value']['プラン利用終了日'].value).format("YYYYMM")>=moment(nextstartdt).format('YYYYMM')){
+                      virtualflg=true;
+                       }
+                    //virtualflg=true;
+                    //3月もくは９月の場合で、初回プラン利用開始日の月＜今回請求日の月
+                    if((moment(invoicedt).month()==2 || moment(invoicedt).month()==8) && (moment(firstplandt).format('YYYYMM')<moment(invoicedt).format('YYYYMM')) && previnvoicedt != null){
                       //プラン終了日が6か月以前の場合
                       if(subrec[j]['value']['プラン利用終了日'].value != null && enddt6>=subrec[j]['value']['プラン利用終了日'].value){
                         planenddt=moment(subrec[j]['value']['プラン利用終了日'].value).startOf('month').format("YYYY-MM-DD");
@@ -199,7 +203,7 @@
                         max=6
                       }
                       for(let k=0;k<max;k++){
-                        //請求明細用
+                      //請求明細用
                         insbody.record.請求明細.value.push({
                                         "value":{
                                           "種別":{
@@ -293,8 +297,8 @@
             //0円以外
             if(subrec[j]['value']['オプション合計料金'].value != "0" ){
                   if(virtualflg){
-                    //3月もくは９月の場合で、初回プラン利用開始日の月≦今回請求日の月
-                     if((moment(invoicedt).month()==2 || moment(invoicedt).month()==8) && (moment(firstplandt).format('YYYYMM')<=moment(invoicedt).format('YYYYMM')) && previnvoicedt != null){
+                    //3月もくは９月の場合で、初回プラン利用開始日の月＜今回請求日の月
+                     if((moment(invoicedt).month()==2 || moment(invoicedt).month()==8) && (moment(firstplandt).format('YYYYMM')<moment(invoicedt).format('YYYYMM')) && previnvoicedt != null){
                        //プラン終了日が6か月以前の場合
                        if(
                           (subrec[j]['value']['オプション利用終了日'].value != null &&

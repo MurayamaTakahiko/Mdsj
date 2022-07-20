@@ -34,35 +34,41 @@ jQuery.noConflict();
   }
 
   // 新規保存成功後イベント
-  kintone.events.on(['app.record.create.submit.success'], function(event) {
-    var record = event.record;
-    var clientRecordId = event.recordId;
-    var relatedAppId = kintone.app.getRelatedRecordsTargetAppId('顧客契約一覧');
-    var billDay = record['請求日'].value;
-    var custCd = record['所属・会社名１'].value;;
-    var custName = record['顧客名'].value;
-    var query;
-    var nextenddt =moment(billDay).add(1, 'months').endOf('month').format();
+  kintone.events.on(['app.record.create.submit.success'], async (event) => {
+    try{
+      var record = event.record;
+      var clientRecordId = event.recordId;
+      var relatedAppId = kintone.app.getRelatedRecordsTargetAppId('顧客契約一覧');
+      var billDay = record['請求日'].value;
+      var custCd = record['所属・会社名１'].value;;
+      var custName = record['顧客名'].value;
+      var query;
+      var nextenddt =moment(billDay).add(1, 'months').endOf('month').format();
 
-    if (record['所属・会社名１'].value) {
-      query = '所属・会社名１ = "' + custCd + '"';
-    } else {
-      query = '顧客名 = "' + custName + '"';
-    }
-    var paramGet = {
-        'app': relatedAppId,
-        'query': query
-    };
-    // 入金管理アプリID
-    var APP_CONSTLIST = 79;
-    //var APP_CONSTLIST = 448;
-    var billNum = record['請求番号'].value;
-    var billCD = custCd;
-    var billCstName = custName;
-    var billCstCd = record['顧客番号'].value;
-    var billDay = record['請求日'].value;
-    var billPrice = record['請求総額'].value;
-    var params = {
+      if (record['所属・会社名１'].value) {
+        query = '所属・会社名１ = "' + custCd + '"';
+      } else {
+        query = '顧客名 = "' + custName + '"';
+      }
+      var paramGet = {
+          'app': relatedAppId,
+          'query': query
+      };
+
+      //var APP_CONSTLIST = 79; // 入金管理アプリID
+      //var APP_OTHERBILL = 82; // 売上管理アプリID
+      //var APP_MADO = 505;
+
+      var APP_CONSTLIST = 448;
+      var APP_OTHERBILL = 446;
+      var APP_MADO = 505;
+      var billNum = record['請求番号'].value;
+      var billCD = custCd;
+      var billCstName = custName;
+      var billCstCd = record['顧客番号'].value;
+      var billDay = record['請求日'].value;
+      var billPrice = record['請求総額'].value;
+      var params = {
         'app': APP_CONSTLIST,
         "record": {
           "請求番号": {
@@ -85,10 +91,10 @@ jQuery.noConflict();
           }
         }
       };
-      // 売上管理アプリID
-      var APP_OTHERBILL = 82;
-      //var APP_OTHERBILL = 446;
+
       var paramList = [];
+
+
       var virtualFlg = false;
       //売上登録用
       var insbody={
@@ -107,7 +113,48 @@ jQuery.noConflict();
               };
       // 請求明細分
       for (var i = 0; i < record['請求明細']['value'].length; i++) {
+
+
         var billList = record['請求明細'].value[i].value;
+
+        var ids=[];
+        if(billList['更新用ID1'].value != ""){
+          var paramGet2 = {
+              'app': APP_MADO,
+              'query': "登録NO = " + billList['更新用ID1'].value + ""
+          };
+          const respato = await kintone.api(kintone.api.url('/k/v1/records', true), 'GET',  paramGet2);
+            var ato=respato.records;
+            for(let v=0;v<ato.length;v++){
+              var atolist=ato[v]['料金テーブル'].value;
+              for(let w=0;w<atolist.length;w++){
+                if(billList['更新用ID2'].value==atolist[w]['id']){
+                  ids.push({
+                  "id":atolist[w]['id']
+                  ,"value":{
+                    "自動計上済":{
+                      value: ["済"]
+                      }
+                    }
+                  });
+                }else{
+                     ids.push({"id":atolist[w]['id']});
+                }
+              }
+              var updbody={
+                "app":APP_MADO,
+                "id":billList['更新用ID1'].value,
+                  "record": {
+                    "料金テーブル":{
+                      "value":ids
+                      }
+                  }
+                };
+                //窓口処理後払い更新
+                  await kintone.api(kintone.api.url('/k/v1/record.json', true), 'PUT', updbody);
+
+            }
+          }
         var fromdt;
         var todt;
         if(billList['利用対象期間_from']['value']==null){
@@ -163,8 +210,6 @@ jQuery.noConflict();
                           });
                         }
         }
-
-
       }
         paramList.push(insbody);
         console.log(paramList);
@@ -172,27 +217,27 @@ jQuery.noConflict();
         'app': APP_OTHERBILL,
         'records': paramList
       };
+
+
+
     // 契約顧客請求日・請求番号更新
-    return kintone.api(kintone.api.url('/k/v1/records', true), 'GET', paramGet).then(function(resp) {
+    const resp = await kintone.api(kintone.api.url('/k/v1/records', true), 'GET', paramGet);
       var records = resp.records;
       var paramPut = {
         'app': relatedAppId,
         'records': createPutRecords(records, billDay, billNum)
       };
-      return kintone.api(kintone.api.url('/k/v1/records', true), 'PUT', paramPut).then(function(resp) {
-        // 売上アプリ登録処理
-        kintone.api(kintone.api.url('/k/v1/records', true), 'POST', paramBulk, function(resp) {
-          // success
-          console.log(resp);
-        }, function(error) {
-          // error
-          console.log(error);
-        });
-        // 入金管理アプリ登録処理
-        return kintone.api(kintone.api.url('/k/v1/record', true), 'POST', params).then(function(resp) {
-          console.log(resp);
-        });
-      });
-    });
+    await kintone.api(kintone.api.url('/k/v1/records', true), 'PUT', paramPut);
+    // 売上アプリ登録処理
+    await kintone.api(kintone.api.url('/k/v1/records', true), 'POST', paramBulk);
+    // 入金管理アプリ登録処理
+    await kintone.api(kintone.api.url('/k/v1/record', true), 'POST', params);
+  } catch(e) {
+    // パラメータが間違っているなどAPI実行時にエラーが発生した場合
+
+    alert(e.message);
+
+    return event;
+  }
   });
 })(jQuery);

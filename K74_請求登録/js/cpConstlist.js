@@ -1038,13 +1038,13 @@ jQuery.noConflict();
       for (let k = 0 ; k < recato.length ; k++){
         var subrecato=recato[k]['料金テーブル'].value;
         for(let j = 0 ; j<subrecato.length ; j++){
-          if(subrecato[j]['value']['支払区分'].value == "後払い" ){
+          if(subrecato[j]['value']['支払区分'].value == "後払い" && subrecato[j]['value']['自動計上済'].value == ""){
             //請求明細
             setFields = {
                           "種別":subrecato[j]['value']['商品種別'].value,
                           "プラン・オプション":subrecato[j]['value']['商品名'].value,
-                          "単価":Number(subrecato[j]['value']['料金'].value) + Number(subrecato[j]['value']['郵送手数料'].value),
-                          "数量":1,
+                          "単価":Number(subrecato[j]['value']['単価'].value) ,
+                          "数量":Number(subrecato[j]['value']['数量'].value),
                           "利用対象期間_from":subrecato[j]['value']['対象日'].value,
                           "利用対象期間_to":subrecato[j]['value']['対象日'].value,
                           "摘要":"窓口処理",
@@ -1054,6 +1054,24 @@ jQuery.noConflict();
                 tbl.push({
                   'value': getRowObject(resp, setFields)
                 });
+                if(subrecato[j]['value']['郵送手数料'].value != "" && subrecato[j]['value']['郵送手数料'].value != "0"){
+                  //請求明細
+                  setFields = {
+                                "種別":"郵送手数料",
+                                "プラン・オプション":"郵送手数料",
+                                "単価":Number(subrecato[j]['value']['郵送手数料'].value) ,
+                                "数量":1,
+                                "税区分":"非課税",
+                                "利用対象期間_from":subrecato[j]['value']['対象日'].value,
+                                "利用対象期間_to":subrecato[j]['value']['対象日'].value,
+                                "摘要":"窓口処理",
+                                "更新用ID1":"",
+                                "更新用ID2":""
+                              };
+                      tbl.push({
+                        'value': getRowObject(resp, setFields)
+                      });
+                }
 
           }
         }

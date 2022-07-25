@@ -263,7 +263,6 @@
                                               }
                                             }
                                           });
-                          total+=Math.round(parseInt(parseInt(subrec[j]['value']['プラン料金'].value) * (1+parseInt(TAX)/100)));
                         }
                       }
                   }
@@ -323,7 +322,6 @@
                                              }
                                            }
                                          });
-                          total += Number(subrec[j]['value']['プラン料金'].value * (1+parseInt(TAX)/100));
                         }
                       }
                   }
@@ -407,7 +405,6 @@
                                           }
                                         }
                                       });
-                          total+=Number(subrec[j]['value']['オプション合計料金'].value );
                          }
                       }
                   }
@@ -467,7 +464,7 @@
                                             }
                                           }
                                         });
-                          total+=Number(subrec[j]['value']['オプション合計料金'].value );
+
                         }
                     }
                 }
@@ -583,7 +580,7 @@
                                                   }
                                                 }
                                               });
-                               total += Number(parseInt(parseInt(bill) * (1+parseInt(TAX)/100)));
+
                                bill=0;
                              }
                          }
@@ -646,7 +643,7 @@
                                             }
                                           }
                                         });
-                         total += parseInt(parseInt(bill) * (1+parseInt(TAX)/100));
+
                        }
 
                     }
@@ -666,7 +663,7 @@
           for (let k = 0 ; k < recato.length ; k++){
             var subrecato=recato[k]['料金テーブル'].value;
             for(let j = 0 ; j<subrecato.length ; j++){
-              if(subrecato[j]['value']['支払区分'].value == "後払い" ){
+              if(subrecato[j]['value']['支払区分'].value == "後払い" && subrecato[j]['value']['自動計上済'].value == ""  ){
                 //請求明細
                 insbody.record.請求明細.value.push({
                                 "value":{
@@ -677,10 +674,10 @@
                                     "value":subrecato[j]['value']['商品名'].value
                                   },
                                   "単価":{
-                                    "value":Number(subrecato[j]['value']['料金'].value) + Number(subrecato[j]['value']['郵送手数料'].value)
+                                    "value":Number(subrecato[j]['value']['単価'].value)
                                   },
                                   "数量":{
-                                    "value":1
+                                    "value":Number(subrecato[j]['value']['数量'].value)
                                   },
                                     "利用対象期間_from":{
                                       "value":subrecato[j]['value']['対象日'].value
@@ -693,7 +690,6 @@
                                   }
                                 }
                               });
-
                 //売上明細用
                 insbody2.record.売上明細.value.push({
                                 "value":{
@@ -704,7 +700,7 @@
                                     "value":subrecato[j]['value']['商品名'].value
                                   },
                                   "金額":{
-                                    "value":subrecato[j]['value']['集金額'].value
+                                    "value":Math.round(subrecato[j]['value']['料金'].value * 1.1)
                                   },
                                   "支払種別":{
                                     "value":subrecato[j]['value']['支払種別'].value
@@ -714,7 +710,57 @@
                                   }
                                 }
                               });
-                total+=Number(subrecato[j]['value']['集金額'].value );
+            if(subrecato[j]['value']['郵送手数料'].value != "" && subrecato[j]['value']['郵送手数料'].value != "0"){
+              insbody.record.請求明細.value.push({
+                              "value":{
+                                "種別":{
+                                  "value":"郵送手数料"
+                                },
+                                "プラン・オプション":{
+                                  "value":"郵送手数料"
+                                },
+                                "単価":{
+                                  "value":subrecato[j]['value']['郵送手数料'].value
+                                },
+                                "数量":{
+                                  "value":1
+                                },
+                                "税区分":{
+                                  "value":"非課税"
+                                },
+                                  "利用対象期間_from":{
+                                    "value":subrecato[j]['value']['対象日'].value
+                                },
+                                  "利用対象期間_to":{
+                                    "value":subrecato[j]['value']['対象日'].value
+                                },
+                                "摘要":{
+                                  "value":"窓口処理"
+                                }
+                              }
+                            });
+              //売上明細用
+              insbody2.record.売上明細.value.push({
+                    "value":{
+                      "請求対象月":{
+                        "value":subrecato[j]['value']['対象日'].value
+                      },
+                      "項目":{
+                        "value":"郵送手数料"
+                      },
+                      "金額":{
+                        "value":subrecato[j]['value']['郵送手数料'].value
+                      },
+                      "支払種別":{
+                        "value":subrecato[j]['value']['支払種別'].value
+                      },
+                      "商品番号":{
+                        "value":""
+                      }
+                    }
+                  });
+            }
+
                 var ids=[];
                  for(let v=0;v<subrecato.length;v++){
                    if(v==j){
@@ -768,9 +814,6 @@
                     },
                     "請求先名": {
                       "value": rec[i]['顧客名'].value
-                    },
-                    "請求額": {
-                      "value": total
                     }
 
                   }

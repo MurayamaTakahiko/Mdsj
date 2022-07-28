@@ -104,6 +104,9 @@ jQuery.noConflict();
                   "請求番号":{
                     "value":billNum
                   },
+                  "請求日":{
+                    "value":billDay
+                  },
                   "対象顧客":{
                     "value":billCstName
                   },

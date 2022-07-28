@@ -710,56 +710,6 @@
                                   }
                                 }
                               });
-            if(subrecato[j]['value']['郵送手数料'].value != "" && subrecato[j]['value']['郵送手数料'].value != "0"){
-              insbody.record.請求明細.value.push({
-                              "value":{
-                                "種別":{
-                                  "value":"郵送手数料"
-                                },
-                                "プラン・オプション":{
-                                  "value":"郵送手数料"
-                                },
-                                "単価":{
-                                  "value":subrecato[j]['value']['郵送手数料'].value
-                                },
-                                "数量":{
-                                  "value":1
-                                },
-                                "税区分":{
-                                  "value":"非課税"
-                                },
-                                  "利用対象期間_from":{
-                                    "value":subrecato[j]['value']['対象日'].value
-                                },
-                                  "利用対象期間_to":{
-                                    "value":subrecato[j]['value']['対象日'].value
-                                },
-                                "摘要":{
-                                  "value":"窓口処理"
-                                }
-                              }
-                            });
-              //売上明細用
-              insbody2.record.売上明細.value.push({
-                    "value":{
-                      "請求対象月":{
-                        "value":subrecato[j]['value']['対象日'].value
-                      },
-                      "項目":{
-                        "value":"郵送手数料"
-                      },
-                      "金額":{
-                        "value":subrecato[j]['value']['郵送手数料'].value
-                      },
-                      "支払種別":{
-                        "value":subrecato[j]['value']['支払種別'].value
-                      },
-                      "商品番号":{
-                        "value":""
-                      }
-                    }
-                  });
-            }
 
                 var ids=[];
                  for(let v=0;v<subrecato.length;v++){

@@ -1054,24 +1054,6 @@ jQuery.noConflict();
                 tbl.push({
                   'value': getRowObject(resp, setFields)
                 });
-                if(subrecato[j]['value']['郵送手数料'].value != "" && subrecato[j]['value']['郵送手数料'].value != "0"){
-                  //請求明細
-                  setFields = {
-                                "種別":"郵送手数料",
-                                "プラン・オプション":"郵送手数料",
-                                "単価":Number(subrecato[j]['value']['郵送手数料'].value) ,
-                                "数量":1,
-                                "税区分":"非課税",
-                                "利用対象期間_from":subrecato[j]['value']['対象日'].value,
-                                "利用対象期間_to":subrecato[j]['value']['対象日'].value,
-                                "摘要":"窓口処理",
-                                "更新用ID1":"",
-                                "更新用ID2":""
-                              };
-                      tbl.push({
-                        'value': getRowObject(resp, setFields)
-                      });
-                }
 
           }
         }

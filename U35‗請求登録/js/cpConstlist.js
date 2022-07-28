@@ -29,10 +29,6 @@ jQuery.noConflict();
   var objRecord;
   // ロケールを設定
   moment.locale('ja');
-  // 工事依頼アプリID
-  //var APP_CONSTLIST = 31;//本番
-  var APP_CONSTLIST = 479;//テスト
-
 
   /**
    *「請求明細一覧」サブテーブルを取得
@@ -88,7 +84,9 @@ jQuery.noConflict();
 
   //「明細取得ボタン」クリックイベント
   $(document).on('click', '#emxas-button-schedule', function(ev) {
-
+    // 工事依頼アプリID
+    var APP_CONSTLIST = 31;
+    //var APP_CONSTLIST = 479;
     var custCd;
     var finDay = "";
     var billDay = "";
@@ -108,7 +106,7 @@ jQuery.noConflict();
         query: "得意先CD = \"" + custCd + "\" and " +
           "金額入力日 != \"" + finDay + "\" and " +
           "請求日 = \"" + billDay + "\" " +
-          "order by 工事番号 desc"
+          "order by 工事番号 asc"
       };
       return kintoneUtility.rest.getAllRecordsByQuery(param).then(function(resp) {
         console.log(resp);

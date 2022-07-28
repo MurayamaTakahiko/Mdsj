@@ -14,11 +14,6 @@ jQuery.noConflict();
    * @param billDay 一括更新する請求番号データ
    * @returns {Array} kintone REST APIで一括更新するrecordsデータ
    */
-
-   // 入金管理アプリID
-  //var APP_CONSTLIST = 37;//本番
-  var APP_CONSTLIST = 476;//テスト
-
   function createPutRecords(records, billDay, billNum) {
     var putRecords = [];
     for (var i = 0, l = records.length; i < l; i++) {
@@ -120,7 +115,9 @@ jQuery.noConflict();
         'app': relatedAppId,
         'query': query
     };
-
+    // 入金管理アプリID
+    var APP_CONSTLIST = 37;
+    //var APP_CONSTLIST = 476;
     var billNum = record['請求番号'].value;
     var billCD = record['得意先CD'].value;
     var billCstName = record['得意先名'].value;

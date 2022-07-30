@@ -44,15 +44,19 @@ jQuery.noConflict();
   var virtualdt;
   var firstdt;
 
-  //var APP_CONSTLIST = 80;
-  //var APP_TELLBILL = 81;
-  //var APP_ITEM = 17;
-  var APP_CONSTLIST = 447;
-  var APP_TELLBILL = 461;
-  var APP_ITEM = 458;
-  var APP_SALES=446;
-  var APP_MADO=505;
-  var TEL_ITEM_NO=238;
+  var APP_CONSTLIST = 80;
+  var APP_TELLBILL = 81;
+  var APP_ITEM = 17;
+  var APP_SALES=82;
+  var APP_MADO=178;
+  var TEL_ITEM_NO=121;
+
+  //var APP_CONSTLIST = 447;
+  //var APP_TELLBILL = 461;
+  //var APP_ITEM = 458;
+  //var APP_SALES=446;
+  //var APP_MADO=505;
+  //var TEL_ITEM_NO=238;
   // ロケールを設定
   moment.locale('ja');
 

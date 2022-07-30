@@ -55,13 +55,13 @@ jQuery.noConflict();
           'query': query
       };
 
-      //var APP_CONSTLIST = 79; // 入金管理アプリID
-      //var APP_OTHERBILL = 82; // 売上管理アプリID
-      //var APP_MADO = 505;
+      var APP_CONSTLIST = 79; // 入金管理アプリID
+      var APP_OTHERBILL = 82; // 売上管理アプリID
+      var APP_MADO = 178;
 
-      var APP_CONSTLIST = 448;
-      var APP_OTHERBILL = 446;
-      var APP_MADO = 505;
+      //var APP_CONSTLIST = 448;
+      //var APP_OTHERBILL = 446;
+      //var APP_MADO = 505;
       var billNum = record['請求番号'].value;
       var billCD = custCd;
       var billCstName = custName;

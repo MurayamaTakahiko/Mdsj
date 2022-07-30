@@ -7,7 +7,8 @@
   ];
   kintone.events.on(events, async (event) => {
   try {
-    var APP_ID= 449;  //請求登録
+    var APP_ID= 74;  //請求登録
+    //var APP_ID= 449;  //請求登録
 
     // 「請求番号」を取得
     var invoiceno =event.record.請求番号.value;

@@ -1,0 +1,15 @@
+/*商品番号  */
+.subtable-gaia th:nth-child(10),
+.subtable-gaia td:nth-child(10) {
+  display: none;
+}
+/*商品名 */
+.subtable-gaia th:nth-child(11),
+.subtable-gaia td:nth-child(11) {
+  display: none;
+}
+/*自動計上  */
+/*.subtable-gaia th:nth-child(13),
+.subtable-gaia td:nth-child(13) {
+  display: none;
+}*/

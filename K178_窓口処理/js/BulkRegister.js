@@ -182,6 +182,13 @@
                             }
                           };
           for(let j = 0 ; j<subrec.length ; j++){
+
+            var kin;
+            if(parseInt(subrec[j]['value']['料金'].value)>=0){
+              kin=Math.floor(Number(subrec[j]['value']['料金'].value) * 1.1)
+            }else{
+              kin=Math.ceil(Number(subrec[j]['value']['料金'].value) * 1.1)
+            }
             //支払済かつ自動計上するかつ、集金額1円以上
             if(subrec[j]['value']['支払区分'].value =='支払済' &&  subrec[j]['value']['集金額'].value >= 1 && subrec[j]['value']['自動計上済'].value ==''){
               insbody.record.売上明細.value.push({
@@ -193,7 +200,7 @@
                                   "value":subrec[j]['value']['商品名'].value
                                 },
                                 "金額":{
-                                  "value":Math.round(subrec[j]['value']['料金'].value * 1.1)
+                                  "value":kin
                                 },
                                 "支払種別":{
                                   "value":subrec[j]['value']['支払種別'].value
@@ -353,6 +360,12 @@
                           }
                         };
         for(let j = 0 ; j<subrec.length ; j++){
+          var kin;
+          if(parseInt(subrec[j]['value']['料金'].value)>=0){
+            kin=Math.floor(parseInt(subrec[j]['value']['料金'].value) * 1.1)
+          }else{
+            kin=Math.ceil(parseInt(subrec[j]['value']['料金'].value) * 1.1)
+          }
           //支払済かつ自動計上するかつ、集金額1円以上
           if(subrec[j]['value']['支払区分'].value =='後払い' &&  subrec[j]['value']['集金額'].value >= 1 ){
             insbody.record.売上明細.value.push({
@@ -364,7 +377,7 @@
                                 "value":subrec[j]['value']['商品名'].value
                               },
                               "金額":{
-                                "value":Math.round(subrec[j]['value']['料金'].value * 1.1)
+                                "value":kin
                               },
                               "支払種別":{
                                 "value":subrec[j]['value']['支払種別'].value

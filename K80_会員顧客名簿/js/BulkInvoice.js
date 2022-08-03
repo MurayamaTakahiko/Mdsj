@@ -247,6 +247,12 @@
                                             }
                                           }
                                         });
+                            var kin;
+                            if(parseInt(subrec[j]['value']['プラン料金'].value)>=0){
+                              kin=Math.floor(Number(subrec[j]['value']['プラン料金'].value) * (1+parseInt(TAX)/100))
+                            }else{
+                              kin=Math.ceil(Number(subrec[j]['value']['プラン料金'].value) * (1+parseInt(TAX)/100))
+                            }
                             //売上明細用
                             insbody2.record.売上明細.value.push({
                                             "value":{
@@ -257,7 +263,7 @@
                                                 "value":subrec[j]['value']['プラン'].value
                                               },
                                               "金額":{
-                                                "value":Math.round(parseInt(parseInt(subrec[j]['value']['プラン料金'].value) * (1+parseInt(TAX)/100)))
+                                                "value":kin
                                               },
                                               "商品番号":{
                                                 "value":subrec[j]['value']['商品番号_プラン'].value
@@ -305,7 +311,12 @@
                                             }
                                           }
                                         });
-
+                            var kin;
+                            if(parseInt(subrec[j]['value']['プラン料金'].value)>=0){
+                              kin=Math.floor(Number(subrec[j]['value']['プラン料金'].value) * (1+parseInt(TAX)/100))
+                            }else{
+                              kin=Math.ceil(Number(subrec[j]['value']['プラン料金'].value) * (1+parseInt(TAX)/100))
+                            }
                            //売上明細用
                            insbody2.record.売上明細.value.push({
                                            "value":{
@@ -316,7 +327,7 @@
                                                "value":subrec[j]['value']['プラン'].value
                                              },
                                              "金額":{
-                                               "value":parseInt(parseInt(subrec[j]['value']['プラン料金'].value) * (1+parseInt(TAX)/100))
+                                               "value":kin
                                              },
                                              "商品番号":{
                                                "value":subrec[j]['value']['商品番号_プラン'].value
@@ -564,6 +575,12 @@
                                                   }
                                                 }
                                               });
+                                var kin;
+                                if(parseInt(bill)>=0){
+                                  kin=Math.floor(Number(bill) * (1+parseInt(TAX)/100))
+                                }else{
+                                  kin=Math.ceil(Number(bill) * (1+parseInt(TAX)/100))
+                                }
                                 //売上明細用
                                 insbody2.record.売上明細.value.push({
                                                 "value":{
@@ -574,7 +591,7 @@
                                                     "value":'通話料（' + mm2 + '月分）'
                                                   },
                                                   "金額":{
-                                                    "value":parseInt(parseInt(bill) * (1+parseInt(TAX)/100))
+                                                    "value":kin
                                                   },
                                                   "商品番号":{
                                                     "value":TEL_ITEM_NO
@@ -627,6 +644,12 @@
                                             }
                                           }
                                         });
+                          var kin;
+                          if(parseInt(bill)>=0){
+                            kin=Math.floor(Number(bill) * (1+parseInt(TAX)/100))
+                          }else{
+                            kin=Math.ceil(Number(bill) * (1+parseInt(TAX)/100))
+                          }
                           //売上明細用
                           insbody2.record.売上明細.value.push({
                                           "value":{
@@ -637,7 +660,7 @@
                                               "value":'通話料（' + mm2 + '月分）'
                                             },
                                             "金額":{
-                                              "value":parseInt(parseInt(bill) * (1+parseInt(TAX)/100))
+                                              "value":kin
                                             },
                                             "商品番号":{
                                               "value":TEL_ITEM_NO
@@ -691,6 +714,12 @@
                                   }
                                 }
                               });
+                var kin;
+                if(parseInt(subrec[j]['value']['プラン料金'].value)>=0){
+                  kin=Math.floor(Number(subrecato[j]['value']['料金'].value) * (1+parseInt(TAX)/100))
+                }else{
+                  kin=Math.ceil(Number(subrecato[j]['value']['料金'].value) * (1+parseInt(TAX)/100))
+                }
                 //売上明細用
                 insbody2.record.売上明細.value.push({
                                 "value":{
@@ -701,7 +730,7 @@
                                     "value":subrecato[j]['value']['商品名'].value
                                   },
                                   "金額":{
-                                    "value":Math.round(subrecato[j]['value']['料金'].value * 1.1)
+                                    "value":kin
                                   },
                                   "支払種別":{
                                     "value":subrecato[j]['value']['支払種別'].value

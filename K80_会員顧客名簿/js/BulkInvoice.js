@@ -14,14 +14,36 @@
   //一括登録ボタン処理
   $(document).on('click', '#bulk_button', async (ev) => {
     try {
-    //本番
-    var APP_ID = 80;   //会員顧客名簿
-    var APP_INVOICE_ID = 74;//請求登録
-    var APP_CONSTLIST = 79;
-    var APP_SALES_ID = 82;
-    var APP_CALL = 81;
-    var APP_MADO = 178;
-    var TEL_ITEM_NO=121;
+    //////請求番号採番時ロジック編集(NS)
+    //中津店
+    //var APP_ID = 80;   //会員顧客名簿
+    //var APP_INVOICE_ID = 74;//請求登録
+    //var APP_CONSTLIST = 79;
+    //var APP_SALES_ID = 82;
+    //var APP_CALL = 81;
+    //var APP_MADO = 178;
+    //var TEL_ITEM_NO=121;
+
+
+     //////請求番号採番時ロジック編集(US)
+    //梅田店
+    //var APP_ID = 156;   //会員顧客名簿
+    //var APP_INVOICE_ID = 169;//請求登録
+    //var APP_CONSTLIST = 170;
+    //var APP_SALES_ID = 168;
+    //var APP_CALL = 183;
+    //var APP_MADO = 179;
+    //var TEL_ITEM_NO=229;
+
+     //////請求番号採番時ロジック編集(SS)
+     var APP_ID = 140;   //会員顧客名簿
+     var APP_INVOICE_ID = 153;//請求登録
+     var APP_CONSTLIST = 154;
+     var APP_SALES_ID = 152;
+     var APP_CALL = 185;
+     var APP_MADO = 180;
+     var TEL_ITEM_NO=141;
+
     //var APP_ID = 447;   //会員顧客名簿
     //var APP_INVOICE_ID = 449;   //請求登録
     //var APP_CONSTLIST = 448;   //入金管理
@@ -106,14 +128,18 @@
           var rec2=resp2.records;
           var newno;
           if(rec2.length==0){
-            newno="NS-" + yymm + "-0001";
+            //newno="NS-" + yymm + "-0001";
+            //newno="US-" + yymm + "-0001";
+            newno="SS-" + yymm + "-0001";
           }else{
             var ren=rec2[0]['請求番号'].value;
             var iren=parseInt(ren.substr(-4));
             iren=iren+1;
             var sren=String(iren);
             sren=('0000' + sren).slice(-4);
-            newno="NS-" + yymm + "-" + sren;
+            //newno="NS-" + yymm + "-" + sren;
+            //newno="US-" + yymm + "-" + sren;
+            newno="SS-" + yymm + "-" + sren;
           }
           //請求登録用
           var insbody={"app":APP_INVOICE_ID,
@@ -674,104 +700,115 @@
                   }
                 }
             }
+
           //窓口処理後払い分
+          targetflg=false;
+          if(virtualflg){
+            if((moment(invoicedt).month() == 2 || moment(invoicedt).month() == 8) && (moment(firstplandt).format('YYYYMM')<=moment(invoicedt).format('YYYYMM')) && previnvoicedt != null){
+                targetflg=true;
+            }
+          }else{
+                targetflg=true;
+          }
           body = {
             'app': APP_MADO,
             'query': '登録NO_メンバー = "' + rec[i]['レコード番号'].value + 　'" and ' +
                      '支払区分 in ("後払い") and ' +
                      '自動計上済 in ("")  '
           };
-          //データ取得
-          const respato = await  kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', body);
-          var recato=respato.records;
-          for (let k = 0 ; k < recato.length ; k++){
-            var subrecato=recato[k]['料金テーブル'].value;
-            for(let j = 0 ; j<subrecato.length ; j++){
-              if(subrecato[j]['value']['支払区分'].value == "後払い" && subrecato[j]['value']['自動計上済'].value == ""  ){
-                //請求明細
-                insbody.record.請求明細.value.push({
-                                "value":{
-                                  "種別":{
-                                    "value":subrecato[j]['value']['商品種別'].value
-                                  },
-                                  "プラン・オプション":{
-                                    "value":subrecato[j]['value']['商品名'].value
-                                  },
-                                  "単価":{
-                                    "value":Number(subrecato[j]['value']['単価'].value)
-                                  },
-                                  "数量":{
-                                    "value":Number(subrecato[j]['value']['数量'].value)
-                                  },
-                                    "利用対象期間_from":{
-                                      "value":subrecato[j]['value']['対象日'].value
-                                  },
-                                    "利用対象期間_to":{
-                                      "value":subrecato[j]['value']['対象日'].value
-                                  },
-                                  "摘要":{
-                                    "value":"窓口処理"
+          if(targetflg){
+            //データ取得
+            const respato = await  kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', body);
+            var recato=respato.records;
+            for (let k = 0 ; k < recato.length ; k++){
+              var subrecato=recato[k]['料金テーブル'].value;
+              for(let j = 0 ; j<subrecato.length ; j++){
+                if(subrecato[j]['value']['支払区分'].value == "後払い" && subrecato[j]['value']['自動計上済'].value == ""  ){
+                  //請求明細
+                  insbody.record.請求明細.value.push({
+                                  "value":{
+                                    "種別":{
+                                      "value":subrecato[j]['value']['商品種別'].value
+                                    },
+                                    "プラン・オプション":{
+                                      "value":subrecato[j]['value']['商品名'].value
+                                    },
+                                    "単価":{
+                                      "value":Number(subrecato[j]['value']['単価'].value)
+                                    },
+                                    "数量":{
+                                      "value":Number(subrecato[j]['value']['数量'].value)
+                                    },
+                                      "利用対象期間_from":{
+                                        "value":subrecato[j]['value']['対象日'].value
+                                    },
+                                      "利用対象期間_to":{
+                                        "value":subrecato[j]['value']['対象日'].value
+                                    },
+                                    "摘要":{
+                                      "value":"窓口処理"
+                                    }
                                   }
-                                }
-                              });
-                var kin;
-                if(parseInt(subrec[j]['value']['プラン料金'].value)>=0){
-                  kin=Math.floor(Number(subrecato[j]['value']['料金'].value) * (1+parseInt(TAX)/100))
-                }else{
-                  kin=Math.ceil(Number(subrecato[j]['value']['料金'].value) * (1+parseInt(TAX)/100))
-                }
-                //売上明細用
-                insbody2.record.売上明細.value.push({
-                                "value":{
-                                  "請求対象月":{
-                                    "value":subrecato[j]['value']['対象日'].value
-                                  },
-                                  "項目":{
-                                    "value":subrecato[j]['value']['商品名'].value
-                                  },
-                                  "金額":{
-                                    "value":kin
-                                  },
-                                  "支払種別":{
-                                    "value":subrecato[j]['value']['支払種別'].value
-                                  },
-                                  "商品番号":{
-                                    "value":subrecato[j]['value']['商品番号'].value
-                                  }
-                                }
-                              });
-
-                var ids=[];
-                 for(let v=0;v<subrecato.length;v++){
-                   if(v==j){
-                     ids.push({
-                     "id":subrecato[v]['id']
-                     ,"value":{
-                       "自動計上済":{
-                         value: ["済"]
-                         }
-                       }
-                     });
-                   }else{
-                        ids.push({"id":subrecato[v]['id']});
-                   }
-                 }
-                //窓口処理更新
-                var insbodyato = {
-                  "app": APP_MADO,
-                  "id":recato[k]['登録NO'].value,
-                  "record": {
-                    "料金テーブル":{
-                      "value":ids
-                      }
+                                });
+                  var kin;
+                  if(Number(subrecato[j]['value']['料金'].value)>=0){
+                    kin=Math.floor(Number(subrecato[j]['value']['料金'].value) * (1+parseInt(TAX)/100))
+                  }else{
+                    kin=Math.ceil(Number(subrecato[j]['value']['料金'].value) * (1+parseInt(TAX)/100))
                   }
-                };
-                await kintone.api(kintone.api.url('/k/v1/record.json', true), 'PUT', insbodyato);
+                  //売上明細用
+                  insbody2.record.売上明細.value.push({
+                                  "value":{
+                                    "請求対象月":{
+                                      "value":subrecato[j]['value']['対象日'].value
+                                    },
+                                    "項目":{
+                                      "value":subrecato[j]['value']['商品名'].value
+                                    },
+                                    "金額":{
+                                      "value":kin
+                                    },
+                                    "支払種別":{
+                                      "value":subrecato[j]['value']['支払種別'].value
+                                    },
+                                    "商品番号":{
+                                      "value":subrecato[j]['value']['商品番号'].value
+                                    }
+                                  }
+                                });
 
+                  var ids=[];
+                   for(let v=0;v<subrecato.length;v++){
+                     if(v==j){
+                       ids.push({
+                       "id":subrecato[v]['id']
+                       ,"value":{
+                         "自動計上済":{
+                           value: ["済"]
+                           }
+                         }
+                       });
+                     }else{
+                          ids.push({"id":subrecato[v]['id']});
+                     }
+                   }
+                  //窓口処理更新
+                  var insbodyato = {
+                    "app": APP_MADO,
+                    "id":recato[k]['登録NO'].value,
+                    "record": {
+                      "料金テーブル":{
+                        "value":ids
+                        }
+                    }
+                  };
+                  await kintone.api(kintone.api.url('/k/v1/record.json', true), 'PUT', insbodyato);
+
+                }
               }
-          }
 
-        }
+            }
+          }
           if (insbody.record.請求明細.value.length>0){
             //カウントアップ
             count+=1;

@@ -7,7 +7,12 @@
   ];
   kintone.events.on(events, async (event) => {
   try {
-    var APP_ID= 74;  //請求登録
+    //中津店
+    //var APP_ID= 74;  //請求登録
+    //梅田店
+    //var APP_ID= 169;  //請求登録
+    //四条烏丸店
+    var APP_ID= 153;  //請求登録
     //var APP_ID= 449;  //請求登録
 
     // 「請求番号」を取得
@@ -141,4 +146,19 @@ function GetColHtml(value,align){
                   '<div class="control-design-gaia"></div>' +
                   '</div>';
 }
+
+
+var ev2 = [
+  'app.record.create.show',
+  'app.record.edit.show',
+  'app.record.create.change.登録NO_預り金',
+  'app.record.edit.change.登録NO_預り金'
+];
+
+kintone.events.on(ev2, function(event){
+  event.record['入金額'].disabled=false;
+  event.record['入金日'].disabled=false;
+  return event;
+});
+
 })();

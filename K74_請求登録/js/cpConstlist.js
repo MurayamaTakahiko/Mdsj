@@ -43,13 +43,27 @@ jQuery.noConflict();
   var optenddt;
   var virtualdt;
   var firstdt;
-
-  var APP_CONSTLIST = 80;
-  var APP_TELLBILL = 81;
-  var APP_ITEM = 17;
-  var APP_SALES=82;
-  var APP_MADO=178;
-  var TEL_ITEM_NO=121;
+  //中津店
+  //var APP_CONSTLIST = 80;
+  //var APP_TELLBILL = 81;
+  //var APP_ITEM = 17;
+  //var APP_SALES=82;
+  //var APP_MADO=178;
+  //var TEL_ITEM_NO=121;
+  //梅田店
+  //var APP_CONSTLIST = 156; //会員顧客名簿
+  //var APP_TELLBILL = 183;
+  //var APP_ITEM = 157;
+  //var APP_SALES=168;
+  //var APP_MADO=179;
+  //var TEL_ITEM_NO=229;
+  //四条烏丸店
+  var APP_CONSTLIST = 140; //会員顧客名簿
+  var APP_TELLBILL = 185;
+  var APP_ITEM = 141;
+  var APP_SALES=152;
+  var APP_MADO=180;
+  var TEL_ITEM_NO=141;
 
   //var APP_CONSTLIST = 447;
   //var APP_TELLBILL = 461;

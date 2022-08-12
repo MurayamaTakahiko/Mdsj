@@ -54,10 +54,18 @@ jQuery.noConflict();
           'app': relatedAppId,
           'query': query
       };
-
-      var APP_CONSTLIST = 79; // 入金管理アプリID
-      var APP_OTHERBILL = 82; // 売上管理アプリID
-      var APP_MADO = 178;
+      //中津店
+      //var APP_CONSTLIST = 79; // 入金管理アプリID
+      //var APP_OTHERBILL = 82; // 売上管理アプリID
+      //var APP_MADO = 178;
+      //梅田店
+      //var APP_CONSTLIST = 170; // 入金管理アプリID
+      //var APP_OTHERBILL = 168; // 売上管理アプリID
+      //var APP_MADO = 179;
+      //四条烏丸店
+      var APP_CONSTLIST = 154; // 入金管理アプリID
+      var APP_OTHERBILL = 152; // 売上管理アプリID
+      var APP_MADO = 180;
 
       //var APP_CONSTLIST = 448;
       //var APP_OTHERBILL = 446;

@@ -24,11 +24,24 @@
           return;
       }
       showSpinner(); // スピナー表示
-      //アプリID本番用
-      var APP_SALES_ID = 82;  //売上管理
-      var APP_INVOICE_ID = 74; //請求登録
-      var APP_NYUKIN_ID= 79; //入金管理
-      var APP_CUSTMER_ID = 80 //会員顧客名簿
+      //アプリID本番用<中津店>
+      //var APP_SALES_ID = 82;  //売上管理
+      //var APP_INVOICE_ID = 74; //請求登録
+      //var APP_NYUKIN_ID= 79; //入金管理
+      //var APP_CUSTMER_ID = 80 //会員顧客名簿
+
+      //アプリID本番用<梅田店>
+      //var APP_SALES_ID = 168;  //売上管理
+      //var APP_INVOICE_ID = 169; //請求登録
+      //var APP_NYUKIN_ID= 170; //入金管理
+      //var APP_CUSTMER_ID = 156 //会員顧客名簿
+
+      //アプリID本番用<四条烏丸店>
+      var APP_SALES_ID = 152;  //売上管理
+      var APP_INVOICE_ID = 153; //請求登録
+      var APP_NYUKIN_ID= 154; //入金管理
+      var APP_CUSTMER_ID = 140 //会員顧客名簿
+
       //アプリID
       //var APP_SALES_ID = 446;  //売上管理
       //var APP_INVOICE_ID = 449; //請求登録

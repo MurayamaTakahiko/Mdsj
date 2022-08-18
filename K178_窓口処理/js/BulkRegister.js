@@ -37,16 +37,16 @@
       //var APP_CUSTMER_ID = 156 //会員顧客名簿
 
       //アプリID本番用<四条烏丸店>
-      var APP_SALES_ID = 152;  //売上管理
-      var APP_INVOICE_ID = 153; //請求登録
-      var APP_NYUKIN_ID= 154; //入金管理
-      var APP_CUSTMER_ID = 140 //会員顧客名簿
+      //var APP_SALES_ID = 152;  //売上管理
+      //var APP_INVOICE_ID = 153; //請求登録
+      //var APP_NYUKIN_ID= 154; //入金管理
+      //var APP_CUSTMER_ID = 140 //会員顧客名簿
 
       //アプリID
-      //var APP_SALES_ID = 446;  //売上管理
-      //var APP_INVOICE_ID = 449; //請求登録
-      //var APP_NYUKIN_ID= 448; //入金管理
-      //var APP_CUSTMER_ID = 447 //会員顧客名簿
+      var APP_SALES_ID = 446;  //売上管理
+      var APP_INVOICE_ID = 449; //請求登録
+      var APP_NYUKIN_ID= 448; //入金管理
+      var APP_CUSTMER_ID = 447 //会員顧客名簿
       //カレンダーの年月を取得
       var dts=$('input[id^="selectDate"]');
       var dt=dts[0].value;
@@ -142,7 +142,7 @@
                               "自動登録日":{
                                 "value":moment().format('YYYY-MM-DD')
                               },
-                              "顧客名  ":{
+                              "顧客名":{
                                 "value":rec[i]['メンバーの場合'].value
                               },
                               "顧客名_ビジター":{

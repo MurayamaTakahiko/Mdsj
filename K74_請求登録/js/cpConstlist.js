@@ -362,6 +362,10 @@ jQuery.noConflict();
                 // バーチャルプランのみ半年請求
                 if (planList['プラン種別']['value'] === "バーチャル") {
                   //virtualFlg = true;
+                  if(moment(planList['プラン利用開始日'].value).format("YYYYMM")<=moment(finDay).format('YYYYMM') &&
+                     moment(planList['プラン利用終了日'].value).format("YYYYMM")>=moment(finDay).format('YYYYMM')){
+                    virtualFlg=true;
+                     }
                   virtualdt=planList['プラン利用開始日']['value'];
                   //初回請求（入会日の月＝請求日かつ前回請求日なし）
                   if(moment(record['入会日'].value).format('YYYYMM') == moment(invoicedt).format('YYYYMM') && record['前回請求日'].value == null){
@@ -401,7 +405,6 @@ jQuery.noConflict();
                     max=moment(nextinvoicedt).diff(moment(planList['プラン利用開始日'].value).startOf('month').format("YYYY-MM-DD"),'months');
 
                     if(max>=0){
-                      virtualFlg=true;
                       for(let j=0;j<=max;j++){
                         // 売上管理の窓口入金済みにあるかどうか
                         body = {
@@ -1050,32 +1053,43 @@ jQuery.noConflict();
                  '支払区分 in ("後払い") and ' +
                  '自動計上済 in ("")  '
       };
-      //データ取得
-      const respato = await  kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', body);
-      var recato=respato.records;
-      for (let k = 0 ; k < recato.length ; k++){
-        var subrecato=recato[k]['料金テーブル'].value;
-        for(let j = 0 ; j<subrecato.length ; j++){
-          if(subrecato[j]['value']['支払区分'].value == "後払い" && subrecato[j]['value']['自動計上済'].value == ""){
-            //請求明細
-            setFields = {
-                          "種別":subrecato[j]['value']['商品種別'].value,
-                          "プラン・オプション":subrecato[j]['value']['商品名'].value,
-                          "単価":Number(subrecato[j]['value']['単価'].value) ,
-                          "数量":Number(subrecato[j]['value']['数量'].value),
-                          "利用対象期間_from":subrecato[j]['value']['対象日'].value,
-                          "利用対象期間_to":subrecato[j]['value']['対象日'].value,
-                          "摘要":"窓口処理",
-                          "更新用ID1":recato[k]['登録NO'].value,
-                          "更新用ID2":subrecato[j]['id']
-                        };
-                tbl.push({
-                  'value': getRowObject(resp, setFields)
-                });
-
-          }
+      //窓口処理後払い分
+      var targetflg=false;
+      if(virtualFlg){
+        if((moment(invoicedt).month() == 2 || moment(invoicedt).month() == 8) && (moment(firstplandt).format('YYYYMM')<=moment(invoicedt).format('YYYYMM')) ){
+            targetflg=true;
         }
+      }else{
+            targetflg=true;
+      }
+      if(targetflg){
+        //データ取得
+        const respato = await  kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', body);
+        var recato=respato.records;
+        for (let k = 0 ; k < recato.length ; k++){
+          var subrecato=recato[k]['料金テーブル'].value;
+          for(let j = 0 ; j<subrecato.length ; j++){
+            if(subrecato[j]['value']['支払区分'].value == "後払い" && subrecato[j]['value']['自動計上済'].value == ""){
+              //請求明細
+              setFields = {
+                            "種別":subrecato[j]['value']['商品種別'].value,
+                            "プラン・オプション":subrecato[j]['value']['商品名'].value,
+                            "単価":Number(subrecato[j]['value']['単価'].value) ,
+                            "数量":Number(subrecato[j]['value']['数量'].value),
+                            "利用対象期間_from":subrecato[j]['value']['対象日'].value,
+                            "利用対象期間_to":subrecato[j]['value']['対象日'].value,
+                            "摘要":"窓口処理",
+                            "更新用ID1":recato[k]['登録NO'].value,
+                            "更新用ID2":subrecato[j]['id']
+                          };
+                  tbl.push({
+                    'value': getRowObject(resp, setFields)
+                  });
 
+            }
+          }
+
+        }
       }
     }
         //画面[請求明細]サブテーブル]に反映

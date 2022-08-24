@@ -37,16 +37,16 @@
       //var APP_CUSTMER_ID = 156 //会員顧客名簿
 
       //アプリID本番用<四条烏丸店>
-      //var APP_SALES_ID = 152;  //売上管理
-      //var APP_INVOICE_ID = 153; //請求登録
-      //var APP_NYUKIN_ID= 154; //入金管理
-      //var APP_CUSTMER_ID = 140 //会員顧客名簿
+      var APP_SALES_ID = 152;  //売上管理
+      var APP_INVOICE_ID = 153; //請求登録
+      var APP_NYUKIN_ID= 154; //入金管理
+      var APP_CUSTMER_ID = 140 //会員顧客名簿
 
       //アプリID
-      var APP_SALES_ID = 446;  //売上管理
-      var APP_INVOICE_ID = 449; //請求登録
-      var APP_NYUKIN_ID= 448; //入金管理
-      var APP_CUSTMER_ID = 447 //会員顧客名簿
+      //var APP_SALES_ID = 446;  //売上管理
+      //var APP_INVOICE_ID = 449; //請求登録
+      //var APP_NYUKIN_ID= 448; //入金管理
+      //var APP_CUSTMER_ID = 447 //会員顧客名簿
       //カレンダーの年月を取得
       var dts=$('input[id^="selectDate"]');
       var dt=dts[0].value;
@@ -87,14 +87,18 @@
             var recno=respno.records;
             var newno;
             if(recno.length==0){
-              newno="NS-" + yymm + "-0001";
+              //newno="NS-" + yymm + "-0001";
+              //newno="US-" + yymm + "-0001";
+              newno="SS-" + yymm + "-0001";
             }else{
               var ren=recno[0]['請求番号'].value;
               var iren=parseInt(ren.substr(-4));
               iren=iren+1;
               var sren=String(iren);
               sren=('0000' + sren).slice(-4);
-              newno="NS-" + yymm + "-" + sren;
+              //newno="NS-" + yymm + "-" + sren;
+              //newno="US-" + yymm + "-" + sren;
+              newno="SS-" + yymm + "-" + sren;
             }
           //*******************************
 
@@ -191,9 +195,31 @@
                           "record":{
                               "請求番号":{
                                "value":newno
-                              }
+                                },
+                                "入金日":{
+                                    "value":moment(rec[i]['日時'].value).format('YYYY-MM-DD')
+                                },
+                                "入金額":{
+                                    "value":0
+                                },
+                                "複数入金":{
+                                  "value":[{
+                                      "value":{
+                                        "登録NO_複数":{
+                                          "value":""
+                                        },
+                                        "入金日_複数":{
+                                          "value":null
+                                        },
+                                        "入金額_複数":{
+                                          "value":""
+                                        }
+                                      }
+                                    }]
+                                }
                             }
                           };
+          var ttl=0;
           for(let j = 0 ; j<subrec.length ; j++){
 
             var kin;
@@ -202,8 +228,9 @@
             }else{
               kin=Math.ceil(Number(subrec[j]['value']['料金'].value) * 1.1)
             }
+            ttl=ttl+kin;
             //支払済かつ自動計上するかつ、集金額1円以上
-            if(subrec[j]['value']['支払区分'].value =='支払済' &&  subrec[j]['value']['集金額'].value >= 1 && subrec[j]['value']['自動計上済'].value ==''){
+            if(subrec[j]['value']['支払区分'].value =='支払済' &&  subrec[j]['value']['集金額'].value != 0 && subrec[j]['value']['自動計上済'].value ==''){
               insbody.record.売上明細.value.push({
                               "value":{
                                 "請求対象月":{
@@ -282,14 +309,16 @@
               const resp2 = await kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', insbody);
               //登録
               const resp3 = await kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', insbody2);
+
               //登録
+              insbody3.record.入金額.value=ttl;
               const resp4 = await kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', insbody3);
             }
       }
       //後払い分（ビジター）
       body = {
         'app': kintone.app.getId(),
-        'query': '日時 >= "' + minDt +  '" and 日時 <="' + maxDt  + '" and 自動計上済 in ("") and 支払区分 in ("後払い") and 登録NO_ビジター != "" order by 日時 limit 500'
+        'query': '日時 >= "' + minDt +  '" and 日時 <="' + maxDt  + '" and 自動計上済 in ("") and 支払区分 in ("後払い") and 登録NO_メンバー = "" order by 日時 limit 500'
       };
       //指定年月の後払いを取得
       const resp4 = await kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', body);
@@ -369,9 +398,31 @@
                         "record":{
                             "請求番号":{
                              "value":newno
-                            }
-                          }
+                           },
+                             "入金日":{
+                               "value":moment(rec[i]['日時'].value).format('YYYY-MM-DD')
+                           },
+                             "入金額":{
+                               "value":0
+                             },
+                             "複数入金":{
+                               "value":[{
+                                   "value":{
+                                     "登録NO_複数":{
+                                       "value":""
+                                     },
+                                     "入金日_複数":{
+                                       "value":null
+                                     },
+                                     "入金額_複数":{
+                                       "value":""
+                                     }
+                                   }
+                                 }]
+                             }
+                           }
                         };
+        var ttl=0;
         for(let j = 0 ; j<subrec.length ; j++){
           var kin;
           if(parseInt(subrec[j]['value']['料金'].value)>=0){
@@ -379,6 +430,7 @@
           }else{
             kin=Math.ceil(parseInt(subrec[j]['value']['料金'].value) * 1.1)
           }
+          ttl=ttl+kin;
           //支払済かつ自動計上するかつ、集金額1円以上
           if(subrec[j]['value']['支払区分'].value =='後払い' &&  subrec[j]['value']['集金額'].value >= 1 ){
             insbody.record.売上明細.value.push({
@@ -459,6 +511,9 @@
             const resp5 = await kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', insbody);
             //請求管理登録
             const resp6 = await kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', insbody2);
+
+            insbody3.record.入金額.value=ttl;
+
             //入金管理登録
             const resp7 = await kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', insbody3);
 

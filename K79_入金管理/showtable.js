@@ -129,7 +129,6 @@
       cell6.innerHTML=GetColHtml(ttl6.toLocaleString(),'right');
       cell7.innerHTML=GetColHtml(ttl7.toLocaleString(),'right');
 
-
       return event;
     } catch(e){
       // パラメータが間違っているなどAPI実行時にエラーが発生した場合
@@ -147,18 +146,20 @@ function GetColHtml(value,align){
                   '</div>';
 }
 
-
-var ev2 = [
+var ev   = [
   'app.record.create.show',
   'app.record.edit.show',
-  'app.record.create.change.登録NO_預り金',
-  'app.record.edit.change.登録NO_預り金'
+  'app.record.create.change.複数入金',
+  'app.record.edit.change.複数入金'
 ];
 
-kintone.events.on(ev2, function(event){
-  event.record['入金額'].disabled=false;
-  event.record['入金日'].disabled=false;
-  return event;
+kintone.events.on(ev, function(event){
+  var tableVal = event.record['複数入金'].value;
+  tableVal.forEach(function(column) {
+    column.value['入金日_複数'].disabled = false;
+    column.value['入金額_複数'].disabled = false;
+  });
+    return event;
 });
 
 })();

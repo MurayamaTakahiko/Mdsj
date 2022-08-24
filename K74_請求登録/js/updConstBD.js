@@ -94,8 +94,20 @@ jQuery.noConflict();
           "請求額": {
             "value": billPrice
           },
-          "請求先区分": {
-            "value": "法人"
+          "複数入金":{
+            "value":[{
+                "value":{
+                  "登録NO_複数":{
+                    "value":""
+                  },
+                  "入金日_複数":{
+                    "value":null
+                  },
+                  "入金額_複数":{
+                    "value":""
+                  }
+                }
+              }]
           }
         }
       };

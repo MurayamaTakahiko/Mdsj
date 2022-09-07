@@ -87,10 +87,7 @@
     var nextinvoicedt;
     //６か月後
     var enddt6=moment(invoicedt).add(6, 'months').endOf('month').format("YYYY-MM-DD");
-    //オプション終了日
-    var optenddt=null;
-    //プラン終了日
-    var planenddt=null;
+
 
     var max=0;
     //利用・請求代表 に "請求代表"含む
@@ -105,6 +102,10 @@
     };
     //指定年月のデータを取得
     const resp = await kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', body);
+    //オプション終了日
+    var optenddt=null;
+    //プラン終了日
+    var planenddt=null;
       var rec=resp.records;
       var i,j;
       for ( i = 0 ; i < rec.length ; i++){
@@ -235,6 +236,7 @@
                         planenddt=moment(subrec[j]['value']['プラン利用終了日'].value).startOf('month').format("YYYY-MM-DD");
                         max=moment(planenddt).diff(nextstartdt,'months')+1;
                       }else{
+                        planenddt=moment(enddt6).startOf('month').format("YYYY-MM-DD");
                         max=6
                       }
                       for(let k=0;k<max;k++){
@@ -378,7 +380,7 @@
                           (subrec[j]['value']['オプション利用終了日'].value != null &&
                              enddt6>=subrec[j]['value']['オプション利用終了日'].value) || (planenddt != null && enddt6>=planenddt)
                            ){
-                         optenddt=moment(subrec[j]['value']['オプション利用終了日'].value).endOf('month').format();
+                         optenddt=moment(subrec[j]['value']['オプション利用終了日'].value).startOf('month').format();
                          //バーチャルプラン終了日と比較
                          if(planenddt == null){
                            max=moment(optenddt).diff(nextstartdt,'months')+1;

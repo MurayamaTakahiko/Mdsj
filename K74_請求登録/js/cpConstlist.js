@@ -435,10 +435,11 @@ jQuery.noConflict();
                   }else if (moment(staDay).month() == 3 || moment(staDay).month() == 9){
                       //プラン終了日が6か月以前の場合
                       if(planList['プラン利用終了日'].value != null && enddt6>=planList['プラン利用終了日'].value){
-                        planenddt=moment(planList['プラン利用終了日'].value).endOf('month').format();
+                        planenddt=moment(planList['プラン利用終了日'].value).startOf('month').format();
                         max=moment(planenddt).diff(finDay,'months')+1;
                       }else{
-                        max=6
+                        max=6;
+                        planenddt=moment(enddt6).startOf('month').format();
                       }
                       for(let j=0;j<max;j++){
                         virtualFlg=true;
@@ -690,7 +691,7 @@ jQuery.noConflict();
                        (tableList['オプション利用終了日'].value != null &&
                           enddt6>=tableList['オプション利用終了日'].value) || (planenddt != null && enddt6>=planenddt)
                         ){
-                      optenddt=moment(tableList['オプション利用終了日'].value).endOf('month').format();
+                      optenddt=moment(tableList['オプション利用終了日'].value).startOf('month').format();
                       //バーチャルプラン終了日と比較
                       if(planenddt == null){
                         max=moment(optenddt).diff(finDay,'months')+1;

@@ -58,19 +58,19 @@ jQuery.noConflict();
   //var APP_MADO=179;
   //var TEL_ITEM_NO=229;
   //四条烏丸店
-  var APP_CONSTLIST = 140; //会員顧客名簿
-  var APP_TELLBILL = 185;
-  var APP_ITEM = 141;
-  var APP_SALES=152;
-  var APP_MADO=180;
-  var TEL_ITEM_NO=141;
+  //var APP_CONSTLIST = 140; //会員顧客名簿
+  //var APP_TELLBILL = 185;
+  //var APP_ITEM = 141;
+  //var APP_SALES=152;
+  //var APP_MADO=180;
+  //var TEL_ITEM_NO=141;
 
-  //var APP_CONSTLIST = 447;
-  //var APP_TELLBILL = 461;
-  //var APP_ITEM = 458;
-  //var APP_SALES=446;
-  //var APP_MADO=505;
-  //var TEL_ITEM_NO=238;
+  var APP_CONSTLIST = 447;
+  var APP_TELLBILL = 461;
+  var APP_ITEM = 458;
+  var APP_SALES=446;
+  var APP_MADO=505;
+  var TEL_ITEM_NO=238;
   // ロケールを設定
   moment.locale('ja');
 
@@ -878,7 +878,7 @@ jQuery.noConflict();
                     if(moment(tableList['オプション利用終了日'].value).format("YYYYMM") <= moment(finTelDay).format("YYYYMM")){
                       finTelDay=moment(tableList['オプション利用終了日'].value).endOf('month').format("YYYY-MM-DD");
                     }
-                    var query = '契約電話番号 = "' + tellNo + '" and 請求対象月 >= "' + staTelDay + '" and 請求対象月 <= "' + finTelDay + '" order by 請求対象月';
+                    var query = '契約電話番号 = "' + tellNo + '" and 請求対象月 >= "' + staTelDay + '" and 請求対象月 <= "' + finTelDay + '" order by 請求対象月 limit 500';
                     var paramTell = {
                         'app': APP_TELLBILL,
                         'query': query

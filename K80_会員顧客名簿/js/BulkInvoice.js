@@ -36,21 +36,21 @@
     //var TEL_ITEM_NO=229;
 
      //////請求番号採番時ロジック編集(SS)
-     var APP_ID = 140;   //会員顧客名簿
-     var APP_INVOICE_ID = 153;//請求登録
-     var APP_CONSTLIST = 154;
-     var APP_SALES_ID = 152;
-     var APP_CALL = 185;
-     var APP_MADO = 180;
-     var TEL_ITEM_NO=141;
+     //var APP_ID = 140;   //会員顧客名簿
+     //var APP_INVOICE_ID = 153;//請求登録
+     //var APP_CONSTLIST = 154;
+     //var APP_SALES_ID = 152;
+     //var APP_CALL = 185;
+     //var APP_MADO = 180;
+     //var TEL_ITEM_NO=141;
 
-    //var APP_ID = 447;   //会員顧客名簿
-    //var APP_INVOICE_ID = 449;   //請求登録
-    //var APP_CONSTLIST = 448;   //入金管理
-    //var APP_SALES_ID = 446;
-    //var APP_CALL = 461;
-    //var APP_MADO = 505;
-    //var TEL_ITEM_NO=238;
+    var APP_ID = 447;   //会員顧客名簿
+    var APP_INVOICE_ID = 449;   //請求登録
+    var APP_CONSTLIST = 448;   //入金管理
+    var APP_SALES_ID = 446;
+    var APP_CALL = 461;
+    var APP_MADO = 505;
+    var TEL_ITEM_NO=238;
 
     var TAX=10;
 
@@ -643,7 +643,7 @@
                         'query': '登録NO_メンバー = "' + rec[i]['レコード番号'].value + 　'" and ' +
                                  '請求対象月 >= "' + moment(ymd2).startOf('month').format("YYYY-MM-DD") +'" and ' +
                                  '請求対象月 <= "' + moment(ymd2).endOf('month').format("YYYY-MM-DD") +'" and ' +
-                                 '商品番号 in ( "' + TEL_ITEM_NO + '") and 窓口入金 in ("済") '
+                                 '商品番号 in ( "' + TEL_ITEM_NO + '") and 窓口入金 in ("済")  limit 500'
                       };
                       //データ取得
                       const respsumi = await  kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', body);

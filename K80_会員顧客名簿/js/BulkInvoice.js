@@ -52,6 +52,7 @@
     //var APP_MADO = 505;
     //var TEL_ITEM_NO=238;
 
+
     var TAX=10;
 
     var proc='';
@@ -653,7 +654,7 @@
                         'query': '登録NO_メンバー = "' + rec[i]['レコード番号'].value + 　'" and ' +
                                  '請求対象月 >= "' + moment(ymd2).startOf('month').format("YYYY-MM-DD") +'" and ' +
                                  '請求対象月 <= "' + moment(ymd2).endOf('month').format("YYYY-MM-DD") +'" and ' +
-                                 '商品番号 in ( "' + TEL_ITEM_NO + '") and 窓口入金 in ("済") '
+                                 '商品番号 in ( "' + TEL_ITEM_NO + '") and 窓口入金 in ("済")  limit 500'
                       };
                       //データ取得
                       const respsumi = await  kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', body);

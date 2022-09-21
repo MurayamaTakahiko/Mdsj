@@ -58,19 +58,19 @@ jQuery.noConflict();
   //var APP_MADO=179;
   //var TEL_ITEM_NO=229;
   //四条烏丸店
-  var APP_CONSTLIST = 140; //会員顧客名簿
-  var APP_TELLBILL = 185;
-  var APP_ITEM = 141;
-  var APP_SALES=152;
-  var APP_MADO=180;
-  var TEL_ITEM_NO=141;
+  //var APP_CONSTLIST = 140; //会員顧客名簿
+  //var APP_TELLBILL = 185;
+  //var APP_ITEM = 141;
+  //var APP_SALES=152;
+  //var APP_MADO=180;
+  //var TEL_ITEM_NO=141;
 
-  //var APP_CONSTLIST = 447;
-  //var APP_TELLBILL = 461;
-  //var APP_ITEM = 458;
-  //var APP_SALES=446;
-  //var APP_MADO=505;
-  //var TEL_ITEM_NO=238;
+  var APP_CONSTLIST = 447;
+  var APP_TELLBILL = 461;
+  var APP_ITEM = 458;
+  var APP_SALES=446;
+  var APP_MADO=505;
+  var TEL_ITEM_NO=238;
   // ロケールを設定
   moment.locale('ja');
 
@@ -184,6 +184,47 @@ jQuery.noConflict();
         kintone.app.record.set({record: record});
       });
   });
+
+  //課税、非課税対象額合計
+    var fields = ['税区分','単価','数量','請求明細'];
+     var kamokuInfos = {
+     '10%': '課税10対象額',
+     '非課税': '非課税対象額'
+      }
+
+    var events = ["app.record.edit.show", "app.record.create.show"];
+     fields.forEach(function(field) {
+     events.push("app.record.edit.change." + field);
+     events.push("app.record.create.change." + field);
+     })
+
+    var totalFields = [];
+     Object.keys(kamokuInfos).forEach(function(kamoku) {
+     var tcode = kamokuInfos[kamoku];
+     if (totalFields.indexOf(tcode) < 0) {
+     totalFields.push(tcode);
+     }
+     });
+
+    kintone.events.on(events, function(event) {
+     var record = event.record;
+     totalFields.forEach(function(tcode) {
+     record[tcode].value = 0;
+     record[tcode].disabled = true;
+     });
+     var subTable = record['請求明細'].value;
+     subTable.forEach(function(rows) {
+     var kamoku = rows.value['税区分'].value;
+     if (Object.keys(kamokuInfos).indexOf(kamoku) >= 0) {
+     var tcode = kamokuInfos[kamoku];
+     if (rows.value['単価'].value) {
+     record[tcode].value += Number(rows.value['単価'].value)*Number(rows.value['数量'].value);
+     }
+     }
+     });
+
+    return event;
+     });
   //「明細取得ボタン」クリックイベント
   $(document).on('click', '#emxas-button-schedule', function(ev) {
     // 契約顧客アプリID
@@ -325,7 +366,8 @@ jQuery.noConflict();
   try {
     var tbl = [];
     var nextinvoicedt;
-
+    var total=0;
+    var nototal=0;
     //画面の請求明細サブテーブルに既存行がある場合、退避
     for (var iTbl = 0; iTbl < objRecord['record']['請求明細']['value'].length; iTbl++) {
       //空行はつめる
@@ -336,6 +378,15 @@ jQuery.noConflict();
           objRecord['record']['請求明細']['value'][iTbl]['value']['摘要']['value'])) {
         continue;
       }
+      switch(objRecord['record']['請求明細']['value'][iTbl]['value']['税区分']['value']){
+        case "10%":
+          total=Number(total)+Number(objRecord['record']['請求明細']['value'][iTbl]['value']['金額']['value']);
+          break;
+        case "非課税":
+          nototal=Number(nototal)+Number(objRecord['record']['請求明細']['value'][iTbl]['value']['金額']['value']);
+          break;
+        }
+
       tbl.push({
         'id': objRecord['record']['請求明細']['value'][iTbl]['id'],
         'value': objRecord['record']['請求明細']['value'][iTbl]['value']
@@ -354,6 +405,7 @@ jQuery.noConflict();
           var flgA=false;
           var flgB=false;
           var body;
+
           // プラン分をまずセット
           for (var pTbl = 0; pTbl < record['プランリスト']['value'].length; pTbl++) {
             var planList = record['プランリスト'].value[pTbl].value;
@@ -429,7 +481,9 @@ jQuery.noConflict();
                           tbl.push({
                             'value' : getRowObject(resp, setFields)
                           });
+                          total=Number(total) + Number(planList['プラン料金']['value']);
                         }
+
                       }
                     }
                   }else if (moment(staDay).month() == 3 || moment(staDay).month() == 9){
@@ -467,6 +521,7 @@ jQuery.noConflict();
                           tbl.push({
                             'value' : getRowObject(resp, setFields)
                           });
+                          total=Number(total) + Number(planList['プラン料金']['value']);
                         }
                       }
                   }
@@ -510,6 +565,7 @@ jQuery.noConflict();
                                 tbl.push({
                                   'value' : getRowObject(resp, setFields)
                                 });
+                                total=Number(total) + Number(planList['プラン料金']['value']);
                               }
                             }
                         //入会日の翌月分がプランの利用期間に対象だった場合
@@ -539,6 +595,7 @@ jQuery.noConflict();
                                 tbl.push({
                                   'value' : getRowObject(resp, setFields)
                                 });
+                                total=Number(total) + Number(planList['プラン料金']['value']);
                               }
                             }
 
@@ -571,6 +628,7 @@ jQuery.noConflict();
                                 tbl.push({
                                   'value' : getRowObject(resp, setFields)
                                 });
+                                total=Number(total) + Number(planList['プラン料金']['value']);
                               }
                             }
                       }
@@ -602,6 +660,7 @@ jQuery.noConflict();
                               tbl.push({
                                 'value' : getRowObject(resp, setFields)
                               });
+                              total=Number(total) + Number(planList['プラン料金']['value']);
                             }
                     }
                 }
@@ -681,6 +740,7 @@ jQuery.noConflict();
                           tbl.push({
                             'value' : getRowObject(resp, setFields)
                           });
+                          total=Number(total) + (Number(tableList['オプション単価']['value'])*Number(tableList['オプション契約数']['value']));
                         }
                       }
                     }
@@ -730,6 +790,7 @@ jQuery.noConflict();
                       tbl.push({
                         'value' : getRowObject(resp, setFields)
                       });
+                      total=Number(total) + (Number(tableList['オプション単価']['value'])*Number(tableList['オプション契約数']['value']));
                     }
                   }
                 } else {
@@ -768,6 +829,7 @@ jQuery.noConflict();
                                tbl.push({
                                  'value' : getRowObject(resp, setFields)
                                });
+                               total=Number(total) + (Number(tableList['オプション単価']['value'])*Number(tableList['オプション契約数']['value']));
                              }
                            }
                        //入会日の翌月分がオプションの利用期間に対象だった場合
@@ -798,6 +860,7 @@ jQuery.noConflict();
                                tbl.push({
                                  'value' : getRowObject(resp, setFields)
                                });
+                               total=Number(total) + (Number(tableList['オプション単価']['value'])*Number(tableList['オプション契約数']['value']));
                              }
                            }
 
@@ -829,6 +892,7 @@ jQuery.noConflict();
                                    tbl.push({
                                      'value' : getRowObject(resp, setFields)
                                    });
+                                   total=Number(total) + (Number(tableList['オプション単価']['value'])*Number(tableList['オプション契約数']['value']));
                                  }
                                }
                              }
@@ -859,6 +923,7 @@ jQuery.noConflict();
                                tbl.push({
                                  'value' : getRowObject(resp, setFields)
                                });
+                               total=Number(total) + (Number(tableList['オプション単価']['value'])*Number(tableList['オプション契約数']['value']));
                              }
                      }
                  }
@@ -924,6 +989,7 @@ jQuery.noConflict();
                                           tbl.push({
                                             'value': getRowObject(resp, setFields)
                                           });
+                                          total=Number(total) + Number(tellBill);
 
                                }
                              }
@@ -958,6 +1024,7 @@ jQuery.noConflict();
                           tbl.push({
                             'value': getRowObject(resp, setFields)
                           });
+                          total=Number(total) + Number(tellBill);
                         }
                       }
                   }
@@ -1006,6 +1073,7 @@ jQuery.noConflict();
                                           tbl.push({
                                             'value': getRowObject(resp, setFields)
                                           });
+                                          total=Number(total) + Number(tellBill);
                              }
                            }
                             tellBill=0;
@@ -1038,6 +1106,7 @@ jQuery.noConflict();
                           tbl.push({
                             'value': getRowObject(resp, setFields)
                           });
+                          total=Number(total) + Number(tellBill);
                         }
                     }
 
@@ -1095,6 +1164,10 @@ jQuery.noConflict();
     }
         //画面[請求明細]サブテーブル]に反映
         objRecord['record']['請求明細']['value'] = tbl;
+
+        //対象額
+        objRecord['record']['課税10対象額']['value']=total;
+        objRecord['record']['非課税対象額']['value']=nototal;
         kintone.app.record.set(objRecord);
         //ポップアップエリア隠す
         $('.emxas-confirm').hide();

@@ -24,6 +24,7 @@
           return;
       }
       showSpinner(); // スピナー表示
+      //請求番号編集２か所
       //アプリID本番用<中津店>
       //var APP_SALES_ID = 82;  //売上管理
       //var APP_INVOICE_ID = 74; //請求登録
@@ -87,7 +88,7 @@
             var recno=respno.records;
             var newno;
             if(recno.length==0){
-              //newno="NS-" + yymm + "-0001";
+              newno="NS-" + yymm + "-0001";
               //newno="US-" + yymm + "-0001";
               newno="SS-" + yymm + "-0001";
             }else{
@@ -160,6 +161,12 @@
                               },
                               "請求書対象":{
                                 "value":"対象外"
+                              },
+                              "課税10対象額":{
+                                "value":0
+                              },
+                              "非課税対象額":{
+                                "value":0
                               }
                             }
                           };
@@ -220,17 +227,23 @@
                             }
                           };
           var ttl=0;
+          var total=0;
           for(let j = 0 ; j<subrec.length ; j++){
 
             var kin;
+            var tax;
             if(parseInt(subrec[j]['value']['料金'].value)>=0){
-              kin=Math.floor(Number(subrec[j]['value']['料金'].value) * 1.1)
+              tax=Math.floor(Number(subrec[j]['value']['料金'].value) * 0.1);
+              kin=Number(subrec[j]['value']['料金'].value) + Number(tax);
             }else{
-              kin=Math.ceil(Number(subrec[j]['value']['料金'].value) * 1.1)
+              tax=Math.ceil(Number(subrec[j]['value']['料金'].value) * 0.1);
+              kin=Number(subrec[j]['value']['料金'].value) + Number(tax);
             }
             ttl=ttl+kin;
+
             //支払済かつ自動計上するかつ、集金額1円以上
             if(subrec[j]['value']['支払区分'].value =='支払済' &&  subrec[j]['value']['集金額'].value != 0 && subrec[j]['value']['自動計上済'].value ==''){
+              total=Number(total)+Number(subrec[j]['value']['料金'].value);
               insbody.record.売上明細.value.push({
                               "value":{
                                 "請求対象月":{
@@ -307,6 +320,8 @@
             if(insbody.record.売上明細.value.length>0){
               //登録
               const resp2 = await kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', insbody);
+
+              insbody2.record.課税10対象額.value=total;
               //登録
               const resp3 = await kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', insbody2);
 
@@ -338,14 +353,18 @@
           var recno=respno.records;
           var newno;
           if(recno.length==0){
-            newno="NS-" + yymm + "-0001";
+            //newno="NS-" + yymm + "-0001";
+            //newno="US-" + yymm + "-0001";
+            newno="SS-" + yymm + "-0001";
           }else{
             var ren=recno[0]['請求番号'].value;
             var iren=parseInt(ren.substr(-4));
             iren=iren+1;
             var sren=String(iren);
             sren=('0000' + sren).slice(-4);
-            newno="NS-" + yymm + "-" + sren;
+            //newno="NS-" + yymm + "-" + sren;
+            //newno="US-" + yymm + "-" + sren;
+            newno="SS-" + yymm + "-" + sren;
           }
         //*******************************
         subrec=rec[i]['料金テーブル'].value;
@@ -390,6 +409,12 @@
                             },
                             "請求明細":{
                               "value":[]
+                            },
+                            "課税10対象額":{
+                              "value":0
+                            },
+                            "非課税対象額":{
+                              "value":0
                             }
                           }
                         };
@@ -423,16 +448,24 @@
                            }
                         };
         var ttl=0;
+
+
+        var total=0;
         for(let j = 0 ; j<subrec.length ; j++){
           var kin;
+          var tax;
           if(parseInt(subrec[j]['value']['料金'].value)>=0){
-            kin=Math.floor(parseInt(subrec[j]['value']['料金'].value) * 1.1)
+            tax=Math.floor(parseInt(subrec[j]['value']['料金'].value) * 0.1);
+            kin=parseInt(subrec[j]['value']['料金'].value) +tax;
           }else{
-            kin=Math.ceil(parseInt(subrec[j]['value']['料金'].value) * 1.1)
+            tax=Math.ceil(parseInt(subrec[j]['value']['料金'].value) * 0.1);
+            kin=parseInt(subrec[j]['value']['料金'].value) +tax;
           }
           ttl=ttl+kin;
+
           //支払済かつ自動計上するかつ、集金額1円以上
           if(subrec[j]['value']['支払区分'].value =='後払い' &&  subrec[j]['value']['集金額'].value >= 1 ){
+            total=Number(total)+Number(subrec[j]['value']['料金'].value);
             insbody.record.売上明細.value.push({
                             "value":{
                               "請求対象月":{
@@ -510,6 +543,7 @@
             //売上管理登録
             const resp5 = await kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', insbody);
             //請求管理登録
+            insbody2.record.課税10対象額.value=total;
             const resp6 = await kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', insbody2);
 
             insbody3.record.入金額.value=ttl;

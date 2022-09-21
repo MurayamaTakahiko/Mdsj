@@ -36,13 +36,13 @@
     //var TEL_ITEM_NO=229;
 
      //////請求番号採番時ロジック編集(SS)
-     var APP_ID = 140;   //会員顧客名簿
-     var APP_INVOICE_ID = 153;//請求登録
-     var APP_CONSTLIST = 154;
-     var APP_SALES_ID = 152;
-     var APP_CALL = 185;
-     var APP_MADO = 180;
-     var TEL_ITEM_NO=141;
+    var APP_ID = 140;   //会員顧客名簿
+    var APP_INVOICE_ID = 153;//請求登録
+    var APP_CONSTLIST = 154;
+    var APP_SALES_ID = 152;
+    var APP_CALL = 185;
+    var APP_MADO = 180;
+    var TEL_ITEM_NO=141;
 
     //var APP_ID = 447;   //会員顧客名簿
     //var APP_INVOICE_ID = 449;   //請求登録
@@ -192,6 +192,12 @@
                      },
                      "テーブル":{
                        "value":[]
+                    },
+                    "課税10対象額":{
+                      "value":0
+                    },
+                    "非課税対象額":{
+                      "value":0
                     }
                   }
                 };
@@ -281,6 +287,7 @@
                             }else{
                               kin=Math.ceil(Number(subrec[j]['value']['プラン料金'].value) * (1+parseInt(TAX)/100))
                             }
+                            total=Number(total)+Number(subrec[j]['value']['プラン料金'].value);
                             //売上明細用
                             insbody2.record.売上明細.value.push({
                                             "value":{
@@ -345,6 +352,7 @@
                             }else{
                               kin=Math.ceil(Number(subrec[j]['value']['プラン料金'].value) * (1+parseInt(TAX)/100))
                             }
+                            total=Number(total)+Number(subrec[j]['value']['プラン料金'].value);
                            //売上明細用
                            insbody2.record.売上明細.value.push({
                                            "value":{
@@ -445,6 +453,7 @@
                                           }
                                         }
                                       });
+                          total=Number(total)+(Number(subrec[j]['value']['オプション単価'].value)*Number(subrec[j]['value']['オプション契約数'].value));
                          }
                       }
                   }
@@ -504,7 +513,7 @@
                                             }
                                           }
                                         });
-
+                          total=Number(total)+(Number(subrec[j]['value']['オプション単価'].value)*Number(subrec[j]['value']['オプション契約数'].value));
                         }
                     }
                 }
@@ -609,6 +618,7 @@
                                 }else{
                                   kin=Math.ceil(Number(bill) * (1+parseInt(TAX)/100))
                                 }
+                                total=Number(total)+Number(bill);
                                 //売上明細用
                                 insbody2.record.売上明細.value.push({
                                                 "value":{
@@ -678,6 +688,7 @@
                           }else{
                             kin=Math.ceil(Number(bill) * (1+parseInt(TAX)/100))
                           }
+                          total=Number(total)+Number(bill);
                           //売上明細用
                           insbody2.record.売上明細.value.push({
                                           "value":{
@@ -758,6 +769,7 @@
                   }else{
                     kin=Math.ceil(Number(subrecato[j]['value']['料金'].value) * (1+parseInt(TAX)/100))
                   }
+                  total=Number(total)+Number(subrecato[j]['value']['料金'].value);
                   //売上明細用
                   insbody2.record.売上明細.value.push({
                                   "value":{
@@ -815,6 +827,7 @@
             //カウントアップ
             count+=1;
             //請求登録
+            insbody.record.課税10対象額.value=total;
             await kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', insbody);
               //売上登録
               await kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', insbody2);

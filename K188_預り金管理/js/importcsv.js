@@ -158,9 +158,11 @@
             //読み飛ばし
             //パソコンバンク（りそな）
             if(type=="1"){
-
-              //入金金額がブランク
               if(csvArray[i] == ""){
+                continue;
+              }
+              //入金金額がブランク
+              if(csvArrayD[5] == ""){
                 continue;
               }
             }

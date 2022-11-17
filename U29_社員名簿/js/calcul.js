@@ -9,9 +9,12 @@ jQuery.noConflict();
   // ロケールを初期化
   moment.locale('ja');
   // 今日までの年月計算
-  function getYearMonth(dtDate) {
+  function getYearMonth(dtDate,dtDate2) {
 
     var dtToday = moment();
+    if(dtDate2){
+      dtToday = moment(dtDate2);
+    }
     var dtFrom = moment(dtDate);
     var years = 0;
     var months = 0;
@@ -50,7 +53,7 @@ jQuery.noConflict();
     }
     // 雇用年月日から勤続年数を表示する
     if (emJoiningDate) {
-      emplYear = getYearMonth(record['JoiningDate']['value']);
+      emplYear = getYearMonth(record['JoiningDate']['value'],record['退職年月日']['value']);
       record['勤続年数']['value'] = emplYear;
     }
     return event;

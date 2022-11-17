@@ -1230,7 +1230,7 @@ kintone.app.record.set({record: record});
               //請求明細
               setFields = {
                             "種別":subrecato[j]['value']['商品種別'].value,
-                            "プラン・オプション":subrecato[j]['value']['商品名'].value,
+                            "プラン・オプション":subrecato[j]['value']['商品名'].value +'（' + (moment(subrecato[j]['value']['対象日'].value).month()+1) + '月分）',
                             "単価":Number(subrecato[j]['value']['単価'].value) ,
                             "税区分":subrecato[j]['value']['税区分'].value,
                             "数量":Number(subrecato[j]['value']['数量'].value),

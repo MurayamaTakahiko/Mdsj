@@ -125,7 +125,7 @@
           insbody={"app":APP_SALES_ID,
                   "record":{
                       "種別":{
-                        "value":"system（月額請求）"
+                        "value":"system（窓口処理）"
                       },
                       "請求番号":{
                         "value":newno
@@ -283,7 +283,7 @@
                                   "value":moment(subrec[j]['value']['対象日'].value).format('YYYY-MM-DD')
                                 },
                                 "項目":{
-                                  "value":subrec[j]['value']['商品名'].value
+                                  "value":subrec[j]['value']['商品名'].value +'（' + (moment(subrec[j]['value']['対象日'].value).month()+1) + '月分）'
                                 },
                                 "金額":{
                                   "value":Number(subrec[j]['value']['料金'].value)
@@ -308,7 +308,7 @@
                                     "value":moment(subrec[j]['value']['対象日'].value).format('YYYY-MM-DD')
                                   },
                                   "種別":{
-                                    "value":subrec[j]['value']['商品種別'].value
+                                    "value":subrec[j]['value']['商品種別'].value +'（' + (moment(subrec[j]['value']['対象日'].value).month()+1) + '月分）'
                                   },
                                   "プラン・オプション":{
                                     "value":subrec[j]['value']['商品名'].value
@@ -439,7 +439,7 @@
                      "value":newno
                     },
                     "種別":{
-                      "value":"system（月額請求）"
+                      "value":"system（窓口処理）"
                     },
                     "請求日":{
                       "value":moment(rec[i]['日時'].value).format('YYYY-MM-DD')
@@ -543,7 +543,7 @@
                                 "value":moment(subrec[j]['value']['対象日'].value).format('YYYY-MM-DD')
                               },
                               "項目":{
-                                "value":subrec[j]['value']['商品名'].value
+                                "value":subrec[j]['value']['商品名'].value +'（' + (moment(subrec[j]['value']['対象日'].value).month()+1) + '月分）'
                               },
                               "金額":{
                                 "value":subrec[j]['value']['料金'].value
@@ -571,7 +571,7 @@
                                 "value":subrec[j]['value']['商品種別'].value
                               },
                               "プラン・オプション":{
-                                "value":subrec[j]['value']['商品名'].value
+                                "value":subrec[j]['value']['商品名'].value +'（' + (moment(subrec[j]['value']['対象日'].value).month()+1) + '月分）'
                               },
                               "単価":{
                                 "value":Number(subrec[j]['value']['単価'].value)

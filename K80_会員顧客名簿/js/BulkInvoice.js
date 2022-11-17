@@ -382,7 +382,7 @@
                                                   "value":moment(invoicedt).add(k+1, 'month').endOf('month').format("YYYY-MM-DD")
                                                 },
                                                 "項目":{
-                                                  "value":subrec[j]['value']['プラン'].value
+                                                  "value":subrec[j]['value']['プラン'].value +'（' + (moment(invoicedt).add(k+1, 'month').month()+1) + '月分）'
                                                 },
                                                 "金額":{
                                                   "value":Number(subrec[j]['value']['プラン料金'].value)
@@ -466,7 +466,7 @@
                                                  "value":moment(invoicedt).add(1, 'month').endOf('month').format("YYYY-MM-DD")
                                                },
                                                "項目":{
-                                                 "value":subrec[j]['value']['プラン'].value
+                                                 "value":subrec[j]['value']['プラン'].value +'（' + (moment(invoicedt).add(1, 'month').month()+1) + '月分）'
                                                },
                                                "金額":{
                                                  "value":Number(subrec[j]['value']['プラン料金'].value)
@@ -573,7 +573,7 @@
                                               "value":moment(invoicedt).add(k+1, 'month').endOf('month').format("YYYY-MM-DD")
                                             },
                                             "項目":{
-                                              "value":subrec[j]['value']['オプション'].value
+                                              "value":subrec[j]['value']['オプション'].value +'（' + (moment(invoicedt).add(k+1, 'month').month()+1) + '月分）'
                                             },
                                             "金額":{
                                               "value":Number(subrec[j]['value']['オプション単価'].value)*Number(subrec[j]['value']['オプション契約数'].value)
@@ -657,7 +657,7 @@
                                                 "value":moment(invoicedt).add(1, 'month').endOf('month').format("YYYY-MM-DD")
                                               },
                                               "項目":{
-                                                "value":subrec[j]['value']['オプション'].value
+                                                "value":subrec[j]['value']['オプション'].value +'（' + (moment(invoicedt).add(1, 'month').month()+1) + '月分）'
                                               },
                                               "金額":{
                                                 "value":Number(subrec[j]['value']['オプション単価'].value)*Number(subrec[j]['value']['オプション契約数'].value)
@@ -939,7 +939,7 @@
                                         "value":subrecato[j]['value']['商品種別'].value
                                       },
                                       "プラン・オプション":{
-                                        "value":subrecato[j]['value']['商品名'].value
+                                        "value":subrecato[j]['value']['商品名'].value +'（' + (moment(subrecato[j]['value']['対象日'].value).month()+1) + '月分）'
                                       },
                                       "単価":{
                                         "value":Number(subrecato[j]['value']['単価'].value)
@@ -978,7 +978,7 @@
                                         "value":subrecato[j]['value']['対象日'].value
                                       },
                                       "項目":{
-                                        "value":subrecato[j]['value']['商品名'].value
+                                        "value":subrecato[j]['value']['商品名'].value+'（' + (moment(subrecato[j]['value']['対象日'].value).month()+1) + '月分）'
                                       },
                                       "金額":{
                                         "value":(Number(subrecato[j]['value']['単価'].value)*Number(subrecato[j]['value']['数量'].value))

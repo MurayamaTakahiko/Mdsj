@@ -8,12 +8,12 @@ jQuery.noConflict();
   //APP_URI=168;
   //APP_NYUKIN=170;
   //四条烏丸店
-  //APP_URI=152;
-  //APP_NYUKIN=154;
+  APP_URI=152;
+  APP_NYUKIN=154;
 
   //
-  APP_URI=446;
-  APP_NYUKIN=448;
+  //APP_URI=446;
+  //APP_NYUKIN=448;
 
   //取得ID変更時
   var showEvents=[

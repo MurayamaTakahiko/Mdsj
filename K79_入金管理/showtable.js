@@ -12,8 +12,8 @@
     //梅田店
     //var APP_ID= 169;  //請求登録
     //四条烏丸店
-    //var APP_ID= 153;  //請求登録
-    var APP_ID= 449;  //請求登録
+    var APP_ID= 153;  //請求登録
+    //var APP_ID= 449;  //請求登録
 
     // 「請求番号」を取得
     var invoiceno =event.record.請求番号.value;
@@ -30,10 +30,6 @@
         '    <span class="subtable-inner-gaia">数量</span></th>' +
         '<th class="subtable-label-gaia" style="width:128px;">' +
         '    <span class="subtable-inner-gaia">金額</span></th>' +
-        '<th class="subtable-label-gaia" style="width:128px;">' +
-        '    <span class="subtable-inner-gaia">税額</span></th>' +
-        '<th class="subtable-label-gaia" style="width:128px;">' +
-        '    <span class="subtable-inner-gaia">小計</span></th>' +
         '<th class="subtable-label-gaia" style="width:128px;">' +
         '    <span class="subtable-inner-gaia">摘要</span></th>' +
         '<th class="subtable-label-gaia" style="width:128px;">' +
@@ -65,7 +61,11 @@
       var ttl6=0;
       var ttl7=0;
 
-      // 一次面接
+      //
+      var subtotal = rec[0]['課税対象額'].value;
+      var subnototal = rec[0]['非課税対象額'].value;
+      var taxtotal = rec[0]['消費税'].value;
+
       var tableRows = rec[0]['請求明細'].value;
       var tableRef = document.getElementById('tbody');
       len+=tableRows.length;
@@ -76,36 +76,26 @@
         var cell3 = tableRow.insertCell(-1);
         var cell4 = tableRow.insertCell(-1);
         var cell5 = tableRow.insertCell(-1);
-        var cell6 = tableRow.insertCell(-1);
+        var cell6= tableRow.insertCell(-1);
         var cell7 = tableRow.insertCell(-1);
-        var cell8= tableRow.insertCell(-1);
-        var cell9 = tableRow.insertCell(-1);
-        var cell10 = tableRow.insertCell(-1);
+        var cell8 = tableRow.insertCell(-1);
 
         cell3.style.cssText = "text-align:right;";
         cell4.style.cssText = "text-align:right;";
         cell5.style.cssText = "text-align:right;";
-        cell6.style.cssText = "text-align:right;";
-        cell7.style.cssText = "text-align:right;";
 
         cell1.innerHTML=GetColHtml(row.value['種別'].value,'left'); // "12,345",'left');
         cell2.innerHTML=GetColHtml(row.value['プラン・オプション'].value,'left');
         cell3.innerHTML=GetColHtml(Number(row.value['単価'].value).toLocaleString(),'right');
         cell4.innerHTML=GetColHtml(Number(row.value['数量'].value).toLocaleString(),'right');
         cell5.innerHTML=GetColHtml(Number(row.value['金額'].value).toLocaleString(),'right');
-        cell6.innerHTML=GetColHtml(Number(row.value['税額'].value).toLocaleString(),'right');
-        cell7.innerHTML=GetColHtml(Number(row.value['小計'].value).toLocaleString(),'right');
-        cell8.innerHTML=GetColHtml(row.value['摘要'].value,'right');
-        cell9.innerHTML=GetColHtml(row.value['利用対象期間_from'].value,'right');
-        cell10.innerHTML=GetColHtml(row.value['利用対象期間_to'].value,'right');
+        cell6.innerHTML=GetColHtml(row.value['摘要'].value,'right');
+        cell7.innerHTML=GetColHtml(row.value['利用対象期間_from'].value,'right');
+        cell8.innerHTML=GetColHtml(row.value['利用対象期間_to'].value,'right');
 
-        ttl5+=Number(row.value['金額'].value);
-        ttl6+=Number(row.value['税額'].value);
-        ttl7+=Number(row.value['小計'].value);
 
       });
 
-      //合計
       var tableRow = tableRef.insertRow(-1);
       var cell1 = tableRow.insertCell(-1);
       var cell2 = tableRow.insertCell(-1);
@@ -115,19 +105,29 @@
       var cell6 = tableRow.insertCell(-1);
       var cell7 = tableRow.insertCell(-1);
       var cell8= tableRow.insertCell(-1);
-      var cell9 = tableRow.insertCell(-1);
-      var cell10 = tableRow.insertCell(-1);
+      cell3.innerHTML=GetColHtml('課税対象額');
+      cell4.innerHTML=GetColHtml('非課税対象額');
+      cell5.innerHTML=GetColHtml('消費税');
+
+      //合計
+      tableRow = tableRef.insertRow(-1);
+      cell1 = tableRow.insertCell(-1);
+      cell2 = tableRow.insertCell(-1);
+      cell3 = tableRow.insertCell(-1);
+      cell4 = tableRow.insertCell(-1);
+      cell5 = tableRow.insertCell(-1);
+      cell6 = tableRow.insertCell(-1);
+      cell7 = tableRow.insertCell(-1);
+      cell8= tableRow.insertCell(-1);
 
 
       cell3.style.cssText = "text-align:right;";
       cell4.style.cssText = "text-align:right;";
       cell5.style.cssText = "text-align:right;";
-      cell6.style.cssText = "text-align:right;";
-      cell7.style.cssText = "text-align:right;";
-      cell4.innerHTML=GetColHtml('合計');
-      cell5.innerHTML=GetColHtml(ttl5.toLocaleString(),'right');
-      cell6.innerHTML=GetColHtml(ttl6.toLocaleString(),'right');
-      cell7.innerHTML=GetColHtml(ttl7.toLocaleString(),'right');
+      //cell4.innerHTML=GetColHtml('合計');
+      cell3.innerHTML=GetColHtml(Number(subtotal).toLocaleString(),'right');
+      cell4.innerHTML=GetColHtml(Number(subnototal).toLocaleString(),'right');
+      cell5.innerHTML=GetColHtml(Number(taxtotal).toLocaleString(),'right');
 
       return event;
     } catch(e){

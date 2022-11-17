@@ -7,9 +7,9 @@
       //梅田店
       //var APP_ID = 156;   //会員顧客名簿
       //四条烏丸店
-      //var APP_ID = 140;   //会員顧客名簿
+      var APP_ID = 140;   //会員顧客名簿
 
-      var APP_ID = 447;   //会員顧客名簿
+      //var APP_ID = 447;   //会員顧客名簿
 
       if (event.viewName === "CSV取込") {
         var appId = event.appId;
@@ -32,8 +32,13 @@
             var text_val = $('textarea[name=\"text\"]').val();
             let tel1 = document.getElementById('tel1').value;
             let tel2 = document.getElementById('tel2').value;
-            let keiyaku = document.getElementById('keiyaku').value;
-            let biko = document.getElementById('biko').value;
+            let tel3 = document.getElementById('tel3').value;
+            let tel4 = document.getElementById('tel4').value;
+            let biko1 = document.getElementById('biko1').value;
+            let biko2 = document.getElementById('biko2').value;
+            let biko3 = document.getElementById('biko3').value;
+            let biko4 = document.getElementById('biko4').value;
+
             let year = document.getElementById('year').value;
             //text_val = text_val.replace(/"/g, "");
             if(text_val == ''){
@@ -47,7 +52,7 @@
 
             if (window.confirm('データを登録します。よろしいでしょうか？')) {
                 showSpinner(); // スピナー表示
-            var jsonArray = csv2json(text_val.split('\n'),year,tel1,tel2,keiyaku,biko);
+            var jsonArray = csv2json(text_val.split('\n'),year,tel1,tel2,tel3,tel4,biko1,biko2,biko3,biko4);
               for (var i = 0; i < jsonArray.length; i++) {
 
                 var body = {
@@ -76,11 +81,11 @@
                       }
                       if(stdt <= today){
                         if(eddt =="" ){
-                          jsonArray[i]['備考']='バーチャル';
+                          jsonArray[i]['備考']=jsonArray[i]['備考'] + 'バーチャル';
                           break;
                         }else{
                           if(today <= eddt){
-                            jsonArray[i]['備考']='バーチャル';
+                            jsonArray[i]['備考']=jsonArray[i]['備考'] + 'バーチャル';
                             break;
                           }
                         }
@@ -158,7 +163,7 @@
      return data;
    }
     //パース処理
-    function csv2json(csvArray,year,tel1,tel2,keiyaku,biko) {
+    function csv2json(csvArray,year,tel1,tel2,tel3,tel4,biko1,biko2,biko3,biko4) {
         var jsonArray = [];
 
         //読み込み
@@ -195,13 +200,19 @@
             //契約番号
             switch (a_line['契約番号']) {
               case tel1:
+                a_line['備考']=biko1;
+                break;
               case tel2:
-                a_line['契約者']=keiyaku;
-                a_line['備考']=biko;
+                a_line['備考']=biko2;
+                  break;
+              case tel3:
+                a_line['備考']=biko3;
+                  break;
+              case tel4:
+                a_line['備考']=biko4;
                   break;
               default:
-              a_line['契約者']="";
-              a_line['備考']="";
+                a_line['備考']="";
             }
             a_line['通話料'] = a_line['通話料'].replaceAll(',','');    //通話料（円）
             jsonArray.push(a_line);

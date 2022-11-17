@@ -8,12 +8,12 @@ jQuery.noConflict();
   //APP_URI=168;
   //APP_SEIKYU=169;
   //四条烏丸店
-  //APP_URI=152;
-  //APP_SEIKYU=153;
+  APP_URI=152;
+  APP_SEIKYU=153;
 
   //
-  APP_URI=446;
-  APP_SEIKYU=449;
+  //APP_URI=446;
+  //APP_SEIKYU=449;
 
   //取得ID変更時
   var showEvents=[

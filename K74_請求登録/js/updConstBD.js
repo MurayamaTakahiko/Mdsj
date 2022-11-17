@@ -46,9 +46,9 @@ jQuery.noConflict();
       var nextenddt =moment(billDay).add(1, 'months').endOf('month').format();
 
       if (record['所属・会社名１'].value) {
-        query = '所属・会社名１ = "' + custCd + '"';
+        query = '所属・会社名１ = "' + custCd + '"'+ ' and 退会日 = ""';
       } else {
-        query = '顧客名 = "' + custName + '"';
+        query = '顧客名 = "' + custName + '"' + ' and 退会日 = ""';
       }
       var paramGet = {
           'app': relatedAppId,
@@ -113,7 +113,7 @@ jQuery.noConflict();
       };
 
       var paramList = [];
-
+      var taxtotal=0;
 
       var virtualFlg = false;
       //売上登録用
@@ -132,8 +132,12 @@ jQuery.noConflict();
                   },
                   "売上明細":{
                     "value":[]
+                  },
+                  "消費税差額":{
+                    "value":0
                   }
               };
+
       // 請求明細分
       for (var i = 0; i < record['請求明細']['value'].length; i++) {
 
@@ -195,28 +199,25 @@ jQuery.noConflict();
         //金額
         var subbill=0;
         var subtotal=0;
-        if(billList['プラン・オプション']['value'].substr(0,3)=="通話料"){
-          //売上明細用
-          insbody.売上明細.value.push({
-                          "value":{
-                            "請求対象月":{
-                              "value":moment(nextenddt).endOf('month').format("YYYY-MM-DD")
-                            },
-                            "項目":{
-                              "value":billList['プラン・オプション']['value']
-                            },
-                            "金額":{
-                              "value":billList['小計']['value']
-                            }
-                          }
-                        });
-        }else{
+
+        var tax=0;
+          var ritu=record['税率'].value;
           for(var j=0;j<max;j++){
-            subbill=Math.round(parseInt(billList['小計']['value'])/max);
+            subbill=Math.round(parseInt(billList['金額']['value'])/max);
             subtotal+=subbill;
             if(j==(max-1)){
-              subbill+=parseInt(billList['小計']['value'])-subtotal;
+              subbill+=parseInt(billList['金額']['value'])-subtotal;
             }
+            if(billList['税区分'].value=="課税"){
+              if(Number(subbill)>=0){
+                tax=Math.floor(Number(subbill) * Number(ritu/100));
+              }else{
+                tax=Math.ceil(Number(subbill) * Number(ritu/100));
+              }
+            }else{
+              tax=0;
+            }
+            taxtotal+=Number(tax);
             //売上明細用
             insbody.売上明細.value.push({
                             "value":{
@@ -228,10 +229,28 @@ jQuery.noConflict();
                               },
                               "金額":{
                                 "value":subbill
+                              },
+                              "消費税":{
+                                "value":tax
+                              },
+                              "商品種別":{
+                                "value":billList['種別']['value']
                               }
                             }
                           });
-                        }
+          }
+      }
+      //消費税按分
+      var adjusttax=0;
+
+      adjusttax=Number(record['消費税'].value)-taxtotal;
+      insbody.消費税差額.value=adjusttax;
+      if(adjusttax !=0){
+        for(let j=0;j<insbody.売上明細.value.length;j++){
+          if(insbody.売上明細.value[j]['value']['消費税'].value!=0){
+            insbody.売上明細.value[j]['value']['消費税'].value+=adjusttax;
+            break;
+          }
         }
       }
         paramList.push(insbody);

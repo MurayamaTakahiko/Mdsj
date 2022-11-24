@@ -159,6 +159,9 @@
                               "請求番号":{
                                "value":newno
                               },
+                              "自動計上種別":{
+                                "value":"system（窓口処理）"
+                              },
                               "請求日":{
                                 "value":moment(rec[i]['日時'].value).format('YYYY-MM-DD')
                               },
@@ -178,7 +181,7 @@
                                 "value":[]
                               },
                               "請求書対象":{
-                                "value":"対象外"
+                                "value":"対象外(支払済)"
                               },
                               "課税対象額":{
                                 "value":0
@@ -463,6 +466,9 @@
                         "record":{
                             "請求番号":{
                              "value":newno
+                            },
+                            "自動計上種別":{
+                              "value":"system（窓口処理）"
                             },
                             "請求日":{
                               "value":moment(rec[i]['日時'].value).format('YYYY-MM-DD')

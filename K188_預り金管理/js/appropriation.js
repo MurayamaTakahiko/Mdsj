@@ -13,13 +13,13 @@
         //var APP_NYUKIN_ID= 170; //入金管理
         //var APP_KOZA_ID = 191  //口座管理
         //四条烏丸店
-        //var APP_SALES_ID = 152;  //売上管理
-        //var APP_NYUKIN_ID= 154; //入金管理
-        //var APP_KOZA_ID = 194  //口座管理
+        var APP_SALES_ID = 152;  //売上管理
+        var APP_NYUKIN_ID= 154; //入金管理
+        var APP_KOZA_ID = 194  //口座管理
 
-        var APP_SALES_ID = 446;  //売上管理
-        var APP_NYUKIN_ID= 448; //入金管理
-        var APP_KOZA_ID = 511  //口座管理
+        //var APP_SALES_ID = 446;  //売上管理
+        //var APP_NYUKIN_ID= 448; //入金管理
+        //var APP_KOZA_ID = 511  //口座管理
         var appId = event.appId;
           if (document.getElementById('bulk_button') !== null) {
               return;
@@ -113,6 +113,9 @@
                               },
                               "入金額":{
                                 "value":kin
+                              },
+                              "自動充当確認":{
+                                "value":["自動充当"]
                               }
                             }
                           };
@@ -165,6 +168,12 @@
                              "record": {
                                "入金処理": {
                                  "value": "済"
+                               },
+                               "自動充当確認":{
+                                 "value":["自動充当"]
+                               },
+                               "入金管理登録NO":{
+                                 "value":rec3[k]['レコード番号'].value
                                }
                              }
                              };

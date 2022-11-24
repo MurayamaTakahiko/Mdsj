@@ -54,6 +54,9 @@
 
                 var insbody={"app":appId,
                         "record":{
+                            "種類":{
+                              "value":jsonArray[i]['種類']
+                            },
                             "入金日":{
                               "value":jsonArray[i]['入金日']
                             },

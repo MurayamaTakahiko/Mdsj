@@ -212,6 +212,9 @@
                         "請求日":{
                           "value":invoicedt
                         },
+                        "自動計上種別":{
+                          "value":"system（月額請求）"
+                        },
                         "自動登録日":{
                           "value":moment().format("YYYY-MM-DD")
                         },

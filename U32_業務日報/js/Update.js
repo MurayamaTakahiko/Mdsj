@@ -7,19 +7,27 @@
     kintone.events.on(events, async (ev) => {
         showSpinner(); // スピナー表示
         try{
-          var APP_KOJI_ID = 31  //工事依頼
+          //var APP_KOJI_ID = 31  //工事依頼
+          var APP_KOJI_ID = 479  //工事依頼
+
           var appId = ev.appId;
           var sumWork = "00:00";
           var record = ev.record;
           var koji_no=record['工事番号'].value;
           var check=[];
           var updateflg=false;
+          var intoffset=0;
+
+          do{
             var param = {
               'app': appId,
-              'query': '工事番号 = "' + koji_no + '" limit 500 '
+              'query': '工事番号 = "' + koji_no + '" limit 500 offset ' + intoffset
             };
             const resp = await kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', param);
             var rec=resp.records;
+            if (rec.length==0){
+              break;
+            }
             for (let i = 0 ; i < rec.length ; i++){
                 if(rec[i]['完工区分'].value==="完"){
                   updateflg=true;
@@ -33,6 +41,14 @@
               　check=["未"];
               }
             }
+            if (rec.length<500){
+              break;
+            }
+            intoffset+=500;
+          }while(intoffset<=10000);
+
+
+
             var param2 = {
               'app': APP_KOJI_ID,
               'query': '工事番号 = "' + koji_no + '" limit 500 '

@@ -56,36 +56,51 @@
     }
   };
 
-  kintone.events.on(events, function(event) {
+
+kintone.events.on(events, async (event) => {
+  try{
+//  kintone.events.on(events, function(event) {
     var record = event.record;
     var clientRecordId = event.record.工事番号.value;
     var relatedAppId = kintone.app.getRelatedRecordsTargetAppId('業務日報一覧');
-    var query = '工事番号 = "' + clientRecordId + '" limit 500';
+
     var outputFields = ['完工区分', '工数合計'];
     var appUrl = kintone.api.url('/k/v1/records');
     var chkttl = false;
-    var params = {
-      'app': relatedAppId,
-      'query': query,
-      'fields': outputFields
-    };
+    var intoffset=0;
 
-    kintone.api(appUrl, 'GET', params, function(resp) {
-      var chkComp = "未";
-      var sumWork = "00:00";
-      for (var i = 0; i < resp.records.length; i++) {
-        if (resp.records[i].完工区分.value === "完") {
-          chkttl=true;
-          chkComp = "";
-          record['完工チェック'].value = [];
+    do{
+      var query = '工事番号 = "' + clientRecordId + '" limit 500 offset ' + intoffset ;
+      var params = {
+        'app': relatedAppId,
+        'query': query,
+        'fields': outputFields
+      };
+
+      //kintone.api(appUrl, 'GET', params, function(resp) {
+      const resp = await kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', params);
+        var chkComp = "未";
+        var sumWork = "00:00";
+        for (var i = 0; i < resp.records.length; i++) {
+          if (resp.records[i].完工区分.value === "完") {
+            chkttl=true;
+            chkComp = "";
+            record['完工チェック'].value = [];
+            break;
+          }
+        }
+        if (chkttl==true){
+          for (var i = 0; i < resp.records.length; i++) {
+            sumWork = timeMath.sum(sumWork, resp.records[i].工数合計.value);
+          }
+        }
+        if (resp.records.length<500){
           break;
         }
-      }
-      if (chkttl==true){
-        for (var i = 0; i < resp.records.length; i++) {
-          sumWork = timeMath.sum(sumWork, resp.records[i].工数合計.value);
-        }
-      }
+        intoffset+=500;
+    }while(intoffset<=10000);
+
+
       var sums = sumWork.split(':');
       sumWork = sums[0] + '時間' + sums[1] + '分';
       record.工事工数合計.value = sumWork;
@@ -96,9 +111,11 @@
       record['完工チェック']['disabled'] = true;
       //record['請求日']['disabled'] = true;
       record['請求番号']['disabled'] = true;
-      kintone.app.record.set(event);
-    });
-
+      return event;
+      //kintone.app.record.set(event);
+  }catch(e) {
+     alert(e.message);
     return event;
-  });
+  };
+});
 })();

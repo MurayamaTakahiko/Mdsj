@@ -68,7 +68,7 @@ kintone.events.on(events, async (event) => {
     var appUrl = kintone.api.url('/k/v1/records');
     var chkttl = false;
     var intoffset=0;
-
+    var sumWork = "00:00";
     do{
       var query = '工事番号 = "' + clientRecordId + '" limit 500 offset ' + intoffset ;
       var params = {
@@ -80,7 +80,6 @@ kintone.events.on(events, async (event) => {
       //kintone.api(appUrl, 'GET', params, function(resp) {
       const resp = await kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', params);
         var chkComp = "未";
-        var sumWork = "00:00";
         for (var i = 0; i < resp.records.length; i++) {
           if (resp.records[i].完工区分.value === "完") {
             chkttl=true;

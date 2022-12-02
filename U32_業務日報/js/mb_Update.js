@@ -1,8 +1,8 @@
 (function ($) {
     "use strict";
     var events=[
-      'app.record.create.submit.success',
-      'app.record.edit.submit.success'
+      'mobile.app.record.create.submit.success',
+      'mobile.app.record.edit.submit.success'
     ];
     kintone.events.on(events, async (ev) => {
         showSpinner(); // スピナー表示

@@ -38,7 +38,7 @@
                 showSpinner(); // スピナー表示
                 var param = {
                   'app': kintone.app.getId(),
-                  'query': '入金処理 in ("未") order by 登録NO limit 500'
+                  'query': '入金処理 in ("未") order by 登録NO asc limit 500'
                 };
                 //未処理の預かり金を取得
                 const resp = await kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', param);
@@ -62,13 +62,13 @@
                     if(rec2[j]['顧客番号'].value != ""){
                       var param3 = {
                         'app': APP_NYUKIN_ID,
-                        'query': '顧客番号 = "' + rec2[j]['顧客番号'].value + '" and 残金額 != 0 order by 請求日 desc limit 500'
+                        'query': '顧客番号 = "' + rec2[j]['顧客番号'].value + '" and 残金額 != 0 and (入金額 = "" or 入金額 = "0") order by レコード番号 asc limit 500'
                       };
                     }
                     if(rec2[j]['登録NO_ビジター'].value != ""){
                       var param3 = {
                         'app': APP_NYUKIN_ID,
-                        'query': '登録NO_ビジター = "' + rec2[j]['登録NO_ビジター'].value + '" and 残金額 != 0 order by 請求日 desc limit 500'
+                        'query': '登録NO_ビジター = "' + rec2[j]['登録NO_ビジター'].value + '" and 残金額 != 0 and (入金額 = "" or 入金額 = "0") order by レコード番号 asc limit 500'
                       };
                     }
                     //入金金額
@@ -178,6 +178,7 @@
                              }
                              };
                           await kintone.api(kintone.api.url('/k/v1/record.json', true), 'PUT', updparam3);
+                          break;
                         }
                     }
                 }

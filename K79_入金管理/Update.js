@@ -21,18 +21,18 @@
         //var APP_KOZA_ID = 191  //口座管理
         //var APP_AZUKARI_ID = 190  //預り金管理
         //四条烏丸点
-        //var APP_SALES_ID = 152;  //売上管理
-        //var APP_INVOICE_ID = 153; //請求登録
-        //var APP_NYUKIN_ID= 154; //入金管理
-        //var APP_CUSTMER_ID = 140 //会員顧客名簿
-        //var APP_KOZA_ID = 194  //口座管理
-        //var APP_AZUKARI_ID = 192  //預り金管理
+        var APP_SALES_ID = 152;  //売上管理
+        var APP_INVOICE_ID = 153; //請求登録
+        var APP_NYUKIN_ID= 154; //入金管理
+        var APP_CUSTMER_ID = 140 //会員顧客名簿
+        var APP_KOZA_ID = 194  //口座管理
+        var APP_AZUKARI_ID = 192  //預り金管理
 
-        var APP_SALES_ID = 446;  //売上管理
-        var APP_INVOICE_ID = 449; //請求登録
-        var APP_CUSTMER_ID = 447 //会員顧客名簿
-        var APP_KOZA_ID = 511  //口座管理
-        var APP_AZUKARI_ID = 510  //預り金管理
+        //var APP_SALES_ID = 446;  //売上管理
+        //var APP_INVOICE_ID = 449; //請求登録
+        //var APP_CUSTMER_ID = 447 //会員顧客名簿
+        //var APP_KOZA_ID = 511  //口座管理
+        //var APP_AZUKARI_ID = 510  //預り金管理
         var appId = ev.appId;
 
         try{

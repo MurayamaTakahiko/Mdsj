@@ -138,10 +138,10 @@ jQuery.noConflict();
       if (selectedUsers.length > 1) {
         event.error += "担当者は一人しか指定できません。";
       }
-      var planSale = row.value['計画額']['value'];
-      if (planSale != 0) {
-        event.error += "期中での追加案件では計画額は0円にしてください。";
-      }
+      // var planSale = row.value['計画額']['value'];
+      // if (planSale != 0) {
+      //   event.error += "期中での追加案件では計画額は0円にしてください。";
+      // }
     });
     record['契約期間開始']['value'] = minPrdDate;
     record['契約期間終了']['value'] = maxPrdDate;

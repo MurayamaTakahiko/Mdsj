@@ -135,9 +135,9 @@
             break;
           case "2":
             dtcol=2;
-            amcol=6;
-            fncol=14;
-            name="振込（三井住友））";
+            amcol=4;
+            fncol=7;
+            name="振込（三井住友）";
             break;
           case "3":
             dtcol=-1
@@ -173,10 +173,6 @@
             if(type=="2"){
               //データ区分が2以外
               if(csvArrayD[0]!="2" ){
-              continue;
-              }
-              //取引区分が11以外
-              if(csvArrayD[5]!="11" ){
               continue;
               }
             }

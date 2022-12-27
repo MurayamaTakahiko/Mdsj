@@ -64,9 +64,11 @@
       //
       var subtotal = rec[0]['課税対象額'].value;
       var subnototal = rec[0]['非課税対象額'].value;
+      var tax = rec[0]['調整前消費税'].value;
+      var adj = rec[0]['税調整額'].value;
       var taxtotal = rec[0]['消費税'].value;
-
       var tableRows = rec[0]['請求明細'].value;
+
       var tableRef = document.getElementById('tbody');
       len+=tableRows.length;
       tableRows.forEach(function(row) {
@@ -107,8 +109,9 @@
       var cell8= tableRow.insertCell(-1);
       cell3.innerHTML=GetColHtml('課税対象額');
       cell4.innerHTML=GetColHtml('非課税対象額');
-      cell5.innerHTML=GetColHtml('消費税');
-
+      cell5.innerHTML=GetColHtml('調整前消費税(課税対象の税額)');
+      cell6.innerHTML=GetColHtml('税調整額');
+      cell7.innerHTML=GetColHtml('消費税');
       //合計
       tableRow = tableRef.insertRow(-1);
       cell1 = tableRow.insertCell(-1);
@@ -124,11 +127,14 @@
       cell3.style.cssText = "text-align:right;";
       cell4.style.cssText = "text-align:right;";
       cell5.style.cssText = "text-align:right;";
+      cell6.style.cssText = "text-align:right;";
+      cell7.style.cssText = "text-align:right;";
       //cell4.innerHTML=GetColHtml('合計');
       cell3.innerHTML=GetColHtml(Number(subtotal).toLocaleString(),'right');
       cell4.innerHTML=GetColHtml(Number(subnototal).toLocaleString(),'right');
-      cell5.innerHTML=GetColHtml(Number(taxtotal).toLocaleString(),'right');
-
+      cell5.innerHTML=GetColHtml(Number(tax).toLocaleString(),'right');
+      cell6.innerHTML=GetColHtml(Number(adj).toLocaleString(),'right');
+      cell7.innerHTML=GetColHtml(Number(taxtotal).toLocaleString(),'right');
       return event;
     } catch(e){
       // パラメータが間違っているなどAPI実行時にエラーが発生した場合

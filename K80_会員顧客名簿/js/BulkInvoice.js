@@ -14,7 +14,7 @@
     //var TEL_ITEM_NO=121;
     //var APP_ITEM = 17;
 
-     //////請求番号採番時ロジック編集(US)
+    //////請求番号採番時ロジック編集(US)
     //梅田店
     //var APP_ID = 156;   //会員顧客名簿
     //var APP_INVOICE_ID = 169;//請求登録
@@ -25,7 +25,7 @@
     //var TEL_ITEM_NO=229;
     //var APP_ITEM = 157;
 
-     //////請求番号採番時ロジック編集(SS)
+    //////請求番号採番時ロジック編集(SS)
     var APP_ID = 140;   //会員顧客名簿
     var APP_INVOICE_ID = 153;//請求登録
     var APP_CONSTLIST = 154;
@@ -266,6 +266,12 @@
                       "非課税対象額":{
                         "value":0
                       },
+                      "調整前消費税":{
+                        "value":0
+                      },
+                      "税調整額":{
+                        "value":0
+                      },
                       "消費税":{
                         "value":0
                       },
@@ -299,6 +305,9 @@
                                 "value":[]
                               },
                               "消費税差額":{
+                                "value":0
+                              },
+                              "税調整額":{
                                 "value":0
                               }
                             }
@@ -1044,10 +1053,12 @@
               insbody.record.課税対象額.value=subtotal;
               insbody.record.非課税対象額.value=subnototal;
               if(subtotal>=0){
-                 insbody.record.消費税.value = Math.floor(subtotal * TAX / 100);
+                 insbody.record.調整前消費税.value = Math.floor(subtotal * TAX / 100);
               }else{
-                insbody.record.消費税.value = Math.ceil(subtotal * TAX / 100);
+                insbody.record.調整前消費税.value = Math.ceil(subtotal * TAX / 100);
               }
+              insbody.record.税調整額.value=0;
+              insbody.record.消費税.value = Number(insbody.record.調整前消費税.value) + Number(insbody.record.税調整額.value) ;
               insbody.record.請求総額.value=Number(subtotal) + Number(subnototal)  + Number(insbody.record.消費税.value)  ;
               await kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', insbody);
                 //売上登録
@@ -1056,6 +1067,7 @@
 
                 adjusttax=Number(insbody.record.消費税.value)-taxtotal;
                 insbody2.record.消費税差額.value  =adjusttax;
+                insbody2.record.税調整額.value  =0;
                 if(adjusttax !=0){
                   for(let j=0;j<insbody2.record.売上明細.value.length;j++){
                     if(insbody2.record.売上明細.value[j]['value']['消費税'].value!=0){

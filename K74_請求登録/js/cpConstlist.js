@@ -1260,10 +1260,11 @@ kintone.app.record.set({record: record});
         objRecord['record']['課税対象額']['value']=subtotal;
         objRecord['record']['非課税対象額']['value']=subnototal;
         if(subtotal>=0){
-          objRecord['record']['消費税']['value']= Math.floor(subtotal*Number(objRecord['record']['税率']['value'])/100);
+          objRecord['record']['調整前消費税']['value']= Math.floor(subtotal*Number(objRecord['record']['税率']['value'])/100);
         }else {
-          objRecord['record']['消費税']['value']=Math.ceil(subtotal*Number(objRecord['record']['税率']['value'])/100);
+          objRecord['record']['調整前消費税']['value']=Math.ceil(subtotal*Number(objRecord['record']['税率']['value'])/100);
         }
+        objRecord['record']['消費税']['value']=Number(objRecord['record']['調整前消費税']['value']) + Number(objRecord['record']['税調整額']['value']);
         objRecord['record']['請求総額']['value']=Number(subtotal)+Number(subnototal)+Number(objRecord['record']['消費税']['value']);
 
         kintone.app.record.set(objRecord);

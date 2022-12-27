@@ -70,6 +70,7 @@ jQuery.noConflict();
       //var APP_CONSTLIST = 448;
       //var APP_OTHERBILL = 446;
       //var APP_MADO = 505;
+
       var billNum = record['請求番号'].value;
       var billCD = custCd;
       var billCstName = custName;
@@ -135,6 +136,9 @@ jQuery.noConflict();
                   },
                   "消費税差額":{
                     "value":0
+                  },
+                  "税調整額":{
+                    "value": record['税調整額'].value
                   }
               };
 
@@ -243,7 +247,7 @@ jQuery.noConflict();
       //消費税按分
       var adjusttax=0;
 
-      adjusttax=Number(record['消費税'].value)-taxtotal;
+      adjusttax=Number(record['調整前消費税'].value)-taxtotal;
       insbody.消費税差額.value=adjusttax;
       if(adjusttax !=0){
         for(let j=0;j<insbody.売上明細.value.length;j++){

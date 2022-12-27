@@ -150,6 +150,9 @@
                       },
                       "消費税差額":{
                         "value":0
+                      },
+                      "税調整額":{
+                        "value":rec[i]['税調整額'].value
                       }
                     }
                   };
@@ -200,6 +203,12 @@
                               },
                               "前回請求額":{
                                 "value":zen_seikyukin
+                              },
+                              "調整前消費税":{
+                                "value":0
+                              },
+                              "税調整額":{
+                                "value":rec[i]['税調整額'].value
                               }
                             }
                           };
@@ -385,13 +394,15 @@
 
               insbody2.record.課税対象額.value=subtotal;
               insbody2.record.非課税対象額.value=subnototal;
-              insbody2.record.消費税.value=calctax;
-              insbody2.record.請求総額.value=subtotal + subnototal + calctax;
+              insbody2.record.調整前消費税.value=calctax;
+              insbody2.record.税調整額.value=Number(rec[i]['税調整額'].value);
+              insbody2.record.消費税.value=calctax + Number(rec[i]['税調整額'].value) ;
+              insbody2.record.請求総額.value=subtotal + subnototal + calctax + Number(rec[i]['税調整額'].value);
               //登録
               const resp3 = await kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', insbody2);
 
               //登録
-              insbody3.record.入金額.value=subtotal + subnototal + calctax;
+              insbody3.record.入金額.value=subtotal + subnototal + calctax + Number(rec[i]['税調整額'].value);
               const resp4 = await kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', insbody3);
             }
       }
@@ -458,6 +469,9 @@
                     },
                     "消費税差額":{
                       "value":0
+                    },
+                    "税調整額":{
+                      "value":rec[i]['税調整額'].value
                     }
                   }
                 };
@@ -492,6 +506,12 @@
                               "value":0
                             },
                             "請求総額":{
+                              "value":0
+                            },
+                            "税調整額":{
+                              "value":rec[i]['税調整額'].value
+                            },
+                            "調整前消費税":{
                               "value":0
                             }
                           }
@@ -645,8 +665,11 @@
             //請求管理登録
             insbody2.record.課税対象額.value=subtotal;
             insbody2.record.非課税対象額.value=subnototal;
-            insbody2.record.消費税.value=calctax;
-            insbody2.record.請求総額.value=subtotal + subnototal + calctax;
+            insbody2.record.調整前消費税.value=calctax;
+            insbody2.record.税調整額.value=Number(rec[i]['税調整額'].value);
+            insbody2.record.消費税.value=calctax + Number(rec[i]['税調整額'].value) ;
+            insbody2.record.請求総額.value=subtotal + subnototal + calctax + Number(rec[i]['税調整額'].value);
+
             const resp6 = await kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', insbody2);
 
             //insbody3.record.入金額.value=subtotal + subnototal + calctax;

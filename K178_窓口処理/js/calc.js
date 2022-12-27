@@ -2,7 +2,7 @@
     "use strict";
 
     //課税、非課税対象額合計
-      var fields = ['税区分','税率','単価','数量','料金テーブル','支払区分'];
+      var fields = ['税区分','税率','単価','数量','料金テーブル','支払区分','税調整額'];
        var kamokuInfos = {
        '課税': '課税対象額',
        '非課税': '非課税対象額'
@@ -28,6 +28,8 @@
        totalFields.forEach(function(tcode) {
        record[tcode].value = 0;
        record[tcode].disabled = true;
+       record['調整前消費税'].value =0;
+       record['調整前消費税'].disabled = true;
        record['消費税'].value =0;
        record['消費税'].disabled = true;
        record['料金合計'].value =0;
@@ -40,18 +42,20 @@
          if (Object.keys(kamokuInfos).indexOf(kamoku) >= 0) {
          var tcode = kamokuInfos[kamoku];
            if (rows.value['単価'].value) {
-             if(rows.value['支払区分'].value=="支払済"){
                record[tcode].value += Number(rows.value['単価'].value)*Number(rows.value['数量'].value);
-             }
            }
          }
          });
          if(record['課税対象額'].value>=0){
-            record['消費税'].value = Math.floor(record['課税対象額'].value * record['税率'].value / 100);
+            record['調整前消費税'].value = Math.floor(record['課税対象額'].value * record['税率'].value / 100);
          }else{
-           record['消費税'].value = Math.ceil(record['課税対象額'].value * record['税率'].value / 100);
+           record['調整前消費税'].value = Math.ceil(record['課税対象額'].value * record['税率'].value / 100);
          }
-         record['料金合計'].value = record['課税対象額'].value + record['非課税対象額'].value + record['消費税'].value;
+         if(record['税調整額'].value=="" || typeof record['税調整額'].value ==="undefined" ){
+           record['税調整額'].value=0;
+         }
+         record['消費税'].value =  Number(record['調整前消費税'].value) + Number(record['税調整額'].value) ;
+         record['料金合計'].value = Number(record['課税対象額'].value) + Number(record['非課税対象額'].value) + record['消費税'].value ;
       return event;
     });
 })(jQuery);

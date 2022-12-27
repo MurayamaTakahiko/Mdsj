@@ -7,9 +7,9 @@
       //梅田店
       //var APP_ID = 156;   //会員顧客名簿
       //四条烏丸店
-      var APP_ID = 140;   //会員顧客名簿
+      //var APP_ID = 140;   //会員顧客名簿
 
-      //var APP_ID = 447;   //会員顧客名簿
+      var APP_ID = 447;   //会員顧客名簿
 
       if (event.viewName === "CSV取込") {
         var appId = event.appId;
@@ -183,7 +183,7 @@
             for (var j = 0; j < csvArrayD.length; j++) {
               switch(j){
                 case 0:
-                  a_line['請求対象月'] = csvArrayD[j];     //対象年月
+                  a_line['請求対象月'] = ('0000' + csvArrayD[j]).slice(-4);     //対象年月
                   break;
                 case 2:
                   a_line['契約番号'] = csvArrayD[j];    //契約番号

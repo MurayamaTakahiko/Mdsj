@@ -37,36 +37,67 @@ jQuery.noConflict();
   var events = [
     'app.record.create.submit'
   ];
-  kintone.events.on(events, function(event) {
-    var record = event.record;
-    // var billRecordId = event.record.請求番号.value;
-    var relatedAppId = kintone.app.getRelatedRecordsTargetAppId('工事依頼一覧');
-    var custCd = record['得意先CD'].value;
-    var query = '得意先CD = "' + custCd + '" and 金額入力日 != "" and 請求日 = ""';
-    // var query = '請求番号 = "' + billRecordId + '"';
-    //var query='';
-    var appUrl = kintone.api.url('/k/v1/records');
-    var params = {
-        'app': relatedAppId,
-        'query': query
-    };
-    var result=false;
-    kintone.api(appUrl, 'GET', params, function(resp) {
-      for (var i = 0; i < resp.records.length; i++) {
-        if (resp.records[i].請求時注意事項.value.length != 0) {
-          result=true;
-          break;
+  //kintone.events.on(events, function(event) {
+    kintone.events.on(events, async (event) => {
+      try{
+        var record = event.record;
+        // var billRecordId = event.record.請求番号.value;
+        var relatedAppId = kintone.app.getRelatedRecordsTargetAppId('工事依頼一覧');
+        var custCd = record['得意先CD'].value;
+        var query = '得意先CD = "' + custCd + '" and 金額入力日 != "" and 請求日 = ""';
+        // var query = '請求番号 = "' + billRecordId + '"';
+        //var query='';
+        var appUrl = kintone.api.url('/k/v1/records');
+        var params = {
+            'app': relatedAppId,
+            'query': query
+        };
+        var result=false;
+        const resp=  await kintone.api(appUrl, 'GET', params);
+        for (var i = 0; i < resp.records.length; i++) {
+          if (resp.records[i].請求時注意事項.value.length != 0) {
+            result=true;
+            break;
+          }
         }
-      }
-      if (result == true) {
-        // alert('請求書送付時の注意事項あり');
-        var res = confirm("請求書送付時の注意事項あり");
-        if (res === false) {
-          event.error = 'キャンセルしました';
-          window.location.href = window.location.origin + window.location.pathname + "#record=" + event.record.$id.value; // 画面遷移
+        if (result == true) {
+          // alert('請求書送付時の注意事項あり');
+          var res = confirm("請求書送付時の注意事項あり");
+          if (res === false) {
+            event.error = 'キャンセルしました';
+            //window.location.href = window.location.origin + window.location.pathname + "#record=" + event.recordId; // 画面遷移
+            return event;
+          }
         }
-      }
-    });
+        //請求番号採番***************
+        var nowmindt=moment().startOf('month').format();
+        var nowmaxdt=moment().endOf('month').format();
+        var yy=moment().format('YYYY').slice(-2);
+        var body = {
+          'app': kintone.app.getId(),
+          'query': '請求番号 != "" and 作成日時 >= "' + nowmindt +'" and 作成日時 <= "' + nowmaxdt + '" order by 請求番号 desc '
+        };
+        const resp2= await kintone.api(kintone.api.url('/k/v1/records', true), 'GET', body);
+        var recno=resp2.records;
+        var newno;
+        if(recno.length==0){
+          newno="3" + yy + "0001";
+        }else{
+          var ren=recno[0]['請求番号'].value;
+          var iren=parseInt(ren.substr(-4));
+          iren=iren+1;
+          var sren=String(iren);
+          sren=('0000' + sren).slice(-4);
+            newno="3" + yy + sren;
+        }
+        record['請求番号'].value=newno;
+        return event;
+     }catch(e) {
+       // パラメータが間違っているなどAPI実行時にエラーが発生した場合
+         alert(e.message);
+       return event;
+     }
+
   });
 
   //更新実行前に郵送前連絡、その他にチェックがある場合、アラート表示

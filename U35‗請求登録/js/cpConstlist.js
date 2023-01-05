@@ -85,8 +85,8 @@ jQuery.noConflict();
   //「明細取得ボタン」クリックイベント
   $(document).on('click', '#emxas-button-schedule', function(ev) {
     // 工事依頼アプリID
-    var APP_CONSTLIST = 31;
-    //var APP_CONSTLIST = 479;
+    //var APP_CONSTLIST = 31;
+    var APP_CONSTLIST = 479;
     var custCd;
     var finDay = "";
     var billDay = "";

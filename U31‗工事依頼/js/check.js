@@ -2,7 +2,7 @@
  'use struct';
  moment.locale('ja');
  //kintone.events.on(['app.record.create.submit','app.record.edit.submit'], function(event) {
-kintone.events.on(['app.record.create.submit','app.record.edit.submit'], async (event) => {
+kintone.events.on(['app.record.create.submit'], async (event) => {
   try{
     var record = event.record;
     var user = kintone.getLoginUser();
@@ -11,8 +11,8 @@ kintone.events.on(['app.record.create.submit','app.record.edit.submit'], async (
        return event;
     }
     //請求番号採番***************
-    var nowmindt=moment().startOf('month').format();
-    var nowmaxdt=moment().endOf('month').format();
+    var nowmindt=moment().startOf('year').format();
+    var nowmaxdt=moment().endOf('year').format();
     var yy=moment().format('YYYY').slice(-2);
     var body = {
       'app': kintone.app.getId(),
@@ -44,4 +44,23 @@ kintone.events.on(['app.record.create.submit','app.record.edit.submit'], async (
 
 
  })
+ kintone.events.on(['app.record.edit.submit'], async (event) => {
+   try{
+     var record = event.record;
+     var user = kintone.getLoginUser();
+     if (user.code === 'uematsu-shain') {
+       event.error = '保存する権限がありません。';
+        return event;
+     }
+   }catch(e) {
+     // パラメータが間違っているなどAPI実行時にエラーが発生した場合
+       alert(e.message);
+     return event;
+   }
+
+
+
+
+
+  })
 })();

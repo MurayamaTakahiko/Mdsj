@@ -2,7 +2,7 @@
  'use struct';
  moment.locale('ja');
  //kintone.events.on(['mobile.app.record.create.submit','mobile.app.record.edit.submit'], function(event) {
- kintone.events.on(['mobile.app.record.create.submit','mobile.app.record.edit.submit'], async (event) => {
+ kintone.events.on(['mobile.app.record.create.submit'], async (event) => {
      try{
        var record = event.record;
        var user = kintone.getLoginUser();
@@ -10,8 +10,8 @@
          event.error = '保存する権限がありません。';
        }
        //請求番号採番***************
-       var nowmindt=moment().startOf('month').format();
-       var nowmaxdt=moment().endOf('month').format();
+       var nowmindt=moment().startOf('year').format();
+       var nowmaxdt=moment().endOf('year').format();
        var yy=moment().format('YYYY').slice(-2);
        var body = {
          'app': kintone.mobile.app.getId(),
@@ -31,6 +31,21 @@
            newno="2" + yy + sren;
        }
        record['工事番号'].value=newno;
+       return event;
+     }catch(e) {
+       // パラメータが間違っているなどAPI実行時にエラーが発生した場合
+         alert(e.message);
+       return event;
+     }
+ })
+ kintone.events.on(['mobile.app.record.edit.submit'], async (event) => {
+     try{
+       var record = event.record;
+       var user = kintone.getLoginUser();
+       if (user.code === 'uematsu-shain') {
+         event.error = '保存する権限がありません。';
+       }
+
        return event;
      }catch(e) {
        // パラメータが間違っているなどAPI実行時にエラーが発生した場合

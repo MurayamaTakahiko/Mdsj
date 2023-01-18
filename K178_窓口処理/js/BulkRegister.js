@@ -320,10 +320,10 @@
                                     "value":moment(subrec[j]['value']['対象日'].value).format('YYYY-MM-DD')
                                   },
                                   "種別":{
-                                    "value":subrec[j]['value']['商品種別'].value +'（' + (moment(subrec[j]['value']['対象日'].value).month()+1) + '月分）'
+                                    "value":subrec[j]['value']['商品種別'].value
                                   },
                                   "プラン・オプション":{
-                                    "value":subrec[j]['value']['商品名'].value
+                                    "value":subrec[j]['value']['商品名'].value +'（' + (moment(subrec[j]['value']['対象日'].value).month()+1) + '月分）'
                                   },
                                   "税区分":{
                                     "value":subrec[j]['value']['税区分'].value
@@ -404,6 +404,21 @@
               //登録
               insbody3.record.入金額.value=subtotal + subnototal + calctax + Number(rec[i]['税調整額'].value);
               const resp4 = await kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', insbody3);
+
+              //前回請求日、前回請求額更新
+              var updparam = {
+                "app": APP_CUSTMER_ID,
+                "id":rec[i]['登録NO_メンバー'].value,
+                "record": {
+                  "前回請求番号": {
+                    "value": newno
+                  },
+                  "前回請求日":{
+                    "value":moment(rec[i]['日時'].value).format('YYYY-MM-DD')
+                  }
+                }
+              };
+              await kintone.api(kintone.api.url('/k/v1/record.json', true), 'PUT', updparam);
             }
       }
       //後払い分（ビジター）

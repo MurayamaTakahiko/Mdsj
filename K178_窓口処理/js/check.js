@@ -30,26 +30,27 @@
        if(event.error !=""){
          return event;
        }
-
-       if(record['メンバーの場合'].value !=""){
-         subrec=record['料金テーブル'].value;
-         for(let i=0;i<subrec.length;i++){
-            if(subrec[i]['value']['商品番号'].value !="" && subrec[i]['value']['自動計上済'].value == ""){
-              var param = {
-                app: APP_INVOICE,
-                query: '顧客名 = "' + record['メンバーの場合'].value + '" and 利用対象期間_from <= "' + subrec[i]['value']['対象日'].value + '" ' +
-                                       'and 利用対象期間_to >= "' + subrec[i]['value']['対象日'].value + '" and 金額 in ( '  + subrec[i]['value']['料金'].value + ')'
-              };
-              const resp = await  kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', param);
-                if(resp.records.length !=0 ){
-                  event.error = '請求登録データの重複を防ぐため、「自動計上済（自動）」に✔を入れてください。';
-                  return event;
-                }
+       if(record['強制保存'].value == ""){
+         if(record['メンバーの場合'].value !=""){
+           subrec=record['料金テーブル'].value;
+           for(let i=0;i<subrec.length;i++){
+              if(subrec[i]['value']['商品番号'].value !="" && subrec[i]['value']['自動計上済'].value == ""){
+                var param = {
+                  app: APP_INVOICE,
+                  query: '顧客名 = "' + record['メンバーの場合'].value + '" and 利用対象期間_from <= "' + subrec[i]['value']['対象日'].value + '" ' +
+                                         'and 利用対象期間_to >= "' + subrec[i]['value']['対象日'].value + '" and 金額 in ( '  + subrec[i]['value']['料金'].value + ')' +
+                                         'and プラン・オプション like "' +  subrec[i]['value']['商品名'].value + '"'
+                };
+                const resp = await  kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', param);
+                  if(resp.records.length !=0 ){
+                    event.error = '請求登録データの重複を防ぐため、「自動計上済（自動）」に✔を入れてください。';
+                    return event;
+                  }
+              }
             }
-          }
 
+         }
        }
-
        return event;
     }catch(e) {
       // パラメータが間違っているなどAPI実行時にエラーが発生した場合

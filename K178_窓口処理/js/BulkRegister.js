@@ -406,6 +406,7 @@
               const resp4 = await kintone.api(kintone.api.url('/k/v1/record.json', true), 'POST', insbody3);
 
               //前回請求日、前回請求額更新
+              if(rec[i]['登録NO_メンバー'].value != ""){
               var updparam = {
                 "app": APP_CUSTMER_ID,
                 "id":rec[i]['登録NO_メンバー'].value,
@@ -419,6 +420,7 @@
                 }
               };
               await kintone.api(kintone.api.url('/k/v1/record.json', true), 'PUT', updparam);
+            }
             }
       }
       //後払い分（ビジター）

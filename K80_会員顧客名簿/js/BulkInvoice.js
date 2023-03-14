@@ -736,7 +736,7 @@
 
                     var body = {
                       'app': APP_CALL,
-                      'query': '契約電話番号 = "' + tellNo + '" and 請求対象月 >= "' + stateldt + '" and 請求対象月 <= "' + prevenddt + '" order by 請求対象月'
+                      'query': '契約者 = "' + rec[i]['顧客名'].value +  '" and  契約電話番号 = "' + tellNo + '" and 請求対象月 >= "' + stateldt + '" and 請求対象月 <= "' + prevenddt + '" order by 請求対象月'
                     };
                     //データ取得
                     const resp3= await  kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', body);
@@ -753,6 +753,11 @@
                         mm=moment(ymd).month()+1;
                         if(mm != mm2 ){
                           if(bill !=0){
+                            if(bill>=0){
+                              bill=Math.floor(bill);
+                            }else {
+                              bill=Math.ceil(bill);
+                            }
                             // 売上管理の窓口入金済みにあるかどうか
                             body = {
                               'app': APP_SALES_ID,
@@ -842,6 +847,11 @@
                     }
                     //0円以上
                     if(bill !=0){
+                      if(bill>=0){
+                        bill=Math.floor(bill);
+                      }else {
+                        bill=Math.ceil(bill);
+                      }
                         // 売上管理の窓口入金済みにあるかどうか
                         body = {
                           'app': APP_SALES_ID,

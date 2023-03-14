@@ -7,9 +7,11 @@
       //梅田店
       //var APP_ID = 156;   //会員顧客名簿
       //四条烏丸店
-      //var APP_ID = 140;   //会員顧客名簿
+      var APP_ID = 140;   //会員顧客名簿
 
-      var APP_ID = 447;   //会員顧客名簿
+      //var APP_ID = 447;   //会員顧客名簿
+
+
 
       if (event.viewName === "CSV取込") {
         var appId = event.appId;
@@ -54,19 +56,56 @@
                 showSpinner(); // スピナー表示
             var jsonArray = csv2json(text_val.split('\n'),year,tel1,tel2,tel3,tel4,biko1,biko2,biko3,biko4);
               for (var i = 0; i < jsonArray.length; i++) {
-
+                var eddt=moment().endOf('month').format("YYYY-MM-DD");
+                var stdt=moment().startOf('month').format("YYYY-MM-DD");
                 var body = {
                   'app': APP_ID,
-                  'query': '契約番号 in ("' + jsonArray[i]['契約番号'] +  '") '
+                  'query': '契約番号 in ("' + jsonArray[i]['契約番号'] +  '") and ' +
+                  ' 入会日 <= "' + eddt + '" and ' +
+                  ' (退会日 = ""  or 退会日 >= "' + stdt + '")'
                 };
                 //会員顧客名簿
                 const resp = await kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', body);
                 var rec=resp.records;
                 var today=moment().format('YYYY-MM-DD');
                 var j,k;
+                var count=0;
                 for ( j = 0 ; j < rec.length ; j++){
-                  jsonArray[i]['契約者']=rec[j]['顧客名'].value;
-                  var subrec=rec[j]['プランリスト'].value;
+                  var subrec=rec[j]['オプション利用'].value;
+                  for( k= 0 ; k < subrec.length; k++){
+                    if(subrec[k]['value']['契約番号'].value==jsonArray[i]['契約番号']){
+                      stdt= subrec[k]['value']['オプション利用開始日'].value;
+                      eddt= subrec[k]['value']['オプション利用終了日'].value;
+                      if(stdt != ""){
+                        stdt=moment(stdt).format('YYYY-MM-DD');
+                      }else{
+                        continue;
+                      }
+                      if(eddt != ""){
+                        eddt=moment(eddt).format('YYYY-MM-DD');
+                      }
+                      if(stdt <= today){
+                        if(eddt =="" ){
+                          count+=1;
+                          jsonArray[i]['契約者']=rec[j]['顧客名'].value;
+                          break;
+                        }else{
+                          if(today <= eddt){
+                            count+=1;
+                            jsonArray[i]['契約者']=rec[j]['顧客名'].value;
+                            break;
+                          }
+                        }
+                      }
+                    }
+                  }
+                  if(count>1){
+                    jsonArray[i]['メモ']='〈重複エラー〉';
+                    break;
+                  }else{
+                    jsonArray[i]['メモ']='';
+                  }
+                  subrec=rec[j]['プランリスト'].value;
                   for( k= 0 ; k < subrec.length; k++){
                     if(subrec[k]['value']['プラン種別'].value=='バーチャル'){
                       var stdt= subrec[k]['value']['プラン利用開始日'].value;
@@ -108,6 +147,9 @@
                             },
                             "契約者":{
                               "value":jsonArray[i]['契約者']
+                            },
+                            "メモ":{
+                              "value":jsonArray[i]['メモ']
                             },
                             "備考":{
                               "value":jsonArray[i]['備考']

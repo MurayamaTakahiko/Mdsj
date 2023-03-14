@@ -1002,7 +1002,7 @@ kintone.app.record.set({record: record});
                 if(moment(tableList['オプション利用終了日'].value).format("YYYYMM") <= moment(finTelDay).format("YYYYMM")){
                   finTelDay=moment(tableList['オプション利用終了日'].value).endOf('month').format("YYYY-MM-DD");
                 }
-                var query = '契約電話番号 = "' + tellNo + '" and 請求対象月 >= "' + staTelDay + '" and 請求対象月 <= "' + finTelDay + '" order by 請求対象月 limit 500';
+                var query = '契約者 = "' + record['顧客名'].value +  '" and  契約電話番号 = "' + tellNo + '" and 請求対象月 >= "' + staTelDay + '" and 請求対象月 <= "' + finTelDay + '" order by 請求対象月 limit 500';
                 var paramTell = {
                     'app': APP_TELLBILL,
                     'query': query
@@ -1024,6 +1024,11 @@ kintone.app.record.set({record: record});
                     }
                     if(mm != mm2 ){
                       if(tellBill !=0){
+                        if(tellBill>=0){
+                          tellBill=Math.floor(tellBill);
+                        }else {
+                          tellBill=Math.ceil(tellBill);
+                        }
                         // 売上管理の窓口入金済みにあるかどうか
                         body = {
                           'app': APP_SALES,
@@ -1066,6 +1071,11 @@ kintone.app.record.set({record: record});
 
                   }
                   if (tellBill !== 0) {
+                    if(tellBill>=0){
+                      tellBill=Math.floor(tellBill);
+                    }else {
+                      tellBill=Math.ceil(tellBill);
+                    }
                     // 売上管理の窓口入金済みにあるかどうか
                     body = {
                       'app': APP_SALES,
@@ -1103,7 +1113,7 @@ kintone.app.record.set({record: record});
             } else {
               if (moment(invoicedt).month() % 2 != 0) {
                 var tellNo = tableList['契約番号'].value;
-                var query = '契約電話番号 = "' + tellNo + '" and 請求対象月 >= "' + staTelDay + '" and 請求対象月 <= "' + finTelDay + '" order by 請求対象月';
+                var query =  '契約者 = "' + record['顧客名'].value +  '" and  契約電話番号 = "' + tellNo + '" and 請求対象月 >= "' + staTelDay + '" and 請求対象月 <= "' + finTelDay + '" order by 請求対象月';
                 var paramTell = {
                     'app': APP_TELLBILL,
                     'query': query
@@ -1121,6 +1131,11 @@ kintone.app.record.set({record: record});
                     mm=moment(ymd).month()+1;
                     if(mm != mm2 ){
                       if(tellBill !=0){
+                        if(tellBill>=0){
+                          tellBill=Math.floor(tellBill);
+                        }else {
+                          tellBill=Math.ceil(tellBill);
+                        }
                         // 売上管理の窓口入金済みにあるかどうか
                         body = {
                           'app': APP_SALES,
@@ -1162,6 +1177,11 @@ kintone.app.record.set({record: record});
                     tellBill += Number(recordT['通話料'].value);
                   }
                   if (tellBill !== 0) {
+                    if(tellBill>=0){
+                      tellBill=Math.floor(tellBill);
+                    }else {
+                      tellBill=Math.ceil(tellBill);
+                    }
                     // 売上管理の窓口入金済みにあるかどうか
                     body = {
                       'app': APP_SALES,
@@ -1256,9 +1276,11 @@ kintone.app.record.set({record: record});
     }
         //画面[請求明細]サブテーブル]に反映
         objRecord['record']['請求明細']['value'] = tbl;
+
        //対象額
         objRecord['record']['課税対象額']['value']=subtotal;
         objRecord['record']['非課税対象額']['value']=subnototal;
+
         if(subtotal>=0){
           objRecord['record']['調整前消費税']['value']= Math.floor(subtotal*Number(objRecord['record']['税率']['value'])/100);
         }else {

@@ -14,6 +14,19 @@
     var table = record['作業者一覧'].value;
     var plList = '';
     for (var i = 0; i < table.length; i++) {
+      //駐車料金有の場合
+      if(table[i].value['駐車料金'].value=='有'){
+        if(table[i].value['金額'].value==0 || !table[i].value['金額'].value){
+            event.error = '駐車料金の金額が入力されていません。';
+            return event;
+        }
+      }
+      if(table[i].value['駐車料金'].value=='無'){
+        if(table[i].value['金額'].value!=0 && table[i].value['金額'].value){
+            event.error = '駐車料金「無」で金額が入力されています。';
+            return event;
+        }
+      }
       if (plList !== '') {
         plList += ', ';
       }

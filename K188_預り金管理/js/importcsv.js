@@ -134,7 +134,7 @@
             name="振込（りそな）";
             break;
           case "2":
-            dtcol=2;
+            dtcol=3;
             amcol=4;
             fncol=7;
             name="振込（三井住友）";

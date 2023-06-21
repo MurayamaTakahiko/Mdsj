@@ -271,11 +271,15 @@ kintone.app.record.set({record: record});
       custCd = record['取得ID'].value;
       var param = {
         app: APP_CONSTLIST,
-        query: "レコード番号 = \"" + custCd + "\" and " +
+  //      query: "レコード番号 = \"" + custCd + "\" and " +
   //        "オプション利用開始日 <= \"" + staDay + "\" and " +
-          " 入会日 <= \"" + enddt + "\" and " +
-          "(退会日 = \"" + billDay + "\"  or 退会日 >= \"" + staDay + "\")" +
-          "order by レコード番号 desc"
+  //        " 入会日 <= \"" + enddt + "\" and " +
+  //        "(退会日 = \"" + billDay + "\"  or 退会日 >= \"" + staDay + "\")" +
+  //        "order by レコード番号 desc"
+          query: "レコード番号 = \"" + custCd + "\" and " +
+                " 入会日 <= \"" + enddt + "\"  " +
+            "order by レコード番号 desc"
+
       };
       return kintoneUtility.rest.getAllRecordsByQuery(param).then(function(resp) {
         console.log(resp);
@@ -302,11 +306,14 @@ kintone.app.record.set({record: record});
       custCd = record['所属・会社名１'].value;
       var param = {
         app: APP_CONSTLIST,
-        query: "所属・会社名１ = \"" + custCd + "\" and " +
+    //    query: "所属・会社名１ = \"" + custCd + "\" and " +
     //      "オプション利用開始日 <= \"" + staDay + "\" and " +
-          " 入会日 <= \"" + enddt + "\" and " +
-          "(退会日 = \"" + billDay + "\"  or 退会日 >= \"" + staDay + "\")" +
-          "order by レコード番号 desc"
+    //      " 入会日 <= \"" + enddt + "\" and " +
+    //      "(退会日 = \"" + billDay + "\"  or 退会日 >= \"" + staDay + "\")" +
+    //      "order by レコード番号 desc"
+        query: "所属・会社名１ = \"" + custCd + "\" and " +
+            " 入会日 <= \"" + enddt + "\"  " +
+            "order by レコード番号 desc"
       };
       return kintoneUtility.rest.getAllRecordsByQuery(param).then(function(resp) {
         console.log(resp);
@@ -332,11 +339,15 @@ kintone.app.record.set({record: record});
       custCd = record['顧客名'].value;
       var param = {
         app: APP_CONSTLIST,
-        query: "顧客名 = \"" + custCd + "\" and " +
+  //      query: "顧客名 = \"" + custCd + "\" and " +
   //        "オプション利用開始日 <= \"" + staDay + "\" and " +
-          " 入会日 <= \"" + enddt + "\" and " +
-          "(退会日 = \"" + billDay + "\"  or 退会日 >= \"" + staDay + "\")" +
-          "order by レコード番号 desc"
+  //        " 入会日 <= \"" + enddt + "\" and " +
+  //        "(退会日 = \"" + billDay + "\"  or 退会日 >= \"" + staDay + "\")" +
+  //        "order by レコード番号 desc"
+
+          query: "顧客名 = \"" + custCd + "\" and " +
+            " 入会日 <= \"" + enddt + "\" " +
+            "order by レコード番号 desc"
       };
       return kintoneUtility.rest.getAllRecordsByQuery(param).then(function(resp) {
         console.log(resp);
@@ -399,17 +410,21 @@ kintone.app.record.set({record: record});
     }
     // 「請求明細」サブテーブルを取得
     var resp=await getSubtable();
-        //取得予定の数分
-        for (var i = 0; i < constlist.length; i++) {
-          var record = constlist[i];
-          var setFields = {};
-          var virtualFlg = false;
-          var firstFlg=false;
-          //初回プラン利用開始日
-          var firstplandt=record['入会日_0'].value;
-          var flgA=false;
-          var flgB=false;
-          var body;
+
+    //取得予定の数分
+    for (var i = 0; i < constlist.length; i++) {
+      var record = constlist[i];
+      var setFields = {};
+      var virtualFlg = false;
+      var firstFlg=false;
+      //初回プラン利用開始日
+      var firstplandt=record['入会日_0'].value;
+      var flgA=false;
+      var flgB=false;
+      var body;
+
+      //退会前
+      if(record['退会日'].value== null || record['退会日'].value >=  staDay ){
 
           // プラン分をまずセット
           for (var pTbl = 0; pTbl < record['プランリスト']['value'].length; pTbl++) {
@@ -767,63 +782,6 @@ kintone.app.record.set({record: record});
                         }
                         j++;
                       }
-                    // }
-
-                  // }else if (moment(staDay).month() == 3 || moment(staDay).month() == 9) {
-                  //   //プラン終了日が6か月以前の場合
-                  //   if(
-                  //      (tableList['オプション利用終了日'].value != null &&
-                  //         enddt6>=tableList['オプション利用終了日'].value) || (planenddt != null && enddt6>=planenddt)
-                  //       ){
-                  //     optenddt=moment(tableList['オプション利用終了日'].value).startOf('month').format();
-                  //     //バーチャルプラン終了日と比較
-                  //     if(planenddt == null){
-                  //       max=moment(optenddt).diff(finDay,'months')+1;
-                  //     }else if(optenddt<planenddt){
-                  //       max=moment(optenddt).diff(finDay,'months')+1;
-                  //     }else{
-                  //       max=moment(planenddt).diff(finDay,'months')+1;
-                  //     }
-                  //
-                  //   }else{
-                  //     max=6
-                  //   }
-                  //   for(let j=0;j<max;j++){
-                  //     // 売上管理の窓口入金済みにあるかどうか
-                  //     body = {
-                  //       'app': APP_SALES,
-                  //       'query': '登録NO_メンバー = "' + record['レコード番号'].value + 　'" and ' +
-                  //                '請求対象月 >= "' + moment(staDay).add(j,'month').startOf('month').format("YYYY-MM-DD") +'" and ' +
-                  //                '請求対象月 <= "' + moment(staDay).add(j,'month').endOf('month').format("YYYY-MM-DD") +'" and ' +
-                  //                '商品番号 in ("' + tableList['商品番号_オプション'].value + '") and 窓口入金 in ("済") '
-                  //     };
-                  //     //データ取得
-                  //     const respsumi = await  kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', body);
-                  //     //入金済に存在しなかったら
-                  //     if(respsumi.records.length == 0){
-                  //       //税区分
-                  //       taxkbn = await getTaxkbn(tableList['商品番号_オプション']['value']);
-                  //       setFields = {
-                  //         '種別': 'オプション',
-                  //         'プラン・オプション': tableList['オプション']['value']+'（' + (moment(staDay).add(j, 'month').month()+1) + '月分）',
-                  //         '単価': tableList['オプション単価']['value'] ,
-                  //         '税区分':taxkbn,
-                  //         '数量': tableList['オプション契約数']['value'] ,
-                  //         '利用対象期間_from':moment(staDay).add(j, 'month').startOf('month').format("YYYY-MM-DD"),
-                  //         '利用対象期間_to':moment(staDay).add(j, 'month').endOf('month').format("YYYY-MM-DD")
-                  //       };
-                  //     }
-                  //     // }
-                  //     tbl.push({
-                  //       'value' : getRowObject(resp, setFields)
-                  //     });
-                  //     if(taxkbn=="課税"){
-                  //       subtotal=Number(subtotal) + (Number(tableList['オプション単価']['value'])*Number(tableList['オプション契約数']['value']));
-                  //     }else{
-                  //       subnototal=Number(subnototal) + (Number(tableList['オプション単価']['value'])*Number(tableList['オプション契約数']['value']));
-                  //     }
-                  //   }
-                  // }
                 } else {
                   //初回請求（入会日の月＝請求日かつ前回請求日なし）
                   if(moment(record['入会日'].value).format('YYYYMM') == moment(invoicedt).format('YYYYMM') && record['前回請求日'].value == null){
@@ -1002,7 +960,7 @@ kintone.app.record.set({record: record});
                 if(moment(tableList['オプション利用終了日'].value).format("YYYYMM") <= moment(finTelDay).format("YYYYMM")){
                   finTelDay=moment(tableList['オプション利用終了日'].value).endOf('month').format("YYYY-MM-DD");
                 }
-                var query = '契約者 = "' + record['顧客名'].value +  '" and  契約電話番号 = "' + tellNo + '" and 請求対象月 >= "' + staTelDay + '" and 請求対象月 <= "' + finTelDay + '" order by 請求対象月 limit 500';
+                var query = '((契約者 = "" and 契約電話番号 = "' + tellNo + '" ) or (契約者 = "' + record['顧客名'].value +  '" and  契約電話番号 = "' + tellNo + '")) and 請求対象月 >= "' + staTelDay + '" and 請求対象月 <= "' + finTelDay + '" order by 請求対象月 limit 500';
                 var paramTell = {
                     'app': APP_TELLBILL,
                     'query': query
@@ -1113,7 +1071,7 @@ kintone.app.record.set({record: record});
             } else {
               if (moment(invoicedt).month() % 2 != 0) {
                 var tellNo = tableList['契約番号'].value;
-                var query =  '契約者 = "' + record['顧客名'].value +  '" and  契約電話番号 = "' + tellNo + '" and 請求対象月 >= "' + staTelDay + '" and 請求対象月 <= "' + finTelDay + '" order by 請求対象月';
+                var query =  '((契約者 = "" and 契約電話番号 = "' + tellNo + '" ) or (契約者 = "' + record['顧客名'].value +  '" and  契約電話番号 = "' + tellNo + '")) and 請求対象月 >= "' + staTelDay + '" and 請求対象月 <= "' + finTelDay + '" order by 請求対象月';
                 var paramTell = {
                     'app': APP_TELLBILL,
                     'query': query
@@ -1221,7 +1179,175 @@ kintone.app.record.set({record: record});
         }
 
       }
+    }else{
+        var planstdt1="";
+        var planstdt2="";
+        var staTelDay2="";
+        var finTelDay2="";
+        //退会後は通話料を取得
+        for (var pTbl = 0; pTbl < record['プランリスト']['value'].length; pTbl++) {
+          var planList = record['プランリスト'].value[pTbl].value;
+          var planstdt1=planList['プラン利用開始日'].value;
+          if(planstdt1>=planstdt2){
+            planstdt2=planstdt1;
+            if (planList['プラン種別']['value'] === "バーチャル") {
+              virtualFlg=true;
+            }else{
+              virtualFlg=false;
+            }
+          }
 
+        }
+        //バーチャルの場合
+        if(virtualFlg){
+          //退会月と請求月が同じ場合で3月もしくは9月の場合、6か月分
+          if((moment(invoicedt).month()==2 || moment(invoicedt).month()==8) &&
+              moment(record['退会日'].value).format("YYYY-MM")==moment(invoicedt).format("YYYY-MM")){
+            //抽出開始月
+            staTelDay2 = moment(invoicedt).add(-6, 'month').startOf('month').format("YYYY-MM-DD");
+            finTelDay2 = moment(invoicedt).add(-1, 'month').endOf('month').format("YYYY-MM-DD");
+          }else{
+            //上記以外前月分
+            //抽出開始月
+            staTelDay2 = moment(invoicedt).add(-1, 'month').startOf('month').format("YYYY-MM-DD");
+            finTelDay2 = moment(invoicedt).add(-1, 'month').endOf('month').format("YYYY-MM-DD");
+          }
+        }else{
+          //バーチャル以外の場合、
+          //偶数月は2ヶ月分、　請求月が退会月の翌月以前（一度退会月の翌月が奇数で請求した後、その翌月に請求取得で取得しないため）
+          if (moment(invoicedt).month() % 2 != 0 && moment(record['退会日'].value).add(1,'month').format("YYYY-MM") >= moment(invoicedt).format("YYYY-MM")) {
+            staTelDay2 = moment(invoicedt).add(-2, 'month').startOf('month').format("YYYY-MM-DD");
+            finTelDay2 = moment(invoicedt).add(-1, 'month').endOf('month').format("YYYY-MM-DD");
+          }else{
+            //奇数月で退会月と請求月の前月が同じ場合、前月分を取得
+            if (moment(record['退会日'].value).format("YYYY-MM")==moment(invoicedt).add(-1,'month').format("YYYY-MM")) {
+              staTelDay2 = moment(invoicedt).add(-1, 'month').startOf('month').format("YYYY-MM-DD");
+              finTelDay2 = moment(invoicedt).add(-1, 'month').endOf('month').format("YYYY-MM-DD");
+            }else{
+              staTelDay2 ="";
+              finTelDay2 ="";
+            }
+          }
+        }
+        //
+        if(staTelDay2 !=""){
+          // オプション明細をセット
+          for (var j = 0; j < record['オプション利用'].value.length; j++) {
+            var tableList = record['オプション利用'].value[j].value;
+            if(tableList['契約番号'].value != "" ) {
+              if((moment(tableList['オプション利用開始日'].value).format("YYYYMM")<=moment(staTelDay2).format("YYYYMM") &&
+                 moment(tableList['オプション利用終了日'].value).format("YYYYMM")>=moment(staTelDay2).format("YYYYMM") )||
+                 (moment(tableList['オプション利用開始日'].value).format("YYYYMM")<=moment(finTelDay2).format("YYYYMM") &&
+                    moment(tableList['オプション利用終了日'].value).format("YYYYMM")>=moment(finTelDay2).format("YYYYMM") )){
+                 //通話料抽出
+                 var tellNo = tableList['契約番号'].value;
+                 var query =  '契約電話番号 = "' + tellNo + '" and 請求対象月 >= "' + staTelDay2 + '" and 請求対象月 <= "' + finTelDay2 + '" order by 請求対象月';
+                 var paramTell = {
+                     'app': APP_TELLBILL,
+                     'query': query
+                 };
+                 var respT =await kintone.api(kintone.api.url('/k/v1/records', true), 'GET', paramTell)
+                   var recordsT = respT.records;
+                   var tellBill = 0;
+                   var ymd;
+                   var ymd2;
+                   var mm;
+                   var mm2;
+                   for (var k = 0, l = recordsT.length; k < l; k++) {
+                     var recordT = recordsT[k];
+                     ymd=recordT['請求対象月'].value;
+                     mm=moment(ymd).month()+1;
+                     if(mm != mm2 ){
+                       if(tellBill !=0){
+                         if(tellBill>=0){
+                           tellBill=Math.floor(tellBill);
+                         }else {
+                           tellBill=Math.ceil(tellBill);
+                         }
+                         // 売上管理の窓口入金済みにあるかどうか
+                         body = {
+                           'app': APP_SALES,
+                           'query': '登録NO_メンバー = "' + record['レコード番号'].value + 　'" and ' +
+                                    '請求対象月 >= "' + moment(ymd2).startOf('month').format("YYYY-MM-DD") +'" and ' +
+                                    '請求対象月 <= "' + moment(ymd2).endOf('month').format("YYYY-MM-DD") +'" and ' +
+                                    '商品番号 in ("' + TEL_ITEM_NO + '") and 窓口入金 in ("済") '
+                         };
+                         //データ取得
+                         const respsumi = await  kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', body);
+                         //入金済に存在しなかったら
+                         if(respsumi.records.length == 0){
+                           //税区分
+                           taxkbn = await getTaxkbn(TEL_ITEM_NO);
+                           //請求明細
+                           setFields = {
+                                         "種別":"オプション",
+                                         "プラン・オプション":'通話料（' + mm2 + '月分）',
+                                         "単価":tellBill,
+                                         '税区分':taxkbn,
+                                         "数量":1,
+                                         "利用対象期間_from":moment(ymd2).startOf('month').format("YYYY-MM-DD"),
+                                         "利用対象期間_to":moment(ymd2).endOf('month').format("YYYY-MM-DD")
+                                       };
+                                       tbl.push({
+                                         'value': getRowObject(resp, setFields)
+                                       });
+                                       if(taxkbn=="課税"){
+                                         subtotal=Number(subtotal) + Number(tellBill);
+                                       }else{
+                                         subnototal=Number(subnototal) + Number(tellBill);
+                                       }
+                          }
+                        }
+                         tellBill=0;
+                          ymd2=recordT['請求対象月'].value;
+                          mm2=moment(ymd2).month()+1;
+                     }
+                     tellBill += Number(recordT['通話料'].value);
+                   }
+                   if (tellBill !== 0) {
+                     if(tellBill>=0){
+                       tellBill=Math.floor(tellBill);
+                     }else {
+                       tellBill=Math.ceil(tellBill);
+                     }
+                     // 売上管理の窓口入金済みにあるかどうか
+                     body = {
+                       'app': APP_SALES,
+                       'query': '登録NO_メンバー = "' + record['レコード番号'].value + 　'" and ' +
+                                '請求対象月 >= "' + moment(ymd2).startOf('month').format("YYYY-MM-DD") +'" and ' +
+                                '請求対象月 <= "' + moment(ymd2).endOf('month').format("YYYY-MM-DD") +'" and ' +
+                                '商品番号 in ("' + TEL_ITEM_NO + '") and 窓口入金 in ("済") '
+                     };
+                     //データ取得
+                     const respsumi = await  kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', body);
+                     //入金済に存在しなかったら
+                     if(respsumi.records.length == 0){
+                       //税区分
+                       taxkbn = await getTaxkbn(TEL_ITEM_NO);
+                       setFields = {
+                         '種別': 'オプション',
+                         'プラン・オプション': '通話料（' + mm2 + '月分）',
+                         '単価': tellBill,
+                         '税区分':taxkbn,
+                         '数量': 1,
+                         '利用対象期間_from':moment(ymd2).startOf('month').format("YYYY-MM-DD"),
+                         '利用対象期間_to':moment(ymd2).endOf('month').format("YYYY-MM-DD")
+                       };
+                       tbl.push({
+                         'value': getRowObject(resp, setFields)
+                       });
+                       if(taxkbn=="課税"){
+                         subtotal=Number(subtotal) + Number(tellBill);
+                       }else{
+                         subnototal=Number(subnototal) + Number(tellBill);
+                       }
+                     }
+                 }
+               }
+             }
+           }
+        }
+      }
       //窓口処理後払い分
       body = {
         'app': APP_MADO,
@@ -1273,6 +1399,8 @@ kintone.app.record.set({record: record});
 
         }
       }
+
+
     }
         //画面[請求明細]サブテーブル]に反映
         objRecord['record']['請求明細']['value'] = tbl;

@@ -1,6 +1,36 @@
 //一括登録ボタン表示
 (function($) {
     "use strict";
+
+    //アプリID本番用<中津店>
+    //var APP_SALES_ID = 82;  //売上管理
+    //var APP_INVOICE_ID = 74; //請求登録
+    //var APP_NYUKIN_ID= 79; //入金管理
+    //var APP_CUSTMER_ID = 80 //会員顧客名簿
+    //var KIGO='NS';
+
+    //アプリID本番用<梅田店>
+    //var APP_SALES_ID = 168;  //売上管理
+    //var APP_INVOICE_ID = 169; //請求登録
+    //var APP_NYUKIN_ID= 170; //入金管理
+    //var APP_CUSTMER_ID = 156 //会員顧客名簿
+    //var KIGO='US';
+
+    //アプリID本番用<四条烏丸店>
+    var APP_SALES_ID = 152;  //売上管理
+    var APP_INVOICE_ID = 153; //請求登録
+    var APP_NYUKIN_ID= 154; //入金管理
+    var APP_CUSTMER_ID = 140 //会員顧客名簿
+    var KIGO='SS';
+
+    //アプリID
+    //var APP_SALES_ID = 446;  //売上管理
+    //var APP_INVOICE_ID = 449; //請求登録
+    //var APP_NYUKIN_ID= 448; //入金管理
+    //var APP_CUSTMER_ID = 447 //会員顧客名簿
+    //var KIGO='NS';
+
+    var myID ;
     // moment.locale('ja');
     kintone.events.on('app.record.index.show', function(event) {
         if (event.viewName === "月末一括計上") {
@@ -16,6 +46,15 @@
       }
     });
 
+      kintone.events.on('app.record.detail.show', (event) => {
+        // メニューの上側の空白部分にボタンを設置
+        const myIndexButton = document.createElement('button');
+        myIndexButton.id = 'my_index_button';
+        myIndexButton.innerText = '売上個別登録';
+        kintone.app.record.getHeaderMenuSpaceElement().appendChild(myIndexButton);
+        myID=event.record['登録NO'].value;
+      });
+
     //一括登録ボタン処理
     $(document).on('click', '#bulk_button', async (ev) => {
       try {
@@ -24,41 +63,62 @@
           return;
       }
       showSpinner(); // スピナー表示
-      //請求番号編集４か所
-      //アプリID本番用<中津店>
-      //var APP_SALES_ID = 82;  //売上管理
-      //var APP_INVOICE_ID = 74; //請求登録
-      //var APP_NYUKIN_ID= 79; //入金管理
-      //var APP_CUSTMER_ID = 80 //会員顧客名簿
-
-      //アプリID本番用<梅田店>
-      //var APP_SALES_ID = 168;  //売上管理
-      //var APP_INVOICE_ID = 169; //請求登録
-      //var APP_NYUKIN_ID= 170; //入金管理
-      //var APP_CUSTMER_ID = 156 //会員顧客名簿
-
-      //アプリID本番用<四条烏丸店>
-      var APP_SALES_ID = 152;  //売上管理
-      var APP_INVOICE_ID = 153; //請求登録
-      var APP_NYUKIN_ID= 154; //入金管理
-      var APP_CUSTMER_ID = 140 //会員顧客名簿
-
-      //アプリID
-      //var APP_SALES_ID = 446;  //売上管理
-      //var APP_INVOICE_ID = 449; //請求登録
-      //var APP_NYUKIN_ID= 448; //入金管理
-      //var APP_CUSTMER_ID = 447 //会員顧客名簿
       //カレンダーの年月を取得
       var dts=$('input[id^="selectDate"]');
       var dt=dts[0].value;
       var proc='';
-
       var minDt=moment(dt).startOf('month').format();
       var maxDt=moment(dt).endOf('month').format();
       var body = {
         'app': kintone.app.getId(),
         'query': '日時 >= "' + minDt +  '" and 日時 <="' + maxDt  + '" and 自動計上済 in ("") and 支払区分 in ("支払済")  order by 日時 limit 500'
       };
+      var body2 = {
+        'app': kintone.app.getId(),
+        'query': '日時 >= "' + minDt +  '" and 日時 <="' + maxDt  + '" and 自動計上済 in ("") and 支払区分 in ("後払い") and 登録NO_メンバー = "" order by 日時 limit 500'
+      };
+      //処理
+      await Proc(body,body2);
+      alert('登録しました。');
+      hideSpinner(); // スピナー非表示
+      return ev;
+    } catch(e) {
+      // パラメータが間違っているなどAPI実行時にエラーが発生した場合
+      hideSpinner(); // スピナー非表示
+      alert(e.message);
+      return ev;
+    }
+    });
+    //個別登録ボタン処理
+    $(document).on('click', '#my_index_button', async (ev) => {
+      try {
+      var result = window.confirm('売上個別登録しますか？');
+      if(result==false){
+          return;
+      }
+      showSpinner(); // スピナー表示
+      var body = {
+        'app': kintone.app.getId(),
+        'query': '登録NO = ' + myID + ' and 自動計上済 in ("") and 支払区分 in ("支払済") '
+      };
+      var body2 = {
+        'app': kintone.app.getId(),
+        'query': '登録NO = ' + myID + ' and 自動計上済 in ("") and 支払区分 in ("後払い") and 登録NO_メンバー = ""  '
+      };
+      //処理
+      await Proc(body,body2);
+      hideSpinner(); // スピナー非表示
+      alert('登録しました。');
+       location.reload();
+      return ev;
+    } catch(e) {
+      // パラメータが間違っているなどAPI実行時にエラーが発生した場合
+      hideSpinner(); // スピナー非表示
+      alert(e.message);
+      return ev;
+    }
+    });
+    async function Proc(body,body2){
       var rec;
       var i,j;
       var subrec;
@@ -90,18 +150,14 @@
             var recno=respno.records;
             var newno;
             if(recno.length==0){
-              //newno="NS-" + yymm + "-0001";
-              //newno="US-" + yymm + "-0001";
-              newno="SS-" + yymm + "-0001";
+              newno=KIGO + "-" + yymm + "-0001";
             }else{
               var ren=recno[0]['請求番号'].value;
               var iren=parseInt(ren.substr(-4));
               iren=iren+1;
               var sren=String(iren);
               sren=('0000' + sren).slice(-4);
-              //newno="NS-" + yymm + "-" + sren;
-              //newno="US-" + yymm + "-" + sren;
-              newno="SS-" + yymm + "-" + sren;
+              newno=KIGO + "-" + yymm + "-" + sren;
             }
           //*******************************
          //前回請求日、請求総額
@@ -424,12 +480,12 @@
             }
       }
       //後払い分（ビジター）
-      body = {
-        'app': kintone.app.getId(),
-        'query': '日時 >= "' + minDt +  '" and 日時 <="' + maxDt  + '" and 自動計上済 in ("") and 支払区分 in ("後払い") and 登録NO_メンバー = "" order by 日時 limit 500'
-      };
+      // body = {
+      //   'app': kintone.app.getId(),
+      //   'query': '日時 >= "' + minDt +  '" and 日時 <="' + maxDt  + '" and 自動計上済 in ("") and 支払区分 in ("後払い") and 登録NO_メンバー = "" order by 日時 limit 500'
+      // };
       //指定年月の後払いを取得
-      const resp4 = await kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', body);
+      const resp4 = await kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', body2);
       console.log(resp);
       rec=resp4.records;
       for ( i = 0 ; i < rec.length ; i++){
@@ -446,18 +502,14 @@
           var recno=respno.records;
           var newno;
           if(recno.length==0){
-            //newno="NS-" + yymm + "-0001";
-            //newno="US-" + yymm + "-0001";
-            newno="SS-" + yymm + "-0001";
+            newno=KIGO + "-" + yymm + "-0001";
           }else{
             var ren=recno[0]['請求番号'].value;
             var iren=parseInt(ren.substr(-4));
             iren=iren+1;
             var sren=String(iren);
             sren=('0000' + sren).slice(-4);
-            //newno="NS-" + yymm + "-" + sren;
-            //newno="US-" + yymm + "-" + sren;
-            newno="SS-" + yymm + "-" + sren;
+            newno=KIGO + "-" + yymm + "-" + sren;
           }
         //*******************************
         subrec=rec[i]['料金テーブル'].value;
@@ -706,20 +758,11 @@
               //     await  kintone.api(kintone.api.url('/k/v1/record.json', true), 'PUT', updbody).then(function(resp8) {
               //   });
 
-        }
-
       }
 
-      hideSpinner(); // スピナー非表示
-      alert('登録しました。');
-      return ev;
-    } catch(e) {
-      // パラメータが間違っているなどAPI実行時にエラーが発生した場合
-      hideSpinner(); // スピナー非表示
-      alert(e.message);
-      return ev;
     }
-    });
+  }
+
 
     function GetNewInvoiceNo(appid){
 

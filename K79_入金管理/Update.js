@@ -10,29 +10,34 @@
         //var APP_SALES_ID = 82;  //売上管理
         //var APP_INVOICE_ID = 74; //請求登録
         //var APP_NYUKIN_ID= 79; //入金管理
-        //var APP_CUSTMER_ID = 80 //会員顧客名簿
-        //var APP_KOZA_ID = 189  //口座管理
-        //var APP_AZUKARI_ID = 188  //預り金管理
+        //var APP_CUSTMER_ID = 80; //会員顧客名簿
+        //var APP_KOZA_ID = 189;  //口座管理
+        //var APP_AZUKARI_ID = 188;  //預り金管理
+        //var APP_HOSYO_ID = 198;      //保証金管理
         //梅田店
-        var APP_SALES_ID = 168;  //売上管理
-        var APP_INVOICE_ID = 169; //請求登録
-        var APP_NYUKIN_ID= 170; //入金管理
-        var APP_CUSTMER_ID = 156 //会員顧客名簿
-        var APP_KOZA_ID = 191  //口座管理
-        var APP_AZUKARI_ID = 190  //預り金管理
+        //var APP_SALES_ID = 168;  //売上管理
+        //var APP_INVOICE_ID = 169; //請求登録
+        //var APP_NYUKIN_ID= 170; //入金管理
+        //var APP_CUSTMER_ID = 156; //会員顧客名簿
+        //var APP_KOZA_ID = 191;  //口座管理
+        //var APP_AZUKARI_ID = 190;  //預り金管理
+        //var APP_HOSYO_ID = 204;      //保証金管理
         //四条烏丸点
         //var APP_SALES_ID = 152;  //売上管理
         //var APP_INVOICE_ID = 153; //請求登録
         //var APP_NYUKIN_ID= 154; //入金管理
-        //var APP_CUSTMER_ID = 140 //会員顧客名簿
-        //var APP_KOZA_ID = 194  //口座管理
-        //var APP_AZUKARI_ID = 192  //預り金管理
+        //var APP_CUSTMER_ID = 140; //会員顧客名簿
+        //var APP_KOZA_ID = 194;  //口座管理
+        //var APP_AZUKARI_ID = 192;  //預り金管理
+        //var APP_HOSYO_ID = 205;      //保証金管理
 
-        //var APP_SALES_ID = 446;  //売上管理
-        //var APP_INVOICE_ID = 449; //請求登録
-        //var APP_CUSTMER_ID = 447 //会員顧客名簿
-        //var APP_KOZA_ID = 511  //口座管理
-        //var APP_AZUKARI_ID = 510  //預り金管理
+        var APP_SALES_ID = 446;      //売上管理
+        var APP_INVOICE_ID = 449;    //請求登録
+        var APP_CUSTMER_ID = 447;    //会員顧客名簿
+        var APP_KOZA_ID = 511;       //口座管理
+        var APP_AZUKARI_ID = 510;    //預り金管理
+        var APP_HOSYO_ID = 518;      //保証金管理
+
         var appId = ev.appId;
 
         try{
@@ -145,6 +150,31 @@
               };
             await kintone.api(kintone.api.url('/k/v1/record.json', true), 'PUT', updparam2);
           }
+          //保証金アプリ
+          var param4 = {
+            'app': APP_HOSYO_ID,
+            'query': '請求番号 = "' + seikyu_no + '" ' + 'and 入金区分 in ("") '
+          };
+          const resp4 = await kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', param4);
+          var rec4=resp4.records;
+          if(rec4.length != 0){
+            //売上管理更新
+            var updparam4 = {
+              "app": APP_HOSYO_ID,
+              "id":rec4[0]['レコード番号'].value,
+              "record": {
+                "入金区分": {
+                  "value": nyukin_kbn
+                },
+                "入金日": {
+                  "value": nyukin_dt
+                }
+              }
+            };
+            await kintone.api(kintone.api.url('/k/v1/record.json', true), 'PUT', updparam4);
+          }
+
+
           hideSpinner(); // スピナー非表示
           return ev;
 

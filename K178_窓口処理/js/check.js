@@ -4,8 +4,8 @@
 
   //const APP_INVOICE=74;  //中津店
   //const APP_INVOICE=169;  //梅田店
-  const APP_INVOICE=153;  //四条烏丸店
-  //const APP_INVOICE=449;
+  //const APP_INVOICE=153;  //四条烏丸店
+  const APP_INVOICE=449;
 
  var events=['app.record.create.submit','app.record.edit.submit'];
    kintone.events.on(events, async (event) => {
@@ -51,11 +51,27 @@
 
          }
        }
+
+       for (var i = 0; i < subrec.length; i++) {
+         if(subrec[i].value['商品名'].value.indexOf('保証金') != -1){
+           //  alert('保証金が含まれています。保存後、「保証金登録」ボタンにて保証金の登録を行ってください。');
+           //  break;
+           var result = window.confirm('保証金が含まれています。\r\n保存後、「売上個別登録」ボタン⇒請求登録アプリの「保証金登録」ボタンにて保証金の登録を行ってください。');
+           if( result ) {
+           }
+           else {
+                event.error="キャンセルしました。";
+                return event;
+           }
+         }
+       }
        return event;
+
     }catch(e) {
       // パラメータが間違っているなどAPI実行時にエラーが発生した場合
         alert(e.message);
       return event;
     }
   });
+
   })(jQuery);

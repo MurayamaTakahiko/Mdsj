@@ -188,15 +188,24 @@ jQuery.noConflict();
           }
         var fromdt;
         var todt;
-        if(billList['利用対象期間_from']['value']==null){
-          fromdt=moment(nextenddt).startOf('month').format();
+        if(billList['プラン・オプション'].value.indexOf('通話料') != -1){
+          fromdt=nextenddt;
         }else{
-          fromdt=moment(billList['利用対象期間_from']['value']).startOf('month').format();
+          if(billList['利用対象期間_from']['value']==null){
+            fromdt=moment(nextenddt).startOf('month').format();
+          }else{
+            fromdt=moment(billList['利用対象期間_from']['value']).startOf('month').format();
+          }
         }
-        if(billList['利用対象期間_to']['value']==null){
-          todt=moment(nextenddt).endOf('month').format();
+
+        if(billList['プラン・オプション'].value.indexOf('通話料') != -1){
+          todt=nextenddt;
         }else{
-          todt=moment(billList['利用対象期間_to']['value']).endOf('month').format();
+          if(billList['利用対象期間_to']['value']==null){
+            todt=moment(nextenddt).endOf('month').format();
+          }else{
+            todt=moment(billList['利用対象期間_to']['value']).endOf('month').format();
+          }
         }
         var max=moment(todt).diff(fromdt,'months')+1;
 

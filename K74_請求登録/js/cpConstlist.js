@@ -60,19 +60,19 @@ jQuery.noConflict();
   //var APP_MADO=179;
   //var TEL_ITEM_NO=229;
   //四条烏丸店
-  var APP_CONSTLIST = 140; //会員顧客名簿
-  var APP_TELLBILL = 185;
-  var APP_ITEM = 141;
-  var APP_SALES=152;
-  var APP_MADO=180;
-  var TEL_ITEM_NO=141;
+  //var APP_CONSTLIST = 140; //会員顧客名簿
+  //var APP_TELLBILL = 185;
+  //var APP_ITEM = 141;
+  //var APP_SALES=152;
+  //var APP_MADO=180;
+  //var TEL_ITEM_NO=141;
 
-  //var APP_CONSTLIST = 447;
-  //var APP_TELLBILL = 461;
-  //var APP_ITEM = 458;
-  //var APP_SALES=446;
-  //var APP_MADO=505;
-  //var TEL_ITEM_NO=238;
+  var APP_CONSTLIST = 447;
+  var APP_TELLBILL = 461;
+  var APP_ITEM = 458;
+  var APP_SALES=446;
+  var APP_MADO=505;
+  var TEL_ITEM_NO=238;
   // ロケールを設定
   moment.locale('ja');
 
@@ -991,8 +991,8 @@ kintone.app.record.set({record: record});
                         body = {
                           'app': APP_SALES,
                           'query': '登録NO_メンバー = "' + record['レコード番号'].value + 　'" and ' +
-                                   '請求対象月 >= "' + moment(ymd2).startOf('month').format("YYYY-MM-DD") +'" and ' +
-                                   '請求対象月 <= "' + moment(ymd2).endOf('month').format("YYYY-MM-DD") +'" and ' +
+                                   '請求対象月 >= "' + staDay +'" and ' +
+                                   '請求対象月 <= "' + staDay +'" and ' +
                                    '商品番号 in ("' + TEL_ITEM_NO + '") and 窓口入金 in ("済") '
                         };
                         //データ取得
@@ -1038,8 +1038,8 @@ kintone.app.record.set({record: record});
                     body = {
                       'app': APP_SALES,
                       'query': '登録NO_メンバー = "' + record['レコード番号'].value + 　'" and ' +
-                               '請求対象月 >= "' + moment(ymd2).startOf('month').format("YYYY-MM-DD") +'" and ' +
-                               '請求対象月 <= "' + moment(ymd2).endOf('month').format("YYYY-MM-DD") +'" and ' +
+                               '請求対象月 >= "' + staDay +'" and ' +
+                               '請求対象月 <= "' + staDay +'" and ' +
                                '商品番号 in ("' + TEL_ITEM_NO + '") and 窓口入金 in ("済") '
                     };
                     //データ取得
@@ -1098,8 +1098,8 @@ kintone.app.record.set({record: record});
                         body = {
                           'app': APP_SALES,
                           'query': '登録NO_メンバー = "' + record['レコード番号'].value + 　'" and ' +
-                                   '請求対象月 >= "' + moment(ymd2).startOf('month').format("YYYY-MM-DD") +'" and ' +
-                                   '請求対象月 <= "' + moment(ymd2).endOf('month').format("YYYY-MM-DD") +'" and ' +
+                                   '請求対象月 >= "' + staDay +'" and ' +
+                                   '請求対象月 <= "' + staDay +'" and ' +
                                    '商品番号 in ("' + TEL_ITEM_NO + '") and 窓口入金 in ("済") '
                         };
                         //データ取得
@@ -1144,8 +1144,8 @@ kintone.app.record.set({record: record});
                     body = {
                       'app': APP_SALES,
                       'query': '登録NO_メンバー = "' + record['レコード番号'].value + 　'" and ' +
-                               '請求対象月 >= "' + moment(ymd2).startOf('month').format("YYYY-MM-DD") +'" and ' +
-                               '請求対象月 <= "' + moment(ymd2).endOf('month').format("YYYY-MM-DD") +'" and ' +
+                               '請求対象月 >= "' + staDay +'" and ' +
+                               '請求対象月 <= "' + staDay +'" and ' +
                                '商品番号 in ("' + TEL_ITEM_NO + '") and 窓口入金 in ("済") '
                     };
                     //データ取得
@@ -1268,8 +1268,8 @@ kintone.app.record.set({record: record});
                          body = {
                            'app': APP_SALES,
                            'query': '登録NO_メンバー = "' + record['レコード番号'].value + 　'" and ' +
-                                    '請求対象月 >= "' + moment(ymd2).startOf('month').format("YYYY-MM-DD") +'" and ' +
-                                    '請求対象月 <= "' + moment(ymd2).endOf('month').format("YYYY-MM-DD") +'" and ' +
+                                    '請求対象月 >= "' + staDay +'" and ' +
+                                    '請求対象月 <= "' + staDay +'" and ' +
                                     '商品番号 in ("' + TEL_ITEM_NO + '") and 窓口入金 in ("済") '
                          };
                          //データ取得
@@ -1314,8 +1314,8 @@ kintone.app.record.set({record: record});
                      body = {
                        'app': APP_SALES,
                        'query': '登録NO_メンバー = "' + record['レコード番号'].value + 　'" and ' +
-                                '請求対象月 >= "' + moment(ymd2).startOf('month').format("YYYY-MM-DD") +'" and ' +
-                                '請求対象月 <= "' + moment(ymd2).endOf('month').format("YYYY-MM-DD") +'" and ' +
+                                '請求対象月 >= "' + staDay +'" and ' +
+                                '請求対象月 <= "' + staDay +'" and ' +
                                 '商品番号 in ("' + TEL_ITEM_NO + '") and 窓口入金 in ("済") '
                      };
                      //データ取得

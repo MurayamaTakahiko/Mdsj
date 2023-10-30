@@ -141,6 +141,7 @@
           var nowmindt=moment().startOf('month').format();
           var nowmaxdt=moment().endOf('month').format();
           var yymm=moment().format('YYYYMM');
+          var yymm2;
           body = {
             'app': APP_INVOICE_ID,
             'query': '請求番号 != "" and 作成日時 >= "' + nowmindt +'" and 作成日時 <= "' + nowmaxdt + '" order by 請求番号 desc '
@@ -344,14 +345,14 @@
                 subnototal=subnototal+Number(subrec[j]['value']['料金'].value);
               }
               taxtotal=taxtotal + Number(tax);
-
+              yymm2=Number(moment(subrec[j]['value']['対象日'].value).year()).toString().slice(-2) + '.' + Number(moment(subrec[j]['value']['対象日'].value).month()+1);
               insbody.record.売上明細.value.push({
                               "value":{
                                 "請求対象月":{
                                   "value":moment(subrec[j]['value']['対象日'].value).format('YYYY-MM-DD')
                                 },
                                 "項目":{
-                                  "value":subrec[j]['value']['商品名'].value +'（' + (moment(subrec[j]['value']['対象日'].value).month()+1) + '月分）'
+                                  "value":subrec[j]['value']['商品名'].value +'（' + yymm2 + '月分）'
                                 },
                                 "金額":{
                                   "value":Number(subrec[j]['value']['料金'].value)
@@ -379,7 +380,7 @@
                                     "value":subrec[j]['value']['商品種別'].value
                                   },
                                   "プラン・オプション":{
-                                    "value":subrec[j]['value']['商品名'].value +'（' + (moment(subrec[j]['value']['対象日'].value).month()+1) + '月分）'
+                                    "value":subrec[j]['value']['商品名'].value +'（' + yymm2 + '月分）'
                                   },
                                   "税区分":{
                                     "value":subrec[j]['value']['税区分'].value
@@ -632,13 +633,14 @@
               subnototal=subnototal+Number(subrec[j]['value']['料金'].value);
             }
             taxtotal=taxtotal + Number(tax);
+            yymm2=Number(moment(subrec[j]['value']['対象日'].value).year()).toString().slice(-2) + '.' + Number(moment(subrec[j]['value']['対象日'].value).month()+1);
             insbody.record.売上明細.value.push({
                             "value":{
                               "請求対象月":{
                                 "value":moment(subrec[j]['value']['対象日'].value).format('YYYY-MM-DD')
                               },
                               "項目":{
-                                "value":subrec[j]['value']['商品名'].value +'（' + (moment(subrec[j]['value']['対象日'].value).month()+1) + '月分）'
+                                "value":subrec[j]['value']['商品名'].value +'（' + yymm2 + '月分）'
                               },
                               "金額":{
                                 "value":subrec[j]['value']['料金'].value
@@ -666,7 +668,7 @@
                                 "value":subrec[j]['value']['商品種別'].value
                               },
                               "プラン・オプション":{
-                                "value":subrec[j]['value']['商品名'].value +'（' + (moment(subrec[j]['value']['対象日'].value).month()+1) + '月分）'
+                                "value":subrec[j]['value']['商品名'].value +'（' + yymm2 + '月分）'
                               },
                               "単価":{
                                 "value":Number(subrec[j]['value']['単価'].value)

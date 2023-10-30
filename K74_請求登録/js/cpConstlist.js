@@ -45,6 +45,7 @@ jQuery.noConflict();
   var firstdt;
   var taxkbn;
   var basedt;
+  var yymm;
   //中津店
   //var APP_CONSTLIST = 80;
   //var APP_TELLBILL = 81;
@@ -60,19 +61,19 @@ jQuery.noConflict();
   //var APP_MADO=179;
   //var TEL_ITEM_NO=229;
   //四条烏丸店
-  //var APP_CONSTLIST = 140; //会員顧客名簿
-  //var APP_TELLBILL = 185;
-  //var APP_ITEM = 141;
-  //var APP_SALES=152;
-  //var APP_MADO=180;
-  //var TEL_ITEM_NO=141;
+  var APP_CONSTLIST = 140; //会員顧客名簿
+  var APP_TELLBILL = 185;
+  var APP_ITEM = 141;
+  var APP_SALES=152;
+  var APP_MADO=180;
+  var TEL_ITEM_NO=141;
 
-  var APP_CONSTLIST = 447;
-  var APP_TELLBILL = 461;
-  var APP_ITEM = 458;
-  var APP_SALES=446;
-  var APP_MADO=505;
-  var TEL_ITEM_NO=238;
+  //var APP_CONSTLIST = 447;
+  //var APP_TELLBILL = 461;
+  //var APP_ITEM = 458;
+  //var APP_SALES=446;
+  //var APP_MADO=505;
+  //var TEL_ITEM_NO=238;
   // ロケールを設定
   moment.locale('ja');
 
@@ -422,7 +423,7 @@ kintone.app.record.set({record: record});
       var flgA=false;
       var flgB=false;
       var body;
-
+　　　
       //退会前
       if(record['退会日'].value== null || record['退会日'].value >=  staDay ){
 
@@ -493,9 +494,11 @@ kintone.app.record.set({record: record});
                       if(respsumi.records.length == 0){
                         //税区分
                         taxkbn = await getTaxkbn(planList['商品番号_プラン']['value']);
+                        yymm=Number(moment(basedt).add(j, 'month').year()).toString().slice(-2) + '.' + Number(moment(basedt).add(j, 'month').month()+1);
+
                         setFields = {
                           '種別': planList['プラン種別']['value'],
-                          'プラン・オプション': planList['プラン']['value']+'（' + (moment(basedt).add(j, 'month').month()+1) + '月分）',
+                          'プラン・オプション': planList['プラン']['value']+'（' + yymm + '月分）',
                           '単価': planList['プラン料金']['value']  ,
                           '税区分':taxkbn,
                           '数量': 1,
@@ -543,9 +546,10 @@ kintone.app.record.set({record: record});
                               if(respsumi.records.length == 0){
                                 //税区分
                                 taxkbn = await getTaxkbn(planList['商品番号_プラン']['value']);
+                                yymm=Number(moment(firstplandt).year()).toString().slice(-2) + '.' + Number(moment(firstplandt).month()+1);
                                 setFields = {
                                   '種別': planList['プラン種別']['value'],
-                                  'プラン・オプション': planList['プラン']['value']+'（' + (moment(firstplandt).month()+1) + '月分）',
+                                  'プラン・オプション': planList['プラン']['value']+'（' + yymm + '月分）',
                                   '単価': planList['プラン料金']['value'],
                                   '税区分':taxkbn,
                                   '数量':1,
@@ -580,9 +584,10 @@ kintone.app.record.set({record: record});
                               if(respsumi.records.length == 0){
                                 //税区分
                                 taxkbn = await getTaxkbn(planList['商品番号_プラン']['value']);
+                                yymm=Number(moment(firstplandt).add(1, 'month').year()).toString().slice(-2) + '.' + Number(moment(firstplandt).add(1, 'month').month()+1);
                                 setFields = {
                                   '種別': planList['プラン種別']['value'],
-                                  'プラン・オプション': planList['プラン']['value']+'（' + (moment(firstplandt).add(1, 'month').month()+1) + '月分）',
+                                  'プラン・オプション': planList['プラン']['value']+'（' + yymm + '月分）',
                                   '単価': planList['プラン料金']['value'],
                                   '税区分':taxkbn,
                                   '数量':1,
@@ -620,9 +625,11 @@ kintone.app.record.set({record: record});
                               if(respsumi.records.length == 0){
                                 //税区分
                                 taxkbn = await getTaxkbn(planList['商品番号_プラン']['value']);
+                                yymm=Number(moment(firstplandt).year()).toString().slice(-2) + '.' + Number(moment(firstplandt).month()+1);
+
                                 setFields = {
                                   '種別': planList['プラン種別']['value'],
-                                  'プラン・オプション': planList['プラン']['value']+'（' + (moment(firstplandt).month()+1) + '月分）',
+                                  'プラン・オプション': planList['プラン']['value']+'（' + yymm + '月分）',
                                   '単価': planList['プラン料金']['value'],
                                   '税区分':taxkbn,
                                   '数量': 1,
@@ -658,9 +665,11 @@ kintone.app.record.set({record: record});
                             if(respsumi.records.length == 0){
                               //税区分
                               taxkbn = await getTaxkbn(planList['商品番号_プラン']['value']);
+                              yymm=Number(moment(staDay).year()).toString().slice(-2) + '.' + Number(moment(staDay).month()+1);
+
                               setFields = {
                                 '種別': planList['プラン種別']['value'],
-                                'プラン・オプション': planList['プラン']['value']+'（' + (moment(staDay).month()+1) + '月分）',
+                                'プラン・オプション': planList['プラン']['value']+'（' + yymm + '月分）',
                                 '単価': planList['プラン料金']['value'],
                                 '税区分':taxkbn,
                                 '数量': 1,
@@ -762,9 +771,10 @@ kintone.app.record.set({record: record});
                         if(respsumi.records.length == 0){
                           //税区分
                           taxkbn = await getTaxkbn(tableList['商品番号_オプション']['value']);
+                          yymm=Number(moment(basedt).add(j, 'month').year()).toString().slice(-2) + '.' + Number(moment(basedt).add(j, 'month').month()+1);
                           setFields = {
                             '種別': 'オプション',
-                            'プラン・オプション': tableList['オプション']['value']+'（'+ (moment(basedt).add(j, 'month').month()+1) + '月分）',
+                            'プラン・オプション': tableList['オプション']['value']+'（'+ yymm + '月分）',
                             '単価': tableList['オプション単価']['value']  ,
                             '税区分':taxkbn,
                             '数量': tableList['オプション契約数']['value'] ,
@@ -809,9 +819,10 @@ kintone.app.record.set({record: record});
                              if(respsumi.records.length == 0){
                                //税区分
                                taxkbn = await getTaxkbn(tableList['商品番号_オプション']['value']);
+                               yymm=Number(moment(firstplandt).year()).toString().slice(-2) + '.' + Number(moment(firstplandt).month()+1);
                                setFields = {
                                  '種別':  'オプション',
-                                 'プラン・オプション': tableList['オプション']['value']+'（' + (moment(firstplandt).month()+1) + '月分）',
+                                 'プラン・オプション': tableList['オプション']['value']+'（' + yymm + '月分）',
                                  '単価': tableList['オプション単価']['value'] ,
                                  '税区分':taxkbn,
                                  '数量':tableList['オプション契約数']['value'] ,
@@ -846,9 +857,10 @@ kintone.app.record.set({record: record});
                              if(respsumi.records.length == 0){
                                //税区分
                                taxkbn = await getTaxkbn(tableList['商品番号_オプション']['value']);
+                               yymm=Number(moment(firstplandt).add(1, 'month').year()).toString().slice(-2) + '.' + Number(moment(firstplandt).add(1, 'month').month()+1);
                                setFields = {
                                  '種別':  'オプション',
-                                 'プラン・オプション': tableList['オプション']['value']+'（' + (moment(firstplandt).add(1, 'month').month()+1) + '月分）',
+                                 'プラン・オプション': tableList['オプション']['value']+'（' + yymm + '月分）',
                                  '単価': tableList['オプション単価']['value'] ,
                                  '税区分':taxkbn,
                                  '数量':tableList['オプション契約数']['value'],
@@ -885,9 +897,10 @@ kintone.app.record.set({record: record});
                                  if(respsumi.records.length == 0){
                                    //税区分
                                    taxkbn = await getTaxkbn(tableList['商品番号_オプション']['value']);
+                                   yymm=Number(moment(firstplandt).year()).toString().slice(-2) + '.' + Number(moment(firstplandt).month()+1);
                                    setFields = {
                                      '種別': 'オプション',
-                                     'プラン・オプション': tableList['オプション']['value']+'（' + (moment(firstplandt).month()+1) + '月分）',
+                                     'プラン・オプション': tableList['オプション']['value']+'（' + yymm + '月分）',
                                      '単価': tableList['オプション単価']['value'] ,
                                      '税区分':taxkbn,
                                      '数量': tableList['オプション契約数']['value'],
@@ -922,9 +935,10 @@ kintone.app.record.set({record: record});
                              if(respsumi.records.length == 0){
                                //税区分
                                taxkbn = await getTaxkbn(tableList['商品番号_オプション']['value']);
+                               yymm=Number(moment(staDay).year()).toString().slice(-2) + '.' + Number(moment(staDay).month()+1);
                                setFields = {
                                  '種別': 'オプション',
-                                 'プラン・オプション':tableList['オプション']['value']+'（' + (moment(staDay).month()+1) + '月分）',
+                                 'プラン・オプション':tableList['オプション']['value']+'（' + yymm + '月分）',
                                  '単価': tableList['オプション単価']['value'],
                                  '税区分':taxkbn,
                                  '数量': tableList['オプション契約数']['value'],
@@ -947,6 +961,24 @@ kintone.app.record.set({record: record});
           　// 通話料請求
             //if(tableList['契約番号']['value'] != "" && firstFlg==false) {
             if(tableList['契約番号']['value'] != "" ) {
+
+
+              //請求時点（請求月の前月）でのプランを取得（８月までバーチャル、９月から通常の場合、９月請求の通話料はバーチャルの６ヶ月分）
+              for (var pTbl = 0; pTbl < record['プランリスト']['value'].length; pTbl++) {
+                var planList = record['プランリスト'].value[pTbl].value;
+                // 利用期間内のプランのみ
+                if(planList['プラン料金'].value != "0"
+                && moment(planList['プラン利用開始日'].value).format("YYYYMM")<=moment(finTelDay).format('YYYYMM') &&
+                   moment(planList['プラン利用終了日'].value).format("YYYYMM")>=moment(finTelDay).format('YYYYMM')){
+                    // バーチャルプランのみ半年請求
+                    if (planList['プラン種別']['value'] === "バーチャル") {
+                      virtualFlg=true;
+                      break;
+                    }else{
+                      virtualFlg=false;
+                    }
+              }
+            }
             // バーチャルプランのみ半年請求
             if (virtualFlg) {
               // if (moment(staDay).month() == 3 || moment(staDay).month() == 9) {
@@ -1001,10 +1033,11 @@ kintone.app.record.set({record: record});
                         if(respsumi.records.length == 0){
                           //税区分
                           taxkbn = await getTaxkbn(TEL_ITEM_NO);
+                          yymm=Number(moment(ymd2).year()).toString().slice(-2) + '.' + Number(mm2);
                           //請求明細
                           setFields = {
                                         "種別":"オプション",
-                                        "プラン・オプション":'通話料（' + mm2 + '月分）',
+                                        "プラン・オプション":'通話料（' + yymm + '月分）',
                                         "単価":tellBill,
                                         '税区分':taxkbn,
                                         "数量":1,
@@ -1048,9 +1081,10 @@ kintone.app.record.set({record: record});
                     if(respsumi.records.length == 0){
                       //税区分
                       taxkbn = await getTaxkbn(TEL_ITEM_NO);
+                      yymm=Number(moment(ymd2).year()).toString().slice(-2) + '.' + Number(mm2);
                       setFields = {
                         '種別': 'オプション',
-                        'プラン・オプション': '通話料（' + mm2 + '月分）',
+                        'プラン・オプション': '通話料（' + yymm + '月分）',
                         '単価': tellBill,
                         '税区分':taxkbn,
                         '数量': 1,
@@ -1108,10 +1142,11 @@ kintone.app.record.set({record: record});
                         if(respsumi.records.length == 0){
                           //税区分
                           taxkbn = await getTaxkbn(TEL_ITEM_NO);
+                          yymm=Number(moment(ymd2).year()).toString().slice(-2) + '.' + Number(mm2);
                           //請求明細
                           setFields = {
                                         "種別":"オプション",
-                                        "プラン・オプション":'通話料（' + mm2 + '月分）',
+                                        "プラン・オプション":'通話料（' + yymm + '月分）',
                                         "単価":tellBill,
                                         '税区分':taxkbn,
                                         "数量":1,
@@ -1154,9 +1189,10 @@ kintone.app.record.set({record: record});
                     if(respsumi.records.length == 0){
                       //税区分
                       taxkbn = await getTaxkbn(TEL_ITEM_NO);
+                      yymm=Number(moment(ymd2).year()).toString().slice(-2) + '.' + Number(mm2);
                       setFields = {
                         '種別': 'オプション',
-                        'プラン・オプション': '通話料（' + mm2 + '月分）',
+                        'プラン・オプション': '通話料（' + yymm + '月分）',
                         '単価': tellBill,
                         '税区分':taxkbn,
                         '数量': 1,
@@ -1278,10 +1314,11 @@ kintone.app.record.set({record: record});
                          if(respsumi.records.length == 0){
                            //税区分
                            taxkbn = await getTaxkbn(TEL_ITEM_NO);
+                           yymm=Number(moment(ymd2).year()).toString().slice(-2) + '.' + Number(mm2);
                            //請求明細
                            setFields = {
                                          "種別":"オプション",
-                                         "プラン・オプション":'通話料（' + mm2 + '月分）',
+                                         "プラン・オプション":'通話料（' + yymm + '月分）',
                                          "単価":tellBill,
                                          '税区分':taxkbn,
                                          "数量":1,
@@ -1324,9 +1361,10 @@ kintone.app.record.set({record: record});
                      if(respsumi.records.length == 0){
                        //税区分
                        taxkbn = await getTaxkbn(TEL_ITEM_NO);
+                       yymm=Number(moment(ymd2).year()).toString().slice(-2) + '.' + Number(mm2);
                        setFields = {
                          '種別': 'オプション',
-                         'プラン・オプション': '通話料（' + mm2 + '月分）',
+                         'プラン・オプション': '通話料（' + yymm + '月分）',
                          '単価': tellBill,
                          '税区分':taxkbn,
                          '数量': 1,

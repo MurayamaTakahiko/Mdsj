@@ -13,6 +13,7 @@
     //var APP_MADO = 178;
     //var TEL_ITEM_NO=121;
     //var APP_ITEM = 17;
+    //var KIGO='NS';
 
     //////請求番号採番時ロジック編集(US)
     //梅田店
@@ -24,6 +25,7 @@
     //var APP_MADO = 179;
     //var TEL_ITEM_NO=229;
     //var APP_ITEM = 157;
+    //var KIGO='US';
 
     //////請求番号採番時ロジック編集(SS)
     var APP_ID = 140;   //会員顧客名簿
@@ -34,6 +36,7 @@
     var APP_MADO = 180;
     var TEL_ITEM_NO=141;
     var APP_ITEM = 141;
+    var KIGO='SS';
 
     //var APP_ID = 447;   //会員顧客名簿
     //var APP_INVOICE_ID = 449;   //請求登録
@@ -43,6 +46,7 @@
     //var APP_MADO = 505;
     //var TEL_ITEM_NO=238;
     //var APP_ITEM = 458;
+    //var KIGO='NS';
 
     var TAX=10;
     // moment.locale('ja');
@@ -170,6 +174,7 @@
           var mindt=moment().startOf('month').format();
           var maxdt=moment().endOf('month').format();
           var yymm=moment().format('YYYYMM');
+          var yymm2;
           var body = {
             'app': APP_INVOICE_ID,
             'query': '請求番号 != "" and 作成日時 >= "' + mindt +'" and 作成日時 <= "' + maxdt + '" order by 請求番号 desc '
@@ -181,7 +186,8 @@
             if(rec2.length==0){
               //newno="NS-" + yymm + "-0001";
               //newno="US-" + yymm + "-0001";
-              newno="SS-" + yymm + "-0001";
+              //newno="SS-" + yymm + "-0001";
+              newno=KIGO + "-" + yymm + "-0001";
             }else{
               var ren=rec2[0]['請求番号'].value;
               var iren=parseInt(ren.substr(-4));
@@ -190,7 +196,8 @@
               sren=('0000' + sren).slice(-4);
               //newno="NS-" + yymm + "-" + sren;
               //newno="US-" + yymm + "-" + sren;
-              newno="SS-" + yymm + "-" + sren;
+              //newno="SS-" + yymm + "-" + sren;
+              newno=KIGO + "-" + yymm + "-" + sren;
             }
             //前回請求日、請求総額
             body = {
@@ -351,6 +358,7 @@
                           if(respsumi.records.length == 0){
                             //税区分
                             taxkbn = await getTaxkbn(subrec[j]['value']['商品番号_プラン'].value);
+                            yymm2= Number(moment(invoicedt).add(k+1, 'month').year()).toString().slice(-2) + '.' + Number(moment(invoicedt).add(k+1, 'month').month()+1);
                             //請求明細用
                             insbody.record.請求明細.value.push({
                                             "value":{
@@ -358,7 +366,7 @@
                                                 "value":subrec[j]['value']['プラン種別'].value
                                               },
                                               "プラン・オプション":{
-                                                "value":subrec[j]['value']['プラン'].value +'（' + (moment(invoicedt).add(k+1, 'month').month()+1) + '月分）',
+                                                "value":subrec[j]['value']['プラン'].value +'（' + yymm2 + '月分）',
                                               },
                                               "単価":{
                                                 "value":subrec[j]['value']['プラン料金'].value
@@ -394,7 +402,7 @@
                                                   "value":moment(invoicedt).add(k+1, 'month').endOf('month').format("YYYY-MM-DD")
                                                 },
                                                 "項目":{
-                                                  "value":subrec[j]['value']['プラン'].value +'（' + (moment(invoicedt).add(k+1, 'month').month()+1) + '月分）'
+                                                  "value":subrec[j]['value']['プラン'].value +'（' + yymm2 + '月分）'
                                                 },
                                                 "金額":{
                                                   "value":Number(subrec[j]['value']['プラン料金'].value)
@@ -435,6 +443,7 @@
                           if(respsumi.records.length == 0){
                             //税区分
                             taxkbn = await getTaxkbn(subrec[j]['value']['商品番号_プラン'].value);
+                            yymm2= Number(moment(invoicedt).add(1, 'month').year()).toString().slice(-2) + '.' + Number(moment(invoicedt).add(1, 'month').month()+1);
                             //請求明細用
                             insbody.record.請求明細.value.push({
                                             "value":{
@@ -442,7 +451,7 @@
                                                 "value":subrec[j]['value']['プラン種別'].value
                                               },
                                               "プラン・オプション":{
-                                                "value":subrec[j]['value']['プラン'].value +'（' + (moment(invoicedt).add(1, 'month').month()+1) + '月分）',
+                                                "value":subrec[j]['value']['プラン'].value +'（' + yymm2 + '月分）',
                                               },
                                               "単価":{
                                                 "value":subrec[j]['value']['プラン料金'].value
@@ -478,7 +487,7 @@
                                                  "value":moment(invoicedt).add(1, 'month').endOf('month').format("YYYY-MM-DD")
                                                },
                                                "項目":{
-                                                 "value":subrec[j]['value']['プラン'].value +'（' + (moment(invoicedt).add(1, 'month').month()+1) + '月分）'
+                                                 "value":subrec[j]['value']['プラン'].value +'（' + yymm2 + '月分）'
                                                },
                                                "金額":{
                                                  "value":Number(subrec[j]['value']['プラン料金'].value)
@@ -543,13 +552,14 @@
                            if(respsumi.records.length == 0){
                              //税区分
                              taxkbn = await getTaxkbn(subrec[j]['value']['商品番号_オプション'].value);
+                             yymm2= Number(moment(invoicedt).add(1, 'month').year()).toString().slice(-2) + '.' + Number(moment(invoicedt).add(1, 'month').month()+1);
                              insbody.record.請求明細.value.push({
                                           "value":{
                                             "種別":{
                                               "value":"オプション"
                                             },
                                             "プラン・オプション":{
-                                              "value":subrec[j]['value']['オプション'].value +'（' + (moment(invoicedt).add(k+1, 'month').month()+1) + '月分）',
+                                              "value":subrec[j]['value']['オプション'].value +'（' + yymm2 + '月分）',
                                             },
                                             "単価":{
                                               "value":subrec[j]['value']['オプション単価'].value
@@ -585,7 +595,7 @@
                                               "value":moment(invoicedt).add(k+1, 'month').endOf('month').format("YYYY-MM-DD")
                                             },
                                             "項目":{
-                                              "value":subrec[j]['value']['オプション'].value +'（' + (moment(invoicedt).add(k+1, 'month').month()+1) + '月分）'
+                                              "value":subrec[j]['value']['オプション'].value +'（' + yymm2 + '月分）'
                                             },
                                             "金額":{
                                               "value":Number(subrec[j]['value']['オプション単価'].value)*Number(subrec[j]['value']['オプション契約数'].value)
@@ -626,6 +636,7 @@
                           if(respsumi.records.length == 0){
                             //税区分
                             taxkbn = await getTaxkbn(subrec[j]['value']['商品番号_オプション'].value);
+                            yymm2= Number(moment(invoicedt).add(1, 'month').year()).toString().slice(-2) + '.' + Number(moment(invoicedt).add(1, 'month').month()+1);
                             //請求明細
                             insbody.record.請求明細.value.push({
                                             "value":{
@@ -633,7 +644,7 @@
                                                 "value":"オプション"
                                               },
                                               "プラン・オプション":{
-                                                "value":subrec[j]['value']['オプション'].value +'（' + (moment(invoicedt).add(1, 'month').month()+1) + '月分）',
+                                                "value":subrec[j]['value']['オプション'].value +'（' + yymm2 + '月分）',
                                               },
                                               "単価":{
                                                 "value":subrec[j]['value']['オプション単価'].value
@@ -669,7 +680,7 @@
                                                 "value":moment(invoicedt).add(1, 'month').endOf('month').format("YYYY-MM-DD")
                                               },
                                               "項目":{
-                                                "value":subrec[j]['value']['オプション'].value +'（' + (moment(invoicedt).add(1, 'month').month()+1) + '月分）'
+                                                "value":subrec[j]['value']['オプション'].value +'（' + yymm2 + '月分）'
                                               },
                                               "金額":{
                                                 "value":Number(subrec[j]['value']['オプション単価'].value)*Number(subrec[j]['value']['オプション契約数'].value)
@@ -703,6 +714,22 @@
                                     }
                                   }
                                 });
+                  var subrec2=rec[i]['プランリスト'].value;
+                  //請求時点（請求月の前月）でのプランを取得（８月までバーチャル、９月から通常の場合、９月請求の通話料はバーチャルの６ヶ月分）
+                  for(let k = 0 ; k<subrec2.length ; k++){
+                    //0円以外
+                    if(subrec2[k]['value']['プラン料金'].value != "0" ){
+                          //バーチャルかどうか
+                          if(moment(subrec2[k]['value']['プラン利用開始日'].value).format("YYYYMM")<=moment(prevenddt).format('YYYYMM') &&
+                             moment(subrec2[k]['value']['プラン利用終了日'].value).format("YYYYMM")>=moment(prevenddt).format('YYYYMM')){
+                               if(subrec2[k]['value']['プラン種別'].value==="バーチャル"){
+                                 virtualflg=true;
+                               }else{
+                                 virtualflg=false;
+                               }
+                          }
+                    }
+                  }
                   var targetflg=false;
                   //作成対象
                   if(virtualflg){
@@ -719,6 +746,10 @@
                      max=0;
                     //契約番号
                     var tellNo=subrec[j]['value']['契約番号'].value;
+
+
+
+
                     //バーチャルは6か月、以外は2か月
                     if (virtualflg) {
                         stateldt=stateldt6;
@@ -732,11 +763,17 @@
                         stateldt=moment(subrec[j]['value']['オプション利用開始日'].value).startOf('month').format("YYYY-MM-DD");
                         }
                     }
+
+                    //抽出終了月
+                    if(moment(subrec[j]['value']['オプション利用終了日'].value).format("YYYYMM") <= moment(prevenddt).format("YYYYMM")){
+                      prevenddt=moment(subrec[j]['value']['オプション利用終了日'].value).endOf('month').format("YYYY-MM-DD");
+                    }
+
                     max=moment(moment(prevenddt).startOf('month').format("YYYY-MM-DD")).diff(moment(stateldt).startOf('month').format("YYYY-MM-DD"),'months')+1;
 
                     var body = {
                       'app': APP_CALL,
-                      'query': '契約者 = "' + rec[i]['顧客名'].value +  '" and  契約電話番号 = "' + tellNo + '" and 請求対象月 >= "' + stateldt + '" and 請求対象月 <= "' + prevenddt + '" order by 請求対象月'
+                      'query': '(契約者 = "" or 契約者 = "' + rec[i]['顧客名'].value +  '" ) and  契約電話番号 = "' + tellNo + '" and 請求対象月 >= "' + stateldt + '" and 請求対象月 <= "' + prevenddt + '" order by 請求対象月 ' + ' limit 500'
                     };
                     //データ取得
                     const resp3= await  kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', body);
@@ -772,6 +809,7 @@
                             if(respsumi.records.length == 0){
                               //税区分
                               taxkbn = await getTaxkbn(TEL_ITEM_NO);
+                              yymm2=Number(moment(ymd2).year()).toString().slice(-2) + '.' + Number(mm2);
                                 //請求明細
                                 insbody.record.請求明細.value.push({
                                                   "value":{
@@ -779,7 +817,7 @@
                                                       "value":"オプション"
                                                     },
                                                     "プラン・オプション":{
-                                                      "value":'通話料（' + mm2 + '月分）'
+                                                      "value":'通話料（' + yymm2 + '月分）'
                                                     },
                                                     "単価":{
                                                       "value":bill
@@ -816,7 +854,7 @@
                                                       "value": moment(invoicedt).add(1, 'month').endOf('month').format("YYYY-MM-DD")
                                                     },
                                                     "項目":{
-                                                      "value":'通話料（' + mm2 + '月分）'
+                                                      "value":'通話料（' + yymm2 + '月分）'
                                                     },
                                                     "金額":{
                                                       "value":bill
@@ -866,6 +904,7 @@
                         if(respsumi.records.length == 0){
                           //税区分
                           taxkbn = await getTaxkbn(TEL_ITEM_NO);
+                          yymm2=Number(moment(ymd2).year()).toString().slice(-2) + '.' + Number(mm2);
                           //請求明細
                           insbody.record.請求明細.value.push({
                                             "value":{
@@ -873,7 +912,7 @@
                                                 "value":"オプション"
                                               },
                                               "プラン・オプション":{
-                                                "value":'通話料（' + mm2 + '月分）'
+                                                "value":'通話料（' + yymm2 + '月分）'
                                               },
                                               "単価":{
                                                 "value":bill
@@ -909,7 +948,7 @@
                                                 "value": moment(invoicedt).add(1, 'month').endOf('month').format("YYYY-MM-DD")
                                               },
                                               "項目":{
-                                                "value":'通話料（' + mm2 + '月分）'
+                                                "value":'通話料（' + yymm2 + '月分）'
                                               },
                                               "金額":{
                                                 "value":bill
@@ -954,6 +993,9 @@
                 var subrecato=recato[k]['料金テーブル'].value;
                 for(let j = 0 ; j<subrecato.length ; j++){
                   if(subrecato[j]['value']['支払区分'].value == "後払い" && subrecato[j]['value']['対象日'].value <= prevenddt && subrecato[j]['value']['自動計上済'].value == ""  ){
+
+                    yymm2=Number(moment(subrecato[j]['value']['対象日'].value).year()).toString().slice(-2) + '.' + Number(moment(subrecato[j]['value']['対象日'].value).month()+1);
+
                     //請求明細
                     insbody.record.請求明細.value.push({
                                     "value":{
@@ -961,7 +1003,7 @@
                                         "value":subrecato[j]['value']['商品種別'].value
                                       },
                                       "プラン・オプション":{
-                                        "value":subrecato[j]['value']['商品名'].value +'（' + (moment(subrecato[j]['value']['対象日'].value).month()+1) + '月分）'
+                                        "value":subrecato[j]['value']['商品名'].value +'（' + yymm2 + '月分）'
                                       },
                                       "単価":{
                                         "value":Number(subrecato[j]['value']['単価'].value)
@@ -1000,7 +1042,7 @@
                                         "value":subrecato[j]['value']['対象日'].value
                                       },
                                       "項目":{
-                                        "value":subrecato[j]['value']['商品名'].value+'（' + (moment(subrecato[j]['value']['対象日'].value).month()+1) + '月分）'
+                                        "value":subrecato[j]['value']['商品名'].value+'（' + yymm2 + '月分）'
                                       },
                                       "金額":{
                                         "value":(Number(subrecato[j]['value']['単価'].value)*Number(subrecato[j]['value']['数量'].value))

@@ -978,6 +978,8 @@
 
             //窓口処理後払い分
             targetflg=true;
+            //前月末
+            prevenddt =moment(invoicedt).add(-1, 'months').endOf('month').format("YYYY-MM-DD");
             body = {
               'app': APP_MADO,
               'query': '登録NO_メンバー = "' + rec[i]['レコード番号'].value + 　'" and ' +

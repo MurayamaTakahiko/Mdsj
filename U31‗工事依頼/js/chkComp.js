@@ -109,7 +109,7 @@ kintone.events.on(events, async (event) => {
       }
       record['完工チェック']['disabled'] = true;
       //record['請求日']['disabled'] = true;
-      record['請求番号']['disabled'] = true;
+      //record['請求番号']['disabled'] = true;
       return event;
       //kintone.app.record.set(event);
   }catch(e) {

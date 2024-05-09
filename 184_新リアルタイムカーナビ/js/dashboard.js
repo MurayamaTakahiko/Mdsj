@@ -666,8 +666,10 @@ jQuery.noConflict();
                     prodData[prod] = 0;
                     prodLabels.push(prod);
                   }
-                  var user = canvas1Rec[l].主担当.value[0].name;
-                  var code = canvas1Rec[l].主担当.value[0].code;
+                  //var user = canvas1Rec[l].主担当.value[0].name;
+                  //var code = canvas1Rec[l].主担当.value[0].code;
+                  var user ="";
+                  var code ="";
                   if (typeof(userData[user]) === "undefined") {
                     userData[user] = 0;
                     userLabels.push(user);

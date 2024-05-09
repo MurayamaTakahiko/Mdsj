@@ -105,10 +105,10 @@ jQuery.noConflict();
     // 過去計上日データは登録不可
     var crow = event.changes.row;
     var sellDate = crow.value['売上月']['value'];
-    if (moment(sellDate).isBefore(moment().add(-1, 'days'), 'day')) {
-      crow.value['売上月']['value'] = "";
-      event.error = "過去日での売上計上はできません。";
-    }
+    // if (moment(sellDate).isBefore(moment().add(-1, 'days'), 'day')) {
+    //   crow.value['売上月']['value'] = "";
+    //   event.error = "過去日での売上計上はできません。";
+    // }
     return event;
   });
 
@@ -130,10 +130,10 @@ jQuery.noConflict();
       }
       var sellDate = row.value['売上月']['value'];
       event.error = "";
-      if (moment(sellDate).isBefore(moment().add(-1, 'days'), 'day')) {
-        row.value['売上月']['value'] = "";
-        event.error = "過去日での売上計上はできません。";
-      }
+      // if (moment(sellDate).isBefore(moment().add(-1, 'days'), 'day')) {
+      //   row.value['売上月']['value'] = "";
+      //   event.error = "過去日での売上計上はできません。";
+      // }
       var selectedUsers = row.value['担当者']['value'];
       if (selectedUsers.length > 1) {
         event.error += "担当者は一人しか指定できません。";
@@ -174,10 +174,10 @@ jQuery.noConflict();
       }
       var sellDate = row.value['売上月']['value'];
       event.error = "";
-      if (moment(sellDate).isBefore(moment().add(-1, 'days'), 'day')) {
-        row.value['売上月']['value'] = "";
-        event.error = "過去日での売上計上はできません。";
-      }
+      // if (moment(sellDate).isBefore(moment().add(-1, 'days'), 'day')) {
+      //   row.value['売上月']['value'] = "";
+      //   event.error = "過去日での売上計上はできません。";
+      // }
       var selectedUsers = row.value['担当者']['value'];
       if (selectedUsers.length > 1) {
         event.error += "担当者は一人しか指定できません。";

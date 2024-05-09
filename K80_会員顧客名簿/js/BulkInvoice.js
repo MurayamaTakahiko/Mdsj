@@ -28,25 +28,25 @@
     //var KIGO='US';
 
     //////請求番号採番時ロジック編集(SS)
-    var APP_ID = 140;   //会員顧客名簿
-    var APP_INVOICE_ID = 153;//請求登録
-    var APP_CONSTLIST = 154;
-    var APP_SALES_ID = 152;
-    var APP_CALL = 185;
-    var APP_MADO = 180;
-    var TEL_ITEM_NO=141;
-    var APP_ITEM = 141;
-    var KIGO='SS';
+    //var APP_ID = 140;   //会員顧客名簿
+    //var APP_INVOICE_ID = 153;//請求登録
+    //var APP_CONSTLIST = 154;
+    //var APP_SALES_ID = 152;
+    //var APP_CALL = 185;
+    //var APP_MADO = 180;
+    //var TEL_ITEM_NO=141;
+    //var APP_ITEM = 141;
+    //var KIGO='SS';
 
-    //var APP_ID = 447;   //会員顧客名簿
-    //var APP_INVOICE_ID = 449;   //請求登録
-    //var APP_CONSTLIST = 448;   //入金管理
-    //var APP_SALES_ID = 446;
-    //var APP_CALL = 461;
-    //var APP_MADO = 505;
-    //var TEL_ITEM_NO=238;
-    //var APP_ITEM = 458;
-    //var KIGO='NS';
+    var APP_ID = 447;   //会員顧客名簿
+    var APP_INVOICE_ID = 449;   //請求登録
+    var APP_CONSTLIST = 448;   //入金管理
+    var APP_SALES_ID = 446;
+    var APP_CALL = 461;
+    var APP_MADO = 505;
+    var TEL_ITEM_NO=238;
+    var APP_ITEM = 458;
+    var KIGO='NS';
 
     var TAX=10;
     // moment.locale('ja');
@@ -552,7 +552,7 @@
                            if(respsumi.records.length == 0){
                              //税区分
                              taxkbn = await getTaxkbn(subrec[j]['value']['商品番号_オプション'].value);
-                             yymm2= Number(moment(invoicedt).add(1, 'month').year()).toString().slice(-2) + '.' + Number(moment(invoicedt).add(1, 'month').month()+1);
+                             yymm2= Number(moment(invoicedt).add(k+1, 'month').year()).toString().slice(-2) + '.' + Number(moment(invoicedt).add(k+1, 'month').month()+1);
                              insbody.record.請求明細.value.push({
                                           "value":{
                                             "種別":{

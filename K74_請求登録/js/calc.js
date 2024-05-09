@@ -39,7 +39,17 @@
          var kamoku = rows.value['税区分'].value;
          if (Object.keys(kamokuInfos).indexOf(kamoku) >= 0) {
            var tcode = kamokuInfos[kamoku];
-             if (rows.value['単価'].value) {
+           if (rows.value['単価'].value){
+             if (isNaN(rows.value['単価'].value)){
+               rows.value['単価'].value=0;
+             }
+           }
+           if (rows.value['数量'].value){
+             if (isNaN(rows.value['数量'].value)){
+               rows.value['数量'].value=0;
+             }
+           }
+             if (rows.value['単価'].value && rows.value['数量'].value) {
                record[tcode].value += Number(rows.value['単価'].value)*Number(rows.value['数量'].value);
              }
            }

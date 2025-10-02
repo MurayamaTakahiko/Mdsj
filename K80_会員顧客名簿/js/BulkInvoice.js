@@ -765,6 +765,7 @@
                     }
 
                     //抽出終了月
+                     prevenddt =moment(invoicedt).add(-1, 'months').endOf('month').format("YYYY-MM-DD");
                     if(moment(subrec[j]['value']['オプション利用終了日'].value).format("YYYYMM") <= moment(prevenddt).format("YYYYMM")){
                       prevenddt=moment(subrec[j]['value']['オプション利用終了日'].value).endOf('month').format("YYYY-MM-DD");
                     }
@@ -1024,6 +1025,9 @@
                                       },
                                       "摘要":{
                                         "value":"窓口処理"
+                                      },
+                                      "窓口処理NO":{
+                                        "value":recato[k]['登録NO'].value
                                       }
                                     }
                                   });
@@ -1060,6 +1064,9 @@
                                       },
                                       "商品番号":{
                                         "value":subrecato[j]['value']['商品番号'].value
+                                      },
+                                      "窓口処理NO":{
+                                        "value":recato[k]['登録NO'].value
                                       }
                                     }
                                   });

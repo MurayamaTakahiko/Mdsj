@@ -368,6 +368,9 @@
                                 },
                                 "商品番号":{
                                   "value":subrec[j]['value']['商品番号'].value
+                                },
+                                "窓口処理NO":{
+                                  "value":rec[i]['登録NO'].value
                                 }
                               }
                             });
@@ -396,6 +399,9 @@
                                   },
                                   "利用対象期間_to":{
                                     "value":moment(subrec[j]['value']['対象日'].value).format('YYYY-MM-DD')
+                                  },
+                                  "窓口処理NO":{
+                                    "value":rec[i]['登録NO'].value
                                   }
                                 }
                               });
@@ -656,6 +662,9 @@
                               },
                               "商品番号":{
                                 "value":subrec[j]['value']['商品番号'].value
+                              },
+                              "窓口処理NO":{
+                                "value":rec[i]['登録NO'].value
                               }
                             }
                           });

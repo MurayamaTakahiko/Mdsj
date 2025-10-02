@@ -989,6 +989,7 @@ kintone.app.record.set({record: record});
                   staTelDay=moment(tableList['オプション利用開始日'].value).startOf('month').format("YYYY-MM-DD");
                 }
                 //抽出終了月
+                finTelDay = moment(invoicedt).add(-1, 'month').endOf('month').format("YYYY-MM-DD");
                 if(moment(tableList['オプション利用終了日'].value).format("YYYYMM") <= moment(finTelDay).format("YYYYMM")){
                   finTelDay=moment(tableList['オプション利用終了日'].value).endOf('month').format("YYYY-MM-DD");
                 }
@@ -1422,7 +1423,8 @@ kintone.app.record.set({record: record});
                             "利用対象期間_to":subrecato[j]['value']['対象日'].value,
                             "摘要":"窓口処理",
                             "更新用ID1":recato[k]['登録NO'].value,
-                            "更新用ID2":subrecato[j]['id']
+                            "更新用ID2":subrecato[j]['id'],
+                            "窓口処理NO":recato[k]['登録NO'].value
                           };
                   tbl.push({
                     'value': getRowObject(resp, setFields)

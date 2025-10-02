@@ -1,0 +1,46 @@
+.dialog[open] {
+  border: none;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 16px rgba(0 0 0 / 16%);
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  width: 1400px;
+  height: 800px;
+}
+
+.dialog::backdrop {
+  background: rgba(0 0 0 / 32%);
+}
+
+
+.close {
+  top: 100%;
+  position: sticky;
+  /*position: fixed;*/
+  z-index: 1;
+  height: 0;
+}
+
+.close button {
+  translate: 0 -100%;
+}
+
+.subtable-label-inner-gaia2 {
+    display: inline-block;
+    padding: 4px 8px;
+    box-sizing: border-box
+}
+
+.subtable-label-gaia2 {
+    background-color: #00DD00;
+    border-color: #00DD00;
+    height: 40px;
+    color: #000;
+    box-sizing: border-box;
+    text-align: left;
+    font-weight: 400;
+    font-size: 12px;
+    white-space: nowrap;
+    border-width: 2px 2px 2px 0
+}

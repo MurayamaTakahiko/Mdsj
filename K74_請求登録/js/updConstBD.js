@@ -248,6 +248,9 @@ jQuery.noConflict();
                               },
                               "商品種別":{
                                 "value":billList['種別']['value']
+                              },
+                              "窓口処理NO":{
+                                "value":billList['窓口処理NO']['value']
                               }
                             }
                           });

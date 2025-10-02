@@ -36,6 +36,8 @@
         '    <span class="subtable-inner-gaia">利用対象期間(from)</span></th>' +
         '<th class="subtable-label-gaia" style="width:128px;">' +
         '    <span class="subtable-inner-gaia">利用対象期間(to)</span></th>' +
+        '<th class="subtable-label-gaia" style="width:128px;">' +
+        '    <span class="subtable-inner-gaia">窓口処理№</span></th>' +
         '</tr>' +
         '</thead>' +
         '<tbody id = "tbody">';
@@ -81,6 +83,7 @@
         var cell6= tableRow.insertCell(-1);
         var cell7 = tableRow.insertCell(-1);
         var cell8 = tableRow.insertCell(-1);
+        var cell9 = tableRow.insertCell(-1);
 
         cell3.style.cssText = "text-align:right;";
         cell4.style.cssText = "text-align:right;";
@@ -94,6 +97,7 @@
         cell6.innerHTML=GetColHtml(row.value['摘要'].value,'right');
         cell7.innerHTML=GetColHtml(row.value['利用対象期間_from'].value,'right');
         cell8.innerHTML=GetColHtml(row.value['利用対象期間_to'].value,'right');
+        cell9.innerHTML=GetColHtml(row.value['窓口処理NO'].value,'right');
 
 
       });
@@ -107,6 +111,8 @@
       var cell6 = tableRow.insertCell(-1);
       var cell7 = tableRow.insertCell(-1);
       var cell8= tableRow.insertCell(-1);
+      var cell9= tableRow.insertCell(-1);
+
       cell3.innerHTML=GetColHtml('課税対象額');
       cell4.innerHTML=GetColHtml('非課税対象額');
       cell5.innerHTML=GetColHtml('調整前消費税(課税対象の税額)');
@@ -122,7 +128,7 @@
       cell6 = tableRow.insertCell(-1);
       cell7 = tableRow.insertCell(-1);
       cell8= tableRow.insertCell(-1);
-
+      cell9= tableRow.insertCell(-1);
 
       cell3.style.cssText = "text-align:right;";
       cell4.style.cssText = "text-align:right;";

@@ -230,8 +230,8 @@ jQuery.noConflict();
         'query': query
     };
     // 入金管理アプリID
-    //var APP_CONSTLIST = 37;
-    var APP_CONSTLIST = 476;
+    var APP_CONSTLIST = 37;
+    //var APP_CONSTLIST = 476;
     var billNum = record['請求番号'].value;
     var billCD = record['得意先CD'].value;
     var billCstName = record['得意先名'].value;

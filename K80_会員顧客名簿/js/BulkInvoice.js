@@ -5,15 +5,15 @@
 
     //請求番号編集２箇所
     //中津店
-    //var APP_ID = 80;   //会員顧客名簿
-    //var APP_INVOICE_ID = 74;//請求登録
-    //var APP_CONSTLIST = 79;
-    //var APP_SALES_ID = 82;
-    //var APP_CALL = 81;
-    //var APP_MADO = 178;
-    //var TEL_ITEM_NO=121;
-    //var APP_ITEM = 17;
-    //var KIGO='NS';
+    var APP_ID = 80;   //会員顧客名簿
+    var APP_INVOICE_ID = 74;//請求登録
+    var APP_CONSTLIST = 79;
+    var APP_SALES_ID = 82;
+    var APP_CALL = 81;
+    var APP_MADO = 178;
+    var TEL_ITEM_NO=121;
+    var APP_ITEM = 17;
+    var KIGO='NS';
 
     //////請求番号採番時ロジック編集(US)
     //梅田店
@@ -38,15 +38,15 @@
     //var APP_ITEM = 141;
     //var KIGO='SS';
 
-    var APP_ID = 447;   //会員顧客名簿
-    var APP_INVOICE_ID = 449;   //請求登録
-    var APP_CONSTLIST = 448;   //入金管理
-    var APP_SALES_ID = 446;
-    var APP_CALL = 461;
-    var APP_MADO = 505;
-    var TEL_ITEM_NO=238;
-    var APP_ITEM = 458;
-    var KIGO='NS';
+    //var APP_ID = 447;   //会員顧客名簿
+    //var APP_INVOICE_ID = 449;   //請求登録
+    //var APP_CONSTLIST = 448;   //入金管理
+    //var APP_SALES_ID = 446;
+    //var APP_CALL = 461;
+    //var APP_MADO = 505;
+    //var TEL_ITEM_NO=238;
+    //var APP_ITEM = 458;
+    //var KIGO='NS';
 
     var TAX=10;
     // moment.locale('ja');
@@ -776,17 +776,21 @@
                       'app': APP_CALL,
                       'query': '(契約者 = "" or 契約者 = "' + rec[i]['顧客名'].value +  '" ) and  契約電話番号 = "' + tellNo + '" and 請求対象月 >= "' + stateldt + '" and 請求対象月 <= "' + prevenddt + '" order by 請求対象月 ' + ' limit 500'
                     };
+
+                    var query = '(契約者 = "" or 契約者 = "' + rec[i]['顧客名'].value +  '" ) and  契約電話番号 = "' + tellNo + '" and 請求対象月 >= "' + stateldt + '" and 請求対象月 <= "' + prevenddt + '"';
                     //データ取得
-                    const resp3= await  kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', body);
-                    var rec3=resp3.records;
+                    //const resp3= await  kintone.api(kintone.api.url('/k/v1/records.json', true), 'GET', body);
+                    const client = new KintoneRestAPIClient();
+                    const resp3 = await client.record.getAllRecords({app: APP_CALL, condition: query,orderBy: '請求対象月'});
+                    //var rec3=resp3.records;
                     var k;
                     var ymd;
                     var ymd2;
                     var mm;
                     var mm2;
                     var bill=0;
-                    for ( k = 0 ; k < rec3.length ; k++){
-                        var subrec3 = rec3[k];
+                    for ( k = 0 ; k < resp3.length ; k++){
+                        var subrec3 = resp3[k];
                         ymd=subrec3['請求対象月'].value;
                         mm=moment(ymd).month()+1;
                         if(mm != mm2 ){

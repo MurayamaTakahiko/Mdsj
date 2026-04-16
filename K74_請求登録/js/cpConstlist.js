@@ -47,12 +47,12 @@ jQuery.noConflict();
   var basedt;
   var yymm;
   //中津店
-  //var APP_CONSTLIST = 80;
-  //var APP_TELLBILL = 81;
-  //var APP_ITEM = 17;
-  //var APP_SALES=82;
-  //var APP_MADO=178;
-  //var TEL_ITEM_NO=121;
+  var APP_CONSTLIST = 80;
+  var APP_TELLBILL = 81;
+  var APP_ITEM = 17;
+  var APP_SALES=82;
+  var APP_MADO=178;
+  var TEL_ITEM_NO=121;
   //梅田店
   //var APP_CONSTLIST = 156; //会員顧客名簿
   //var APP_TELLBILL = 183;
@@ -61,12 +61,12 @@ jQuery.noConflict();
   //var APP_MADO=179;
   //var TEL_ITEM_NO=229;
   //四条烏丸店
-  var APP_CONSTLIST = 140; //会員顧客名簿
-  var APP_TELLBILL = 185;
-  var APP_ITEM = 141;
-  var APP_SALES=152;
-  var APP_MADO=180;
-  var TEL_ITEM_NO=141;
+  //var APP_CONSTLIST = 140; //会員顧客名簿
+  //var APP_TELLBILL = 185;
+  //var APP_ITEM = 141;
+  //var APP_SALES=152;
+  //var APP_MADO=180;
+  //var TEL_ITEM_NO=141;
 
   //var APP_CONSTLIST = 447;
   //var APP_TELLBILL = 461;
@@ -993,13 +993,16 @@ kintone.app.record.set({record: record});
                 if(moment(tableList['オプション利用終了日'].value).format("YYYYMM") <= moment(finTelDay).format("YYYYMM")){
                   finTelDay=moment(tableList['オプション利用終了日'].value).endOf('month').format("YYYY-MM-DD");
                 }
-                var query = '((契約者 = "" and 契約電話番号 = "' + tellNo + '" ) or (契約者 = "' + record['顧客名'].value +  '" and  契約電話番号 = "' + tellNo + '")) and 請求対象月 >= "' + staTelDay + '" and 請求対象月 <= "' + finTelDay + '" order by 請求対象月 limit 500';
+                //var query = '((契約者 = "" and 契約電話番号 = "' + tellNo + '" ) or (契約者 = "' + record['顧客名'].value +  '" and  契約電話番号 = "' + tellNo + '")) and 請求対象月 >= "' + staTelDay + '" and 請求対象月 <= "' + finTelDay + '" order by 請求対象月 limit 500';
+                var query =  '((契約者 = "" and 契約電話番号 = "' + tellNo + '" ) or (契約者 = "' + record['顧客名'].value +  '" and  契約電話番号 = "' + tellNo + '")) and 請求対象月 >= "' + staTelDay + '" and 請求対象月 <= "' + finTelDay + '"' ;
                 var paramTell = {
                     'app': APP_TELLBILL,
                     'query': query
                 };
-                var respT =await kintone.api(kintone.api.url('/k/v1/records', true), 'GET', paramTell);
-                  var recordsT = respT.records;
+                //var respT =await kintone.api(kintone.api.url('/k/v1/records', true), 'GET', paramTell);
+                const client = new KintoneRestAPIClient();
+                var recordsT = await client.record.getAllRecords({app: APP_TELLBILL, condition: query,orderBy: '請求対象月'});
+                  //var recordsT = respT.records;
                   var tellBill = 0;
                   var ymd;
                   var ymd2;
@@ -1106,13 +1109,16 @@ kintone.app.record.set({record: record});
             } else {
               if (moment(invoicedt).month() % 2 != 0) {
                 var tellNo = tableList['契約番号'].value;
-                var query =  '((契約者 = "" and 契約電話番号 = "' + tellNo + '" ) or (契約者 = "' + record['顧客名'].value +  '" and  契約電話番号 = "' + tellNo + '")) and 請求対象月 >= "' + staTelDay + '" and 請求対象月 <= "' + finTelDay + '" order by 請求対象月';
+                //var query =  '((契約者 = "" and 契約電話番号 = "' + tellNo + '" ) or (契約者 = "' + record['顧客名'].value +  '" and  契約電話番号 = "' + tellNo + '")) and 請求対象月 >= "' + staTelDay + '" and 請求対象月 <= "' + finTelDay + '" order by 請求対象月 limit 500 ';
+                var query =  '((契約者 = "" and 契約電話番号 = "' + tellNo + '" ) or (契約者 = "' + record['顧客名'].value +  '" and  契約電話番号 = "' + tellNo + '")) and 請求対象月 >= "' + staTelDay + '" and 請求対象月 <= "' + finTelDay + '"' ;
                 var paramTell = {
                     'app': APP_TELLBILL,
                     'query': query
                 };
-                var respT =await kintone.api(kintone.api.url('/k/v1/records', true), 'GET', paramTell)
-                  var recordsT = respT.records;
+                //var respT =await kintone.api(kintone.api.url('/k/v1/records', true), 'GET', paramTell)
+                const client = new KintoneRestAPIClient();
+                var recordsT = await client.record.getAllRecords({app: APP_TELLBILL, condition: query,orderBy: '請求対象月'});
+                //var recordsT = respT.records;
                   var tellBill = 0;
                   var ymd;
                   var ymd2;
@@ -1278,7 +1284,7 @@ kintone.app.record.set({record: record});
                     moment(tableList['オプション利用終了日'].value).format("YYYYMM")>=moment(finTelDay2).format("YYYYMM") )){
                  //通話料抽出
                  var tellNo = tableList['契約番号'].value;
-                 var query =  '契約電話番号 = "' + tellNo + '" and 請求対象月 >= "' + staTelDay2 + '" and 請求対象月 <= "' + finTelDay2 + '" order by 請求対象月';
+                 var query =  '契約電話番号 = "' + tellNo + '" and 請求対象月 >= "' + staTelDay2 + '" and 請求対象月 <= "' + finTelDay2 + '" order by 請求対象月 limit 500 ';
                  var paramTell = {
                      'app': APP_TELLBILL,
                      'query': query
